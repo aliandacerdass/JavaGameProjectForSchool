@@ -25,6 +25,24 @@ public class OyunPaneli extends JPanel {
     public double kameraX = 0;
     public double kameraY = 0;
     
+    // Oyunun anlik durumunu saklayan degisken (Varsayilan olarak OYUN durumunda baslar)
+    public OyunDurumu durum = OyunDurumu.OYUN;
+    
+    // Oyundaki aktif silahların listesi (Gizem)
+    public final ArrayList<Silah> silahlar = new ArrayList<>();
+    // Oyundaki aktif mermilerin listesi (Gizem & Andaç)
+    public final ArrayList<Mermi> mermiler = new ArrayList<>();
+    // Haritadaki aktif düşmanların listesi (Emre)
+    public final ArrayList<Dusman> dusmanlar = new ArrayList<>();
+    // Yere düşen deneyim kristallerinin listesi (Gizem)
+    public final ArrayList<DeneyimKristali> kristaller = new ArrayList<>();
+    
+    // Seviye atlama kart arayüzü nesnesi (Gizem)
+    public final SeviyeArayuzu seviyeArayuzu;
+    
+    // Oyunda gecen sureyi saniye bazinda hesaplamak icin kare/frame sayaci (Gizem)
+    public int oyunSuresiKareSayisi = 0;
+    
     // Klavye girdi kontrolcusu
     public final TusKontrolcu tusKontrol;
     // Fare girdi kontrolcusu
@@ -32,18 +50,6 @@ public class OyunPaneli extends JPanel {
     
     // Oyuncu karakteri nesnesi
     public final Oyuncu oyuncu;
-    
-    // Oyundaki aktif dusmanlarin listesi
-    public final ArrayList<Dusman> dusmanlar;
-    // Oyundaki aktif mermilerin listesi
-    public final ArrayList<Mermi> mermiler;
-    // Oyundaki aktif deneyim kristallerinin listesi
-    public final ArrayList<DeneyimKristali> kristaller;
-    // Oyuncunun sahip oldugu aktif silahlarin listesi
-    public final ArrayList<Silah> silahlar;
-    
-    // Oyunun anlik durumunu tutan degisken (Varsayilan olarak OYUN durumunda baslar)
-    public OyunDurumu oyunDurumu = OyunDurumu.OYUN;
 
     // Kurucu metot: Panelin boyutlarini ve arka planini ayarlar
     public OyunPaneli() {
@@ -57,15 +63,8 @@ public class OyunPaneli extends JPanel {
         // Oyuncuyu haritanin ortasinda dogacak sekilde baslatir (1500, 1500)
         this.oyuncu = new Oyuncu(1500, 1500);
         
-        // Liste yapilarini baslatir
-        this.dusmanlar = new ArrayList<>();
-        this.mermiler = new ArrayList<>();
-        this.kristaller = new ArrayList<>();
-        this.silahlar = new ArrayList<>();
-        
-        // Test silahlarini ekler (Oyuncunun saldiri yapabilmesi icin)
-        this.silahlar.add(new AtesTopu(this.oyuncu));
-        this.silahlar.add(new DonerBicak(this.oyuncu));
+        // Seviye atlama arayuzunu baslatir
+        this.seviyeArayuzu = new SeviyeArayuzu(this);
         
         // Klavye kontrolcusunu olusturur
         this.tusKontrol = new TusKontrolcu(this);
@@ -77,6 +76,10 @@ public class OyunPaneli extends JPanel {
         // Panelin fare girdilerini dinlemesini saglar
         this.addMouseListener(this.fareKontrol);
         this.addMouseMotionListener(this.fareKontrol);
+        
+        // Test silahlarini ekler (Oyuncunun saldiri yapabilmesi icin)
+        this.silahlar.add(new AtesTopu(this.oyuncu));
+        this.silahlar.add(new DonerBicak(this.oyuncu));
     }
     
     // AWT/Swing tarafindan panel cizimi gerektiginde otomatik cagirilan metot
@@ -104,17 +107,17 @@ public class OyunPaneli extends JPanel {
         g2.setColor(Color.RED);
         g2.drawRect(0, 0, HARITA_BOYUTU, HARITA_BOYUTU);
         
-        // Yerdeki deneyim kristallerini cizer (Gizem'in DeneyimKristali sinifindaki ciz metodu)
+        // Yerdeki deneyim kristallerini cizer
         for (int i = 0; i < kristaller.size(); i++) {
             kristaller.get(i).ciz(g2);
         }
         
-        // Havada giden aktif mermileri cizer (Gizem'in Mermi sinifindaki ciz metodu)
+        // Havada giden aktif mermileri cizer
         for (int i = 0; i < mermiler.size(); i++) {
             mermiler.get(i).ciz(g2);
         }
         
-        // Aktif dusmanlari cizer (Emre'nin Dusman sinifindaki ciz metodu)
+        // Aktif dusmanlari cizer
         for (int i = 0; i < dusmanlar.size(); i++) {
             dusmanlar.get(i).ciz(g2);
         }
@@ -125,31 +128,129 @@ public class OyunPaneli extends JPanel {
         // 2. SABİT EKRAN ARAYÜZÜNÜ ÇİZ (Kamerayi geri cevir / translate geri al)
         g2.translate(kameraX, kameraY);
         
-        // Sabit ekran yazilari (Kameradan etkilenmeyen HUD elemanlari)
+        // --- 2a. EN TEPEDE YATAY DENEYİM BARI (XP BAR) ---
+        int xpBarX = 20;
+        int xpBarY = 10;
+        int xpBarGenislik = EKRAN_GENISLIGI - 40; // 760 piksel genislik
+        int xpBarYukseklik = 14;
+        
+        // XP Bar Arka Plani (Koyu Cam)
+        g2.setColor(new Color(30, 30, 40, 220));
+        g2.fillRect(xpBarX, xpBarY, xpBarGenislik, xpBarYukseklik);
+        
+        // XP Bar Doluluk Orani
+        double xpOran = oyuncu.deneyim / oyuncu.sonrakiSeviyeDeneyimi;
+        int xpDolulukGenislik = (int) (xpBarGenislik * Math.min(1.0, Math.max(0.0, xpOran)));
+        
+        // XP Bar Dolu Alanı (Neon Mor/Eflatun renk - Premium hissi için)
+        g2.setColor(new Color(138, 43, 226));
+        g2.fillRect(xpBarX, xpBarY, xpDolulukGenislik, xpBarYukseklik);
+        
+        // XP Bar Çift Çerçevesi (Piksel stil)
         g2.setColor(Color.WHITE);
-        g2.drawString("Piksel Hayatta Kalma Oyunu - Motor Baslatildi!", 20, 30);
-        g2.drawString("Oyuncu Konumu: X=" + (int) oyuncu.x + ", Y=" + (int) oyuncu.y, 20, 55);
-        g2.drawString("Kamera Konumu: X=" + (int) kameraX + ", Y=" + (int) kameraY, 20, 80);
+        g2.drawRect(xpBarX, xpBarY, xpBarGenislik, xpBarYukseklik);
         
-        // Oyuncu Can (HP) Bari Çizimi
-        g2.setColor(Color.RED);
-        g2.fillRect(520, 20, 250, 20); // Kirmizi zemin barı
-        g2.setColor(Color.GREEN);
-        int canBarGenisligi = (int) ((oyuncu.can / oyuncu.maksCan) * 250);
-        g2.fillRect(520, 20, Math.max(0, canBarGenisligi), 20); // Mevcut saglik bari
+        // XP Metni (Barın üstüne ortalanmış)
         g2.setColor(Color.WHITE);
-        g2.drawRect(520, 20, 250, 20); // Çerçeve cizgisi
-        g2.drawString("HP: " + (int) oyuncu.can + " / " + (int) oyuncu.maksCan, 530, 35);
+        String xpMetni = "SEVIYE: " + oyuncu.seviye + "  |  DP: " + (int) oyuncu.deneyim + " / " + (int) oyuncu.sonrakiSeviyeDeneyimi;
+        g2.drawString(xpMetni, EKRAN_GENISLIGI / 2 - 100, xpBarY + 11);
         
-        // Seviye ve Deneyim Puanı Bilgisi Çizimi
-        g2.drawString("SEVIYE: " + oyuncu.seviye, 520, 60);
-        g2.drawString("EXP: " + (int) oyuncu.deneyim + " / " + (int) oyuncu.sonrakiSeviyeDeneyimi, 520, 80);
+        // --- 2b. SOL ÜST CAN BARI (HP BAR) ---
+        int hpBarX = 20;
+        int hpBarY = 35;
+        int hpBarGenislik = 200;
+        int hpBarYukseklik = 22;
         
-        // Can barının hemen sol tarafında silah sayısını göster
-        g2.drawString("Silahlar: Ates Topu (Oto), Doner Bicak (Oto)", 20, 110);
+        // HP Bar Arka Plani (Koyu Gri)
+        g2.setColor(new Color(50, 50, 50, 200));
+        g2.fillRect(hpBarX, hpBarY, hpBarGenislik, hpBarYukseklik);
         
-        // 3. OYUN BİTTİ EKRANI ÇİZİMİ (Eger durum OYUN_BITTI ise ekrana kirmizi yazi yazar)
-        if (oyunDurumu == OyunDurumu.OYUN_BITTI) {
+        // HP Bar Doluluk Orani
+        double hpOran = oyuncu.can / oyuncu.maksCan;
+        int hpDolulukGenislik = (int) (hpBarGenislik * Math.min(1.0, Math.max(0.0, hpOran)));
+        
+        // HP Bar Dolu Alanı (Göz Alıcı Koyu Kırmızı)
+        g2.setColor(new Color(220, 20, 60));
+        g2.fillRect(hpBarX, hpBarY, hpDolulukGenislik, hpBarYukseklik);
+        
+        // HP Bar Çerçevesi (Piksel Altın Rengi Çift Çerçeve)
+        g2.setColor(new Color(218, 165, 32)); // Altın rengi
+        g2.drawRect(hpBarX, hpBarY, hpBarGenislik, hpBarYukseklik);
+        g2.drawRect(hpBarX + 2, hpBarY + 2, hpBarGenislik - 4, hpBarYukseklik - 4);
+        
+        // HP Metni (Can Barı üzerine ortalanmış)
+        g2.setColor(Color.WHITE);
+        String hpMetni = "CAN: " + (int) oyuncu.can + " / " + (int) oyuncu.maksCan;
+        g2.drawString(hpMetni, hpBarX + 45, hpBarY + 16);
+        
+        // --- 2c. ÜST ORTA KRONOMETRE (STOPWATCH) ---
+        int saniye = oyunSuresiKareSayisi / 60;
+        int dakika = saniye / 60;
+        int kalanSaniye = saniye % 60;
+        String zamanMetni = String.format("%02d:%02d", dakika, kalanSaniye);
+        
+        // Kronometre Kutusu (Piksel cam tasarım)
+        int kronoX = EKRAN_GENISLIGI / 2 - 45;
+        int kronoY = 35;
+        int kronoGenislik = 90;
+        int kronoYukseklik = 26;
+        
+        g2.setColor(new Color(15, 23, 42, 220));
+        g2.fillRect(kronoX, kronoY, kronoGenislik, kronoYukseklik);
+        g2.setColor(Color.CYAN);
+        g2.drawRect(kronoX, kronoY, kronoGenislik, kronoYukseklik);
+        
+        // Zaman Yazısı
+        g2.setColor(Color.YELLOW);
+        g2.drawString(zamanMetni, kronoX + 26, kronoY + 18);
+        
+        // --- 2d. SAĞ ÜST ENVANTER VE DURUM GÖSTERGESİ ---
+        int envX = EKRAN_GENISLIGI - 220;
+        int envY = 35;
+        int envGenislik = 200;
+        int envYukseklik = 45;
+        
+        // Envanter Kutusu (Koyu Cam Görünümü)
+        g2.setColor(new Color(15, 23, 42, 220));
+        g2.fillRect(envX, envY, envGenislik, envYukseklik);
+        g2.setColor(Color.CYAN);
+        g2.drawRect(envX, envY, envGenislik, envYukseklik);
+        
+        // Envanter İçeriği (Aktif silahları küçük sembollerle listeler)
+        g2.setColor(Color.WHITE);
+        g2.drawString("ENVANTER:", envX + 10, envY + 18);
+        
+        int ikonX = envX + 85;
+        for (int i = 0; i < silahlar.size(); i++) {
+            Silah s = silahlar.get(i);
+            if (s.ad.equals("Ates Topu")) {
+                // Ateş Topu İkonu (Turuncu daire)
+                g2.setColor(Color.ORANGE);
+                g2.fillOval(ikonX, envY + 6, 12, 12);
+                g2.setColor(Color.WHITE);
+                g2.drawString("L" + s.seviye, ikonX + 15, envY + 17);
+                ikonX += 45;
+            } else if (s.ad.equals("Doner Bicak")) {
+                // Döner Bıçak İkonu (Cyan daire)
+                g2.setColor(Color.CYAN);
+                g2.fillOval(ikonX, envY + 6, 12, 12);
+                g2.setColor(Color.WHITE);
+                g2.drawString("L" + s.seviye, ikonX + 15, envY + 17);
+                ikonX += 45;
+            }
+        }
+        
+        // Genel İpuçları Yazısı (Ekranın sol altında)
+        g2.setColor(new Color(200, 200, 200, 150));
+        g2.drawString("Hareket: WASD | Durum: Seviye atlayarak yeni silahlar kazanın ve güçlenin!", 20, EKRAN_YUKSEKLIGI - 20);
+        
+        // Eger oyun GELISIM (seviye atlama duraklamasi) durumundaysa, kart seçim arayuzunu en uste cizer
+        if (durum == OyunDurumu.GELISIM) {
+            seviyeArayuzu.ciz(g2);
+        }
+        
+        // --- 2e. OYUN BİTTİ EKRANI ÇİZİMİ ---
+        if (durum == OyunDurumu.OYUN_BITTI) {
             // Ekrana yari saydam siyah perde çekeriz
             g2.setColor(new Color(0, 0, 0, 180));
             g2.fillRect(0, 0, EKRAN_GENISLIGI, EKRAN_YUKSEKLIGI);
@@ -172,65 +273,82 @@ public class OyunPaneli extends JPanel {
     // Oyun durumlarini guncelleyen metot (OyunDongusu tarafindan periyodik olarak tetiklenir)
     public void guncelle() {
         // Eger oyun bittiyse sadece yeniden baslatma tusunu kontrol ederiz
-        if (oyunDurumu == OyunDurumu.OYUN_BITTI) {
+        if (durum == OyunDurumu.OYUN_BITTI) {
             if (tusKontrol.rTusu) {
                 oyunuSifirla();
             }
             return;
         }
         
-        // 1. Oyuncunun hareketlerini ve konumunu gunceller
-        oyuncu.guncelle(this.tusKontrol);
-        
-        // Oyuncunun canı bittiyse oyunu OYUN_BITTI durumuna aliriz
-        if (oyuncu.can <= 0) {
-            oyunDurumu = OyunDurumu.OYUN_BITTI;
+        // Eger oyun GELISIM (seviye atlama) durumundaysa sadece kart arayuzunu gunceller
+        if (durum == OyunDurumu.GELISIM) {
+            seviyeArayuzu.guncelle();
             return;
         }
         
-        // 2. Eger haritada hic dusman kalmadiysa test amaciyla yeni dusmanlar spawn eder (Andac test edebilsin diye)
-        if (dusmanlar.isEmpty()) {
-            // Oyuncunun etrafinda farkli yönlerde 3 zombi/dusman olusturur
-            dusmanlar.add(new Dusman(oyuncu.x + 300, oyuncu.y, 40.0, 1.8, 15.0, 16.0));
-            dusmanlar.add(new Dusman(oyuncu.x - 300, oyuncu.y, 40.0, 1.8, 15.0, 16.0));
-            dusmanlar.add(new Dusman(oyuncu.x, oyuncu.y + 350, 100.0, 1.0, 30.0, 24.0)); // Daha yavas ama guclu boss zombi
+        // Eger oyun normal OYUN durumundaysa tum fizik ve hareketleri gunceller
+        if (durum == OyunDurumu.OYUN) {
+            // Saniye sayacı için kare sayısını artırır (Gizem)
+            oyunSuresiKareSayisi++;
+            
+            // Oyuncunun hareketlerini ve konumunu gunceller
+            oyuncu.guncelle(this.tusKontrol);
+            
+            // Oyuncunun canı bittiyse oyunu OYUN_BITTI durumuna aliriz
+            if (oyuncu.can <= 0) {
+                durum = OyunDurumu.OYUN_BITTI;
+                return;
+            }
+            
+            // Eger haritada hic dusman kalmadiysa test amaciyla yeni dusmanlar spawn eder (Andac test edebilsin diye)
+            if (dusmanlar.isEmpty()) {
+                dusmanlar.add(new Dusman(oyuncu.x + 300, oyuncu.y, 40.0, 1.8, 15.0, 16.0));
+                dusmanlar.add(new Dusman(oyuncu.x - 300, oyuncu.y, 40.0, 1.8, 15.0, 16.0));
+                dusmanlar.add(new Dusman(oyuncu.x, oyuncu.y + 350, 100.0, 1.0, 30.0, 24.0));
+            }
+            
+            // Oyuncunun aktif silahlarini gunceller ve ates etmelerini saglar
+            for (int i = 0; i < silahlar.size(); i++) {
+                silahlar.get(i).guncelle(dusmanlar, mermiler);
+            }
+            
+            // Aktif mermilerin konumlarini gunceller
+            for (int i = mermiler.size() - 1; i >= 0; i--) {
+                Mermi m = mermiler.get(i);
+                m.guncelle();
+                if (!m.aktif) {
+                    mermiler.remove(i);
+                }
+            }
+            
+            // Aktif deneyim kristallerinin oyuncuya çekilmesini ve toplanmasini gunceller
+            for (int i = kristaller.size() - 1; i >= 0; i--) {
+                DeneyimKristali dk = kristaller.get(i);
+                dk.guncelle(this);
+                if (dk.toplandi) {
+                    kristaller.remove(i);
+                }
+            }
+            
+            // Aktif dusmanlarin hareket yapay zekasini gunceller
+            for (int i = 0; i < dusmanlar.size(); i++) {
+                dusmanlar.get(i).guncelle(oyuncu);
+            }
+            
+            // Çarpışmaları denetler (Andac'in CarpismaDenetleyici sınıfındaki metot cagrilir)
+            CarpismaDenetleyici.carpismalariDenetle(oyuncu, dusmanlar, mermiler, kristaller);
+            
+            // Ölen düşmanları temizler
+            dusmanlar.removeIf(d -> d.can <= 0);
+            
+            // Kamerayi oyuncuyu tam ortalayacak sekilde konumlandirir
+            kameraX = oyuncu.x - EKRAN_GENISLIGI / 2.0;
+            kameraY = oyuncu.y - EKRAN_YUKSEKLIGI / 2.0;
+            
+            // Kameranin 3000x3000px haritanin disina cikmasini engeller (Siyah bosluk gosterilmez)
+            kameraX = Math.max(0, Math.min(kameraX, HARITA_BOYUTU - EKRAN_GENISLIGI));
+            kameraY = Math.max(0, Math.min(kameraY, HARITA_BOYUTU - EKRAN_YUKSEKLIGI));
         }
-        
-        // 3. Sahip olunan silahlarin cooldown'larini kontrol eder ve otomatik tetikler
-        for (int i = 0; i < silahlar.size(); i++) {
-            silahlar.get(i).guncelle(dusmanlar, mermiler);
-        }
-        
-        // 4. Dusmanlarin oyuncuyu takip etmesini ve konum guncellemesini saglar
-        for (int i = 0; i < dusmanlar.size(); i++) {
-            dusmanlar.get(i).guncelle(oyuncu);
-        }
-        
-        // 5. Ucus halindeki mermilerin konumlarini gunceller
-        for (int i = 0; i < mermiler.size(); i++) {
-            mermiler.get(i).guncelle();
-        }
-        
-        // 6. Yerde duran veya miknatisa kapilmis kristallerin durumunu gunceller
-        for (int i = 0; i < kristaller.size(); i++) {
-            kristaller.get(i).guncelle(oyuncu);
-        }
-        
-        // 7. Çarpışmaları denetler (Andac'in CarpismaDenetleyici sınıfındaki metot cagrilir)
-        CarpismaDenetleyici.carpismalariDenetle(oyuncu, dusmanlar, mermiler, kristaller);
-        
-        // 8. Ölen, pasif olan veya toplanan nesneleri listelerden temizler (removeIf performanslidir)
-        dusmanlar.removeIf(d -> d.can <= 0);
-        mermiler.removeIf(m -> !m.aktif);
-        kristaller.removeIf(k -> k.toplandi);
-        
-        // 9. Kamerayi oyuncuyu tam ortalayacak sekilde konumlandirir
-        kameraX = oyuncu.x - EKRAN_GENISLIGI / 2.0;
-        kameraY = oyuncu.y - EKRAN_YUKSEKLIGI / 2.0;
-        
-        // Kameranin 3000x3000px haritanin disina cikmasini engeller (Siyah bosluk gosterilmez)
-        kameraX = Math.max(0, Math.min(kameraX, HARITA_BOYUTU - EKRAN_GENISLIGI));
-        kameraY = Math.max(0, Math.min(kameraY, HARITA_BOYUTU - EKRAN_YUKSEKLIGI));
     }
     
     // R tusuna basildiginda oyunu sifirlayip yeniden baslatan metot
@@ -257,8 +375,11 @@ public class OyunPaneli extends JPanel {
         silahlar.add(new AtesTopu(this.oyuncu));
         silahlar.add(new DonerBicak(this.oyuncu));
         
+        // Oyun suresini sifirla
+        oyunSuresiKareSayisi = 0;
+        
         // Oyun durumunu aktif oynanis durumuna getirir
-        oyunDurumu = OyunDurumu.OYUN;
+        durum = OyunDurumu.OYUN;
         System.out.println("Oyun yeniden baslatildi!");
     }
 }
