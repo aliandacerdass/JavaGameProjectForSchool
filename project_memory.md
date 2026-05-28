@@ -146,3 +146,18 @@ Yazılacak kodların 1. sınıf müfredatına uygun, kolay açıklanabilir olmas
   - `GELISIM` (Seviye atlandığında oyunun donduğu ve kart seçim arayüzünün açıldığı an)
   - `OYUN_BITTI` (Oyuncunun öldüğü ekran)
 - **Neden:** `GELISIM` durumunda oyun döngüsü arka plandaki düşman hareketlerini güncellemeyi durdurur (pause), ancak ekrandaki çizimi ve kart seçim arayüzünü çizmeye devam eder.
+
+### G. Yeniden Başlatma (Restart) ve Durum Sıfırlama
+- **Karar:** Oyuncu öldüğünde (`OYUN_BITTI`), klavyeden `R` tuşuna basıldığında oyundaki tüm hareketli nesne listeleri (düşmanlar, mermiler, kristaller) temizlenecek, oyuncu canı, koordinatları (merkezde doğma), seviyesi ve oyun süresi sıfırlanıp oyun `OYUN` durumuna geri getirilecektir.
+- **Neden:** Bellekte eski nesnelerden kalan artıkların çakışmalara yol açmaması için temizleme işlemi `Iterator` veya doğrudan listeyi `.clear()` yaparak gerçekleştirilmelidir.
+
+### H. Mermi Vuruşunda Düşman Geri İtme (Knockback)
+- **Karar:** Düşmanlar bir mermiyle vurulduğunda, merminin geliş vektörünün tersi yönünde hafifçe geriye doğru savrulacaktır:
+  - `dusmanX += mermiYonuX * geriItmeMiktari;`
+  - `dusmanY += mermiYonuY * geriItmeMiktari;`
+- **Neden:** Düşmanların oyuncunun üstüne anında yığılıp onu saniyeler içinde öldürmesini engelleyerek oynanış konforunu ve oyun zevkini artırmak.
+
+### I. Sabit ve Sınırlandırılmış Büyük Oyun Haritası (Map Boundary)
+- **Karar:** Harita boyutu sabit olarak **3000x3000px** olarak ayarlanacaktır. Oyuncunun (ve düşmanların) bu harita dışına çıkışları basit sınır kontrolüyle (`Math.max(0, Math.min(konum, 3000))`) engellenecektir.
+- **Neden:** Oyuncunun sonsuz boşlukta kaybolmasını önlemek ve haritanın köşelerine ulaştığında sınırlanmasını sağlamak.
+

@@ -11,13 +11,13 @@ Bu dosya Emre'nin yapası gereken adımları ve güncel ilerlemesini takip eder.
   - **Emre'nin Görevi:** Oyuncu karakterinin ekrandaki hareketini kontrol etmek ve hareket sınırlarını test etmek.
   - *Durum:* Henüz başlanmadı.
 
-- [ ] **Adım 2: Temel Düşman Sınıfı ve Takip Yapay Zekası**
-  - **Yapay Zeka Görevi:** `Dusman.java` sınıfını yazmak. Düşmanın oyuncuya doğru doğrudan yürümesini sağlayan basit vektörel takip kodunu hazırlamak.
-  - **Emre'nin Görevi:** Düşmanların oyuncuya doğru yönelip yönelmediğini ve oyuncunun peşini bırakıp bırakmadığını doğrulamak.
+- [ ] **Adım 2: Temel Düşman Sınıfı, Takip ve Geri İtme (Knockback)**
+  - **Yapay Zeka Görevi:** `Dusman.java` sınıfını yazmak. Düşmanın oyuncuya doğru doğrudan yürümesini sağlayan basit vektörel takip kodunu hazırlamak. Hasar aldığında merminin geliş yönünün tersine doğru geriye itilmesini sağlayan `geriIt(double yonX, double yonY, double miktar)` mekanizmasını eklemek.
+  - **Emre'nin Görevi:** Düşmanların oyuncuyu takip ettiğini ve mermiyle vurulduklarında hafifçe geriye savrulduklarını test etmek.
   - *Durum:* Henüz başlanmadı.
 
 - [ ] **Adım 3: Düşman Çeşitlerinin Oluşturulması**
-  - **Yapay Zeka Görevi:** Hızlı Düşman (`HizliDusman.java`) ve Golem Boss (`GolemDusman.java`) sınıflarını `Dusman` sınıfından kalıtım alarak yazmak. Hız ve can değerlerini ayarlamak.
+  - **Yapay Zeka Görevi:** Hızlı Düşman (`HizliDusman.java`) ve Golem Boss (`GolemDusman.java`) sınıflarını `Dusman` sınıfından kalıtım alarak yazmak. Hız, can ve geri itilme direnci değerlerini ayarlamak (örn. Golem çok az geri itilecek).
   - **Emre'nin Görevi:** Farklı düşman türlerinin hız ve boyutlarının oyunda doğru yansıdığını test etmek.
   - *Durum:* Henüz başlanmadı.
 
@@ -27,6 +27,6 @@ Bu dosya Emre'nin yapası gereken adımları ve güncel ilerlemesini takip eder.
   - *Durum:* Henüz başlanmadı.
 
 - [ ] **Adım 5: Karakter Görsellerinin Pixel Tasarımları**
-  - **Yapay Zeka Görevi:** Karakterlerin ve düşmanların çizim metotlarını pixel art tarzı resimleri (`BufferedImage`) yükleyip çizecek şekilde güncellemek. Resim yüklenemezse çalışacak geometrik yedek çizim mekanizmasını yazmak.
-  - **Emre'nin Görevi:** Oyuncu ve düşmanlar için 2D pixel görselleri (png) hazırlayıp projenin `res/` klasörüne yerleştirmek.
+  - **Yapay Zeka Görevi:** Karakterlerin ve düşmanların çizim metotlarını `assets/` içerisindeki piksel karakter görsellerini (`FreeCharactersAnimationsAssetPack` veya `Heroes99_free`) yükleyip çizecek şekilde güncellemek. Resim yüklenemezse çalışacak geometrik yedek çizim mekanizmasını yazmak.
+  - **Emre'nin Görevi:** Oyuncu ve düşmanlar için doğru piksel görsellerin yüklendiğini test etmek.
   - *Durum:* Henüz başlanmadı.
