@@ -19,8 +19,16 @@ public class HizliDusman extends Dusman {
         // Hizli dusmana ozel geri itilme carpani (hafif oldugu icin mermiler onu daha cok iter)
         this.geriItmeCarpani = 1.3;
         
-        // Hizli dusman gorselini yuklemeyi dener
-        this.hizliDusmanGorseli = GorselYukleyici.gorselYukle("assets/Heroes99_free 23.13.22/h99_fast_enemy.png");
+        // Hizli dusman gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
+        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
+        if (sheet != null) {
+            try {
+                this.hizliDusmanGorseli = sheet.getSubimage(0, 0, 96, 96);
+            } catch (Exception e) {
+                System.out.println("UYARI: Hizli dusman gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
+                this.hizliDusmanGorseli = null;
+            }
+        }
     }
     
     // Hizli dusmanin ekranda cizilmesini saglayan metot

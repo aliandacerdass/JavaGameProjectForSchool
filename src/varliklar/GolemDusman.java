@@ -19,8 +19,16 @@ public class GolemDusman extends Dusman {
         // Goleme ozel geri itilme carpani (cok agir oldugu icin mermiler onu neredeyse hic itmez)
         this.geriItmeCarpani = 0.15;
         
-        // Golem gorselini yuklemeyi dener
-        this.golemGorseli = GorselYukleyici.gorselYukle("assets/Heroes99_free 23.13.22/h99_golem_enemy.png");
+        // Golem gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
+        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Idle-Sheet.png");
+        if (sheet != null) {
+            try {
+                this.golemGorseli = sheet.getSubimage(0, 0, 96, 96);
+            } catch (Exception e) {
+                System.out.println("UYARI: Golem gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
+                this.golemGorseli = null;
+            }
+        }
     }
     
     // Golem dusmanin ekranda cizilmesini saglayan metot

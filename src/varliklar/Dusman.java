@@ -39,9 +39,16 @@ public class Dusman {
         // Varsayilan geri itilme carpani 1.0 (tam itilme)
         this.geriItmeCarpani = 1.0;
         
-        // Dusman gorselini yuklemeyi dener
-        // Adim 5'te bu yol daha netlestirilebilir veya farkli bir sprite secilebilir
-        this.dusmanGorseli = GorselYukleyici.gorselYukle("assets/Heroes99_free 23.13.22/h99_enemy.png");
+        // Dusman gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
+        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Idle-Sheet.png");
+        if (sheet != null) {
+            try {
+                this.dusmanGorseli = sheet.getSubimage(0, 0, 96, 96);
+            } catch (Exception e) {
+                System.out.println("UYARI: Dusman gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
+                this.dusmanGorseli = null;
+            }
+        }
     }
     
     // Dusmanin durumunu her karede (tick) gunceller ve oyuncuya dogru hareket etmesini saglar

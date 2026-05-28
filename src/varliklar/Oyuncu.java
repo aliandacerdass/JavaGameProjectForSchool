@@ -55,9 +55,16 @@ public class Oyuncu {
         this.deneyim = 0;
         this.sonrakiSeviyeDeneyimi = 100;
         
-        // Oyuncu gorselini yuklemeyi dener
-        // Adim 5'te bu yol daha netlestirilebilir veya farkli bir sprite secilebilir
-        this.oyuncuGorseli = GorselYukleyici.gorselYukle("assets/Heroes99_free 23.13.22/h99_char.png");
+        // Oyuncu gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
+        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Human_Soldier_Sword_Shield/With_Shadows/Human_Soldier_Sword_Shield_Idle-Sheet.png");
+        if (sheet != null) {
+            try {
+                this.oyuncuGorseli = sheet.getSubimage(0, 0, 96, 96);
+            } catch (Exception e) {
+                System.out.println("UYARI: Oyuncu gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
+                this.oyuncuGorseli = null;
+            }
+        }
     }
     
     // Oyuncunun hareket ve diger durumlarini her karede (tick) gunceller
