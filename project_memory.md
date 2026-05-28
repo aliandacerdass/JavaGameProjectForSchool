@@ -28,6 +28,14 @@ Bu dosya, projedeki tüm geliştiricilerin ve onların kullandığı yapay zeka 
 - *Örnek Doğru Kullanım:* `oyuncuHizi`, `dusmanSayisi`, `carpismaVarMi`, `mermiHasari`, `Oyuncu`, `Dusman`, `OyunPaneli`.
 - *Örnek Yanlış Kullanım:* `oyuncuHızı`, `düşmanSayısı`, `çarpışmaVarMı`, `mermiHasarı`.
 
+### Kural 4: Projeyi Zorlaştıracak ve Eklenmeyecek Hususlar (Yapay Zekalar Kesinlikle Eklememeli)
+Projenin 1. sınıf seviyesinde kalması ve 7 gün içinde sorunsuz bitmesi için yapay zekalar ve geliştiriciler şu özellikleri **asla kodlamayacaktır**:
+- **Harici Fizik ve Çarpışma Motorları:** Box2D gibi kütüphaneler yerine sadece AWT'nin `Rectangle.intersects()` metodu veya iki nokta arasındaki uzaklık formülü kullanılmalıdır.
+- **Ses/Müzik Entegrasyonu:** İşletim sistemi (Windows/Mac) uyumluluk sorunları ve thread kilitlenmelerini önlemek için ses çalma kütüphaneleri eklenmeyecektir.
+- **Veritabanı / Kayıt (Save/Load) Sistemi:** Oyun içi skorlar veya ilerlemeler veritabanına ya da dosyalara kaydedilmeyecek, sadece bellek üzerinde (RAM) anlık olarak tutulacaktır.
+- **Gelişmiş Animasyon Sistemleri:** Karakter yürüyüş animasyonları, state machine yapıları kurulmayacaktır. Sadece yönlere göre dönebilen statik resimler (`BufferedImage`) veya renkli şekiller çizilecektir.
+- **Çok Oyunculu Arayüz (Multiplayer):** Oyun tamamen tek oyunculu olacaktır.
+
 ---
 
 ## 3. Roller ve Görev Dağılımı (3 Kişi)

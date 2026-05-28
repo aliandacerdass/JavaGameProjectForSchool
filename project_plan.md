@@ -1,19 +1,23 @@
 # Plan
 
-Bu plan, 3 kişilik bir üniversite 1. sınıf ekibinin, Java Swing ve AWT kütüphanelerini kullanarak 7 gün içinde "Vampire Survivors" benzeri bir hayatta kalma oyunu geliştirmesini hedeflemektedir. Görevler, ekip üyelerinin birbirlerinin kodunu bozmadan bağımsız çalışabilmesi için üç modüle (Motor ve Arayüz, Karakterler ve Mekanikler, Silahlar ve Gelişim) ayrılmıştır.
+Bu plan, Andaç, Emre ve Gizem'den oluşan 3 kişilik üniversite 1. sınıf ekibinin, Java Swing ve AWT kütüphanelerini kullanarak 7 gün içinde "Vampire Survivors" benzeri bir hayatta kalma oyunu geliştirmesini hedeflemektedir. Görevler, ekip üyelerinin birbirlerinin kodunu bozmadan bağımsız çalışabilmesi için üç modüle ayrılmıştır.
 
 ## Scope
 - In:
   - Java Swing ve AWT tabanlı grafik ve pencere yönetimi.
-  - Bağımsız 3 modül yapısı (Motor, Karakterler/Düşmanlar, Silahlar/Gelişim).
+  - Oyuncuyu merkeze alan ve kayan kamera sistemi (`Graphics.translate` yöntemiyle basit ekran kaydırma).
+  - Sonsuz oyun yapısı (Zaman sınırlaması yok, zamanla düşmanların can, hız ve hasar statları yüzdelik olarak artarak oyun zorlaşacak).
   - Türkçe değişken isimleri (sadece İngilizce karakterlerle: oyuncuHizi, dusmanHizi vb.).
   - Her kod bloğu ve satır için detaylı Türkçe yorum satırları.
-  - Basit bir ana menü, oyun ekranı, seviye atlama menüsü ve oyun bitti ekranı.
+  - Basit bir ana menü, oyun ekranı, seviye atlama kart seçim menüsü ve oyun bitti ekranı.
 - Out:
-  - Üçüncü parti oyun kütüphaneleri (LibGDX, Slick2D vb.).
+  - Üçüncü parti oyun kütüphaneleri (LibGDX, Slick2D, Box2D fizik motoru vb.).
   - Ağaç yapılı karmaşık algoritmalar veya yapay zeka kütüphaneleri.
   - Türkçe özel karakter içeren değişken veya sınıf isimleri (ı, ş, ç, ğ, ö, ü).
   - Çok oyunculu (multiplayer) modlar.
+  - Ses ve müzik dosyaları/çalma mekanizmaları (Mac/Windows uyumsuzluklarını önlemek için).
+  - Veritabanı ve oyun kaydetme (Save/Load) sistemleri.
+  - Karmaşık sprite animasyon durum makineleri (sadece statik görseller veya basit şekiller).
 
 ## Action items
 [ ] Temel Proje Yapısının Kurulması (Dosya dizinleri, gitignore ve paket tanımları)
