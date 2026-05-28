@@ -11,10 +11,10 @@ Bu dosya Gizem'in yapması gereken adımları ve güncel ilerlemesini takip eder
   - **Gizem'in Görevi:** Kodların genel yapısını incelemek ve projenin geri kalanıyla olan bağımlılıklarını kontrol etmek.
   - *Durum:* Yapay zeka görevi tamamlandı. Gizem'in kod yapısını inceleyip onaylaması bekleniyor (AI Blocker).
 
-- [ ] **Adım 2: Ateş Topu ve Döner Bıçak Mekanikleri**
+- [x] **Adım 2: Ateş Topu ve Döner Bıçak Mekanikleri**
   - **Yapay Zeka Görevi:** `AtesTopu.java` (en yakın düşmanı hedef alan otomatik fırlatma) ve `DonerBicak.java` (oyuncu etrafında trigonometrik olarak dönen) silahlarını `Silah` sınıfından türeterek yazmak.
   - **Gizem'in Görevi:** Silahların otomatik olarak tetiklendiğini ve mermilerin doğru yönde hareket ettiğini test etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Gizem'in test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 3: Deneyim Kristali ve Mıknatıs Sistemi**
   - **Yapay Zeka Görevi:** `DeneyimKristali.java` sınıfını yazmak. Düşman öldüğünde doğmasını ve oyuncu belirli bir menzile yaklaştığında (`toplamaMenzili`) oyuncuya doğru hızlanarak çekilmesini sağlamak.
