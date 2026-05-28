@@ -20,12 +20,12 @@ Bu plan, Andaç, Emre ve Gizem'den oluşan 3 kişilik üniversite 1. sınıf eki
   - Karmaşık sprite animasyon durum makineleri (sadece statik görseller veya basit şekiller).
 
 ## Action items
-[ ] Temel Proje Yapısının Kurulması (Dosya dizinleri, gitignore ve paket tanımları)
+[x] Temel Proje Yapısının Kurulması (Dosya dizinleri, gitignore ve paket tanımları)
 [ ] Modül 1 (Andaç): Oyun Penceresi, Paneli, Kayan Kamera ve Harita Sınırları (Pencere, Panel, TusKontrolcu, OyunDongusu)
-[ ] Modül 2 (Emre): Oyuncu Karakter Sınıfının Oluşturulması (Oyuncu: konum, can, hiz, deneyim)
+[x] Modül 2 (Emre): Oyuncu Karakter Sınıfının Oluşturulması (Oyuncu: konum, can, hiz, deneyim)
 [ ] Modül 2 (Emre): Düşman Sınıfının, Yapay Zekasının ve Geri İtme (Knockback) Mekaniğinin Kodlanması
-[ ] Modül 3 (Gizem): Temel Silah, Mermi ve Otomatik Saldırı Sisteminin Yazılması (Silah, Mermi)
-[ ] Modül 3 (Gizem): Döner Bıçak ve Ateş Topu Silahlarının Kodlanması (DonerBicak, AtesTopu)
+[x] Modül 3 (Gizem): Temel Silah, Mermi ve Otomatik Saldırı Sisteminin Yazılması (Silah, Mermi)
+[x] Modül 3 (Gizem): Döner Bıçak ve Ateş Topu Silahlarının Kodlanması (DonerBicak, AtesTopu)
 [ ] Modül 1 (Andaç): Daire Tabanlı Çarpışma Kontrolleri ve Yeniden Başlatma (Restart) Mekanizması
 [ ] Modül 3 (Gizem): Deneyim Kristali, Çekim Mıknatısı ve Seviye Atlama Arayüzünün Yapılması
 [ ] Tüm Modüllerin Entegrasyonu ve Oyun Dengesi Ayarları

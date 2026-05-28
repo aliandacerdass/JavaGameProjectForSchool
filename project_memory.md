@@ -164,3 +164,19 @@ Yazılacak kodların 1. sınıf müfredatına uygun, kolay açıklanabilir olmas
 - **Karar:** Harita boyutu sabit olarak **3000x3000px** olarak ayarlanacaktır. Oyuncunun (ve düşmanların) bu harita dışına çıkışları basit sınır kontrolüyle (`Math.max(0, Math.min(konum, 3000))`) engellenecektir.
 - **Neden:** Oyuncunun sonsuz boşlukta kaybolmasını önlemek ve haritanın köşelerine ulaştığında sınırlanmasını sağlamak.
 
+---
+
+## 7. Proje İlerleme Durumu (Güncel Durum)
+
+Projedeki her geliştiricinin yaptığı geliştirmeler ve tamamladığı adımlar aşağıda özetlenmiştir:
+
+### Andaç (Geliştirici A):
+- **Adım 1: Temel Motor ve Pencere Kurulumu** [TAMAMLANDI] -> `Pencere`, `OyunPaneli`, `OyunDurumu`, `GorselYukleyici` oluşturuldu.
+- **Adım 2: Klavye ve Fare Kontrol Mekanizması** [TAMAMLANDI] -> `TusKontrolcu` ve `FareKontrolcu` kodlandı.
+
+### Emre (Geliştirici B):
+- **Adım 1: Oyuncu Karakter Sınıfı** [TAMAMLANDI] -> `Oyuncu` temel nitelikleri, hareket dengelemesi, harita sınırı ve yedek çizim mekanizması ile tamamlandı.
+
+### Gizem (Geliştirici C):
+- **Adım 1: Temel Silah ve Mermi Sınıfları** [TAMAMLANDI] -> `Silah` ve `Mermi` üst sınıfları kodlandı.
+- **Adım 2: Ateş Topu ve Döner Bıçak Mekanikleri** [TAMAMLANDI] -> `AtesTopu`, `DonerBicak` ve `DonerBicakMermi` yazıldı.
