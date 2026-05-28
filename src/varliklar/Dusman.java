@@ -22,6 +22,9 @@ public class Dusman {
     // Dusmanin carpisma yariçap degeri (daire tabanli carpisma tespiti icin)
     public double yariCap;
     
+    // Dusmanin geri itilme direnci carpani (1.0 tam itilme, 0.0 hic itilmeme)
+    public double geriItmeCarpani;
+    
     // Dusman karakterinin gorsel resmi (piksel art)
     private BufferedImage dusmanGorseli;
     
@@ -33,6 +36,8 @@ public class Dusman {
         this.hiz = hiz;
         this.hasar = hasar;
         this.yariCap = yariCap;
+        // Varsayilan geri itilme carpani 1.0 (tam itilme)
+        this.geriItmeCarpani = 1.0;
         
         // Dusman gorselini yuklemeyi dener
         // Adim 5'te bu yol daha netlestirilebilir veya farkli bir sprite secilebilir
@@ -63,9 +68,9 @@ public class Dusman {
     
     // Dusmanin bir mermiyle vuruldugunda geriye savrulmasini saglayan metot (Knockback)
     public void geriIt(double yonX, double yonY, double miktar) {
-        // Gelen merminin hareket yonuyle dogru orantili olarak dusmani geriye iter
-        this.x += yonX * miktar;
-        this.y += yonY * miktar;
+        // Gelen merminin hareket yonuyle ve geri itme carpaniyla dogru orantili olarak dusmani geriye iter
+        this.x += yonX * miktar * this.geriItmeCarpani;
+        this.y += yonY * miktar * this.geriItmeCarpani;
         
         // Geri itilme sonrasinda da harita sinirlari kontrol edilir
         this.x = Math.max(0, Math.min(this.x, 3000));
