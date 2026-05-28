@@ -23,7 +23,9 @@ public class HizliDusman extends Dusman {
         BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
         if (sheet != null) {
             try {
-                this.hizliDusmanGorseli = sheet.getSubimage(0, 0, 96, 96);
+                // Slime yurus spritesheet'i uzerinden hizli dusman icin de ayni merkez alanini (37, 42, 20, 20) kesiyoruz
+                // Bu dusman kucuk yaricapli (12px) cizildigi icin ekranda kucuk ve hizli bir slime olarak gorunur (Emre)
+                this.hizliDusmanGorseli = sheet.getSubimage(37, 42, 20, 20);
             } catch (Exception e) {
                 System.out.println("UYARI: Hizli dusman gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
                 this.hizliDusmanGorseli = null;

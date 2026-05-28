@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.awt.image.BufferedImage;
 import varliklar.*;
@@ -61,8 +62,8 @@ public class OyunPaneli extends JPanel {
     public OyunPaneli() {
         // Panelin tercih edilen boyutunu belirler
         this.setPreferredSize(new Dimension(EKRAN_GENISLIGI, EKRAN_YUKSEKLIGI));
-        // Arka plan rengini siyah yapar
-        this.setBackground(Color.BLACK);
+        // Arka plan rengini bataklik yesili yapar (Zemin karosuyla butunlesmesi icin)
+        this.setBackground(new Color(52, 83, 24));
         // Odaklanabilirlik ozelligini aktif eder (klavye girdilerini alabilmek icin)
         this.setFocusable(true);
         
@@ -84,8 +85,8 @@ public class OyunPaneli extends JPanel {
         try {
             BufferedImage tileset = GorselYukleyici.gorselYukle("assets/Dark_Swamp_Starter_Pack_v1.0 23.13.22/RawAssets/GroundTileset.png");
             if (tileset != null) {
-                // GroundTileset uzerindeki bataklik/camur zemin karosunu keser (x=0, y=0, w=32, h=32)
-                this.zeminKarosu = tileset.getSubimage(0, 0, 32, 32);
+                // GroundTileset uzerindeki bataklik/camur zemin karosunu keser (x=0, y=0, w=24, h=24)
+                this.zeminKarosu = tileset.getSubimage(0, 0, 24, 24);
             }
         } catch (Exception e) {
             System.out.println("Zemin karosu yuklenirken hata olustu, grid cizimine gecilecek. Detay: " + e.getMessage());
@@ -112,22 +113,27 @@ public class OyunPaneli extends JPanel {
         // Daha gelismis cizim metotlari icin Graphics nesnesini Graphics2D'ye donustururuz
         Graphics2D g2 = (Graphics2D) g;
         
+        // Piksel art görsellerin bulaniklasmasini onlemek icin antialiasing kapatilir ve en yakin komsu interpolasyonu aktif edilir (Andaç)
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        
         // 1. DÜNYA NESNELERİNİ ÇİZ (Kamera kaydirmasini uygula)
         g2.translate(-kameraX, -kameraY);
         
         // Zemin cizimi (Andaç)
         if (zeminKarosu != null) {
             // Sadece kameranın gördüğü alandaki karoları (tiles) çizerek optimizasyon yapıyoruz
-            // 32x32 boyutlarındaki karolar için başlangıç ve bitiş indekslerini hesaplarız
-            int baslangicX = Math.max(0, (int) (kameraX / 32) * 32);
-            int bitisX = Math.min(HARITA_BOYUTU, (int) ((kameraX + EKRAN_GENISLIGI) / 32 + 2) * 32);
-            int baslangicY = Math.max(0, (int) (kameraY / 32) * 32);
-            int bitisY = Math.min(HARITA_BOYUTU, (int) ((kameraY + EKRAN_YUKSEKLIGI) / 32 + 2) * 32);
+            // 48x48 boyutlarındaki karolar için başlangıç ve bitiş indekslerini hesaplarız (2x retro olcek)
+            int karoBoyutu = 48;
+            int baslangicX = Math.max(0, (int) (kameraX / karoBoyutu) * karoBoyutu);
+            int bitisX = Math.min(HARITA_BOYUTU, (int) ((kameraX + EKRAN_GENISLIGI) / karoBoyutu + 2) * karoBoyutu);
+            int baslangicY = Math.max(0, (int) (kameraY / karoBoyutu) * karoBoyutu);
+            int bitisY = Math.min(HARITA_BOYUTU, (int) ((kameraY + EKRAN_YUKSEKLIGI) / karoBoyutu + 2) * karoBoyutu);
             
             // Hesaplanan sınırlar dahilinde zemin karolarını yan yana döşeriz (tiling)
-            for (int x = baslangicX; x < bitisX; x += 32) {
-                for (int y = baslangicY; y < bitisY; y += 32) {
-                    g2.drawImage(zeminKarosu, x, y, 32, 32, null);
+            for (int x = baslangicX; x < bitisX; x += karoBoyutu) {
+                for (int y = baslangicY; y < bitisY; y += karoBoyutu) {
+                    g2.drawImage(zeminKarosu, x, y, karoBoyutu, karoBoyutu, null);
                 }
             }
         } else {

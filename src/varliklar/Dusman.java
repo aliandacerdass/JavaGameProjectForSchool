@@ -43,7 +43,9 @@ public class Dusman {
         BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Idle-Sheet.png");
         if (sheet != null) {
             try {
-                this.dusmanGorseli = sheet.getSubimage(0, 0, 96, 96);
+                // Slime karakterinin gorseldeki merkezini (37, 42) koordinatlarindan 20x20 boyutunda keseriz
+                // Boylece seffaf bosluklar atilir ve dusmanlar ekranda net bir sekilde gorunur hale gelir (Emre)
+                this.dusmanGorseli = sheet.getSubimage(37, 42, 20, 20);
             } catch (Exception e) {
                 System.out.println("UYARI: Dusman gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
                 this.dusmanGorseli = null;

@@ -23,7 +23,9 @@ public class GolemDusman extends Dusman {
         BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Idle-Sheet.png");
         if (sheet != null) {
             try {
-                this.golemGorseli = sheet.getSubimage(0, 0, 96, 96);
+                // Slime spritesheet'i uzerinden golem icin de ayni merkez alanini (37, 42, 20, 20) kesiyoruz
+                // Ancak golem buyuk yaricapli (28px) cizildigi icin ekranda devasa boyutta gorunur (Emre)
+                this.golemGorseli = sheet.getSubimage(37, 42, 20, 20);
             } catch (Exception e) {
                 System.out.println("UYARI: Golem gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
                 this.golemGorseli = null;

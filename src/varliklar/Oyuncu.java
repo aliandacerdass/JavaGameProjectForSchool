@@ -59,7 +59,9 @@ public class Oyuncu {
         BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Human_Soldier_Sword_Shield/With_Shadows/Human_Soldier_Sword_Shield_Idle-Sheet.png");
         if (sheet != null) {
             try {
-                this.oyuncuGorseli = sheet.getSubimage(0, 0, 96, 96);
+                // Karakterin gorseldeki merkezini (32, 37) koordinatlarindan 24x24 boyutunda keseriz
+                // Boylece seffaf kisimlar temizlenir, karakter tam ortalanir ve ekranda dolgun gozukmus olur (Emre)
+                this.oyuncuGorseli = sheet.getSubimage(32, 37, 24, 24);
             } catch (Exception e) {
                 System.out.println("UYARI: Oyuncu gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
                 this.oyuncuGorseli = null;
