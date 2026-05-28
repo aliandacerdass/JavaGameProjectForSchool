@@ -29,9 +29,9 @@ Bu dosya Andaç'ın yapması gereken adımları ve güncel ilerlemesini takip ed
 - [x] **Adım 5: Daire Tabanlı Çarpışma Denetleyici ve Yeniden Başlatma (Restart)**
   - **Yapay Zeka Görevi:** `CarpismaDenetleyici.java` sınıfını yazmak (daire çarpışma formülüyle). Oyuncu öldüğünde (canı sıfırlandığında) oyunu durduran ve klavyeden `R` tuşuna basıldığında düşman listesini, mermileri, oyuncu canını ve süreyi sıfırlayan `oyunuSifirla()` yapısını kurmak.
   - **Andaç'ın Görevi:** Çarpışmaların doğru çalıştığını ve öldükten sonra `R` tuşuyla oyunun sorunsuz sıfırlanıp baştan başladığını test etmek.
-  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
+  - *Durum:* Tamamlandı ve onaylandı.
 
-- [ ] **Adım 6: Pixel Arka Plan Çizimi ve Ortak Entegrasyon**
+- [x] **Adım 6: Pixel Arka Plan Çizimi ve Ortak Entegrasyon**
   - **Yapay Zeka Görevi:** Haritanın zeminini `assets/` içerisindeki piksel bataklık/yer karoları (`Dark_Swamp_Starter_Pack_v1.0`) ile kaplayarak (tiling) çizmek. Emre ve Gizem'in kodlarını ana sisteme bağlamak.
   - **Andaç'ın Görevi:** Görsellerin doğru yüklenip çizildiğini test etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).

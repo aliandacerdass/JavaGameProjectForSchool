@@ -7,11 +7,15 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 import varliklar.*;
 import mekanikler.*;
 
 // OyunPaneli sinifi, oyunun cizimlerinin yapildigi ve ekranda gosterildigi ana alandir
 public class OyunPaneli extends JPanel {
+    
+    // Zemin kaplamasi icin kullanilacak karo gorseli (Andaç)
+    private BufferedImage zeminKarosu;
     
     // Ekran genisligi (piksel cinsinden)
     public static final int EKRAN_GENISLIGI = 800;
@@ -76,6 +80,18 @@ public class OyunPaneli extends JPanel {
         // Dusman ureticisini baslatir (Emre)
         this.dusmanUretici = new DusmanUretici(this);
         
+        // Zemin tileset'ini yukler ve bir karosunu keser (Andaç)
+        try {
+            BufferedImage tileset = GorselYukleyici.gorselYukle("assets/Dark_Swamp_Starter_Pack_v1.0 23.13.22/RawAssets/GroundTileset.png");
+            if (tileset != null) {
+                // GroundTileset uzerindeki bataklik/camur zemin karosunu keser (x=0, y=0, w=32, h=32)
+                this.zeminKarosu = tileset.getSubimage(0, 0, 32, 32);
+            }
+        } catch (Exception e) {
+            System.out.println("Zemin karosu yuklenirken hata olustu, grid cizimine gecilecek. Detay: " + e.getMessage());
+            this.zeminKarosu = null;
+        }
+        
         // Panelin klavye girdilerini dinlemesini saglar
         this.addKeyListener(this.tusKontrol);
         // Panelin fare girdilerini dinlemesini saglar
@@ -99,13 +115,28 @@ public class OyunPaneli extends JPanel {
         // 1. DÜNYA NESNELERİNİ ÇİZ (Kamera kaydirmasini uygula)
         g2.translate(-kameraX, -kameraY);
         
-        // Dunya koordinatlarinda basit piksel-art grid cizgileri (Referans zemin cizimleri)
-        g2.setColor(new Color(40, 40, 40));
-        for (int i = 0; i <= HARITA_BOYUTU; i += 100) {
-            // Dikey grid cizgisi
-            g2.drawLine(i, 0, i, HARITA_BOYUTU);
-            // Yatay grid cizgisi
-            g2.drawLine(0, i, HARITA_BOYUTU, i);
+        // Zemin cizimi (Andaç)
+        if (zeminKarosu != null) {
+            // Sadece kameranın gördüğü alandaki karoları (tiles) çizerek optimizasyon yapıyoruz
+            // 32x32 boyutlarındaki karolar için başlangıç ve bitiş indekslerini hesaplarız
+            int baslangicX = Math.max(0, (int) (kameraX / 32) * 32);
+            int bitisX = Math.min(HARITA_BOYUTU, (int) ((kameraX + EKRAN_GENISLIGI) / 32 + 2) * 32);
+            int baslangicY = Math.max(0, (int) (kameraY / 32) * 32);
+            int bitisY = Math.min(HARITA_BOYUTU, (int) ((kameraY + EKRAN_YUKSEKLIGI) / 32 + 2) * 32);
+            
+            // Hesaplanan sınırlar dahilinde zemin karolarını yan yana döşeriz (tiling)
+            for (int x = baslangicX; x < bitisX; x += 32) {
+                for (int y = baslangicY; y < bitisY; y += 32) {
+                    g2.drawImage(zeminKarosu, x, y, 32, 32, null);
+                }
+            }
+        } else {
+            // FALLBACK (Yedek Çizim): Eğer zemin gorseli yüklenemediyse gri grid çizgileri çizeriz
+            g2.setColor(new Color(40, 40, 40));
+            for (int i = 0; i <= HARITA_BOYUTU; i += 100) {
+                g2.drawLine(i, 0, i, HARITA_BOYUTU);
+                g2.drawLine(0, i, HARITA_BOYUTU, i);
+            }
         }
         
         // Haritanin dis sinirlarini kirmizi bir cerceve ile belirler
