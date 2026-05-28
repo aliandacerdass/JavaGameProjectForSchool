@@ -28,10 +28,13 @@ Bu plan, Andaç, Emre ve Gizem'den oluşan 3 kişilik üniversite 1. sınıf eki
 [x] Modül 3 (Gizem): Döner Bıçak ve Ateş Topu Silahlarının Kodlanması (DonerBicak, AtesTopu)
 [x] Modül 1 (Andaç): Daire Tabanlı Çarpışma Kontrolleri ve Yeniden Başlatma (Restart) Mekanizması
 [x] Modül 3 (Gizem): Deneyim Kristali, Çekim Mıknatısı ve Seviye Atlama Arayüzünün Yapılması
-[ ] Tüm Modüllerin Entegrasyonu ve Oyun Dengesi Ayarları
-[ ] Kodların Türkçe Yorum Satırları ile Tam Belgelenmesi ve Test Edilmesi
+[x] Tüm Modüllerin Entegrasyonu ve Oyun Dengesi Ayarları
+[x] Kodların Türkçe Yorum Satırları ile Tam Belgelenmesi ve Test Edilmesi
 
-## Open questions
-- Grafik olarak hazır 2D sprite resimleri mi kullanacağız, yoksa basit geometrik şekillerle (daire, kare) mi render edeceğiz? (Geometrik şekiller anlatım ve çizim açısından en kolayıdır).
-- Oyunun zorluk artış hızı nasıl olacak (örneğin her 30 saniyede bir yeni düşman türü veya daha fazla düşman)?
-- Seviye atlandığında oyuncuya sunulacak geliştirmeler (hız artışı, can yenileme, yeni silah) neler olacak?
+## Açık Sorular ve Çözümleri (Resolved Questions)
+- **Soru:** Grafik olarak hazır 2D sprite resimleri mi kullanacağız, yoksa basit geometrik şekillerle mi çizdireceğiz?
+  - *Çözüm:* İkisi de entegre edildi. Görseller bulunursa piksel çizimler kullanılır, bulunamazsa yedek geometrik şekiller çizilir (çökme koruması).
+- **Soru:** Oyunun zorluk artış hızı nasıl olacak?
+  - *Çözüm:* `DusmanUretici` içinde süreye bağlı zorluk çarpanı eklendi. Geçen süreye göre düşman sayısı artar, canları ve hızları yüzdelik olarak güçlenir.
+- **Soru:** Seviye atlandığında oyuncuya sunulacak geliştirmeler neler olacak?
+  - *Çözüm:* `SeviyeArayuzu` kart seçim ekranıyla hasar artışı, atış sıklığı artışı, hızlanma ve can doldurma geliştirmeleri sunuldu.
