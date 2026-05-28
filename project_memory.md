@@ -345,6 +345,7 @@ Projedeki her geliştiricinin yaptığı geliştirmeler ve tamamladığı adıml
 - **Adım 2: Klavye ve Fare Kontrol Mekanizması** [TAMAMLANDI] -> `TusKontrolcu` ve `FareKontrolcu` kodlandı.
 - **Adım 3: Swing Timer Tabanlı Oyun Döngüsü** [TAMAMLANDI] -> `OyunDongusu` ile 60 FPS oyun döngüsü kuruldu.
 - **Adım 4: Kayan Kamera Sistemi ve Harita Sınırları** [TAMAMLANDI] -> `Graphics2D.translate` tabanlı ekran kaydırma kamerası ve 3000x3000px harita sınırı panelde kuruldu.
+- **Adım 5: Daire Tabanlı Çarpışma Denetleyici ve Yeniden Başlatma** [TAMAMLANDI] -> `CarpismaDenetleyici` (Oyuncu-Düşman, Mermi-Düşman, Oyuncu-Kristal çarpışmaları) ve `oyunuSifirla()` metodu kodlandı.
 
 ### Emre (Geliştirici B):
 - **Adım 1: Oyuncu Karakter Sınıfı** [TAMAMLANDI] -> `Oyuncu` temel nitelikleri, hareket dengelemesi, harita sınırı ve yedek çizim mekanizması ile tamamlandı.
@@ -358,3 +359,4 @@ Projedeki her geliştiricinin yaptığı geliştirmeler ve tamamladığı adıml
 - **Adım 2: Ateş Topu ve Döner Bıçak Mekanikleri** [TAMAMLANDI] -> `AtesTopu`, `DonerBicak` ve `DonerBicakMermi` yazıldı.
 - **Adım 3: Deneyim Kristali ve Mıknatıs Sistemi** [TAMAMLANDI] -> `DeneyimKristali` ile ivmeli çekilme fiziği kodlandı.
 - **Adım 4: Seviye Atlama Menüsü (Kart Arayüzü)** [TAMAMLANDI] -> `SeviyeArayuzu` ile seviye atlandığında oyunu duraklatıp kart seçimi yaptıran arayüz kodlandı.
+- **Adım 5: Arayüz (UI) ve Pixel Detayları** [TAMAMLANDI] -> Ekranın üst kısmında pixel tarzı Can Barı, Seviye Çubuğu (XP Bar), Kronometre (stopwatch) ve envanter hud elemanları çizildi.

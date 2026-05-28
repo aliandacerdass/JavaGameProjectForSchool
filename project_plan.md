@@ -21,13 +21,13 @@ Bu plan, Andaç, Emre ve Gizem'den oluşan 3 kişilik üniversite 1. sınıf eki
 
 ## Action items
 [x] Temel Proje Yapısının Kurulması (Dosya dizinleri, gitignore ve paket tanımları)
-[ ] Modül 1 (Andaç): Oyun Penceresi, Paneli, Kayan Kamera ve Harita Sınırları (Pencere, Panel, TusKontrolcu, OyunDongusu)
+[x] Modül 1 (Andaç): Oyun Penceresi, Paneli, Kayan Kamera ve Harita Sınırları (Pencere, Panel, TusKontrolcu, OyunDongusu)
 [x] Modül 2 (Emre): Oyuncu Karakter Sınıfının Oluşturulması (Oyuncu: konum, can, hiz, deneyim)
 [x] Modül 2 (Emre): Düşman Sınıfının, Yapay Zekasının ve Geri İtme (Knockback) Mekaniğinin Kodlanması
 [x] Modül 3 (Gizem): Temel Silah, Mermi ve Otomatik Saldırı Sisteminin Yazılması (Silah, Mermi)
 [x] Modül 3 (Gizem): Döner Bıçak ve Ateş Topu Silahlarının Kodlanması (DonerBicak, AtesTopu)
-[ ] Modül 1 (Andaç): Daire Tabanlı Çarpışma Kontrolleri ve Yeniden Başlatma (Restart) Mekanizması
-[ ] Modül 3 (Gizem): Deneyim Kristali, Çekim Mıknatısı ve Seviye Atlama Arayüzünün Yapılması
+[x] Modül 1 (Andaç): Daire Tabanlı Çarpışma Kontrolleri ve Yeniden Başlatma (Restart) Mekanizması
+[x] Modül 3 (Gizem): Deneyim Kristali, Çekim Mıknatısı ve Seviye Atlama Arayüzünün Yapılması
 [ ] Tüm Modüllerin Entegrasyonu ve Oyun Dengesi Ayarları
 [ ] Kodların Türkçe Yorum Satırları ile Tam Belgelenmesi ve Test Edilmesi
 
