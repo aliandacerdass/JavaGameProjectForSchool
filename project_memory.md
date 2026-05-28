@@ -75,6 +75,9 @@ src/
 │   ├── Pencere.java     # JFrame ekranı
 │   ├── OyunPaneli.java  # Ana çizim ve güncelleme paneli
 │   ├── TusKontrolcu.java# Klavye girdi kontrolü
+│   ├── FareKontrolcu.java # Fare girdi kontrolü (kart seçimleri vb. için)
+│   ├── GorselYukleyici.java # Try-catch korumalı görsel yükleme yardımcısı
+│   ├── OyunDurumu.java   # Oyun durumları (MENU, OYUN, GELISIM, OYUN_BITTI)
 │   └── OyunDongusu.java # FPS ve UPS kontrolünü sağlayan döngü
 │
 ├── varliklar/           # Emre ve Andaç Sorumluluğu
