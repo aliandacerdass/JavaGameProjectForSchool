@@ -6,10 +6,10 @@ Bu dosya Andaç'ın yapması gereken adımları ve güncel ilerlemesini takip ed
 
 ## 📋 İlerleme Durumu
 
-- [ ] **Adım 1: Temel Motor ve Pencere Kurulumu**
+- [x] **Adım 1: Temel Motor ve Pencere Kurulumu**
   - **Yapay Zeka Görevi:** `Pencere.java` ve `OyunPaneli.java` sınıflarını oluşturmak. Panel çizim metotlarını (`paintComponent`) hazırlamak.
   - **Andaç'ın Görevi:** Kodu test etmek, pencerenin ekranda doğru boyutta açıldığını doğrulamak.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 2: Klavye Kontrol Mekanizması**
   - **Yapay Zeka Görevi:** `TusKontrolcu.java` sınıfını oluşturmak. Boolean dizi (`tuslar[256]`) kullanarak tuş basışlarını kaydetmek.
