@@ -6,10 +6,10 @@ Bu dosya Gizem'in yapması gereken adımları ve güncel ilerlemesini takip eder
 
 ## 📋 İlerleme Durumu
 
-- [ ] **Adım 1: Temel Silah ve Mermi Sınıfları**
+- [x] **Adım 1: Temel Silah ve Mermi Sınıfları**
   - **Yapay Zeka Görevi:** `Silah.java` ve `Mermi.java` sınıflarını tasarlamak. Merminin uçuş açısı, hızı ve hasar değişkenlerini atamak.
   - **Gizem'in Görevi:** Kodların genel yapısını incelemek ve projenin geri kalanıyla olan bağımlılıklarını kontrol etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Gizem'in kod yapısını inceleyip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 2: Ateş Topu ve Döner Bıçak Mekanikleri**
   - **Yapay Zeka Görevi:** `AtesTopu.java` (en yakın düşmanı hedef alan otomatik fırlatma) ve `DonerBicak.java` (oyuncu etrafında trigonometrik olarak dönen) silahlarını `Silah` sınıfından türeterek yazmak.
