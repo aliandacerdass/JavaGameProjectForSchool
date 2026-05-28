@@ -12,5 +12,9 @@ public class AnaGiris {
         
         // Pencereyi oyun paneli ile birlikte baslatir
         pencere.pencereyiBaslat(oyunPaneli);
+        
+        // Oyun dongusunu olusturur ve baslatir
+        motor.OyunDongusu oyunDongusu = new motor.OyunDongusu(oyunPaneli);
+        oyunDongusu.baslat();
     }
 }

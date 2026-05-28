@@ -16,10 +16,10 @@ Bu dosya Andaç'ın yapması gereken adımları ve güncel ilerlemesini takip ed
   - **Andaç'ın Görevi:** Tuş girdilerinin (WASD) ve fare tıklamalarının gecikmesiz algılandığını kontrol etmek.
   - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
 
-- [ ] **Adım 3: Swing Timer Tabanlı Oyun Döngüsü**
+- [x] **Adım 3: Swing Timer Tabanlı Oyun Döngüsü**
   - **Yapay Zeka Görevi:** `OyunDongusu.java` sınıfını (60 FPS hızında çalışan `javax.swing.Timer` ile) kurmak ve panel güncelleme tetikleyicilerini yazmak.
   - **Andaç'ın Görevi:** Oyunun stabil 60 FPS çalıştığını ve CPU'yu aşırı tüketmediğini doğrulamak.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 4: Kayan Kamera Sistemi ve Harita Sınırları**
   - **Yapay Zeka Görevi:** Oyuncunun konumuna göre ekranı kaydıran kamera koordinat sistemini yazmak, `Graphics2D.translate(-kameraX, -kameraY)` yöntemini oyun paneline entegre etmek. 3000x3000px boyutlarında harita sınırları tanımlamak ve oyuncunun bu sınırların dışına çıkmasını engellemek.
