@@ -21,10 +21,10 @@ Bu dosya Gizem'in yapması gereken adımları ve güncel ilerlemesini takip eder
   - **Gizem'in Görevi:** Kristallerin doğru şekilde düştüğünü ve oyuncuya pürüzsüzce çekilip toplandığını doğrulamak.
   - *Durum:* Yapay zeka görevi tamamlandı. Gizem'in test edip onaylaması bekleniyor (AI Blocker).
 
-- [ ] **Adım 4: Seviye Atlama Menüsü (Kart Arayüzü)**
+- [x] **Adım 4: Seviye Atlama Menüsü (Kart Arayüzü)**
   - **Yapay Zeka Görevi:** Seviye atlandığında oyunu duraklatıp ekranda 3 adet rastgele geliştirme seçeneği (Silah geliştir, Can doldur, Hızlan vb.) sunan `SeviyeArayuzu.java` kart arayüzünü kodlamak.
   - **Gizem'in Görevi:** Kartlara tıklandığında oyunun kaldığı yerden devam ettiğini ve seçilen yükseltmenin oyuncuya uygulandığını test etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Gizem'in test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 5: Arayüz (UI) ve Pixel Detayları**
   - **Yapay Zeka Görevi:** Ekranın üst kısmında pixel tarzı Can Barı, Seviye Çubuğu ve kronometre çizimlerini kodlamak. Menü butonlarını piksel temalı tasarlamak.
