@@ -350,6 +350,7 @@ Projedeki her geliştiricinin yaptığı geliştirmeler ve tamamladığı adıml
 - **Adım 1: Oyuncu Karakter Sınıfı** [TAMAMLANDI] -> `Oyuncu` temel nitelikleri, hareket dengelemesi, harita sınırı ve yedek çizim mekanizması ile tamamlandı.
 - **Adım 2: Temel Düşman Sınıfı, Takip ve Geri İtme (Knockback)** [TAMAMLANDI] -> `Dusman` temel sınıfı, takip yapay zekası ve knockback mekanizması yazıldı.
 - **Adım 3: Düşman Çeşitlerinin Oluşturulması** [TAMAMLANDI] -> `HizliDusman` ve `GolemDusman` alt sınıfları hız, can, hasar ve knockback çarpanlarıyla kodlandı.
+- **Adım 4: Düşman Dalga Üreticisi** [TAMAMLANDI] -> `DusmanUretici` ile kamera sınırlarının dışında zamanla zorlaşan düşmanlar doğuran spawn sistemi kuruldu.
 
 ### Gizem (Geliştirici C):
 - **Adım 1: Temel Silah ve Mermi Sınıfları** [TAMAMLANDI] -> `Silah` ve `Mermi` üst sınıfları kodlandı.

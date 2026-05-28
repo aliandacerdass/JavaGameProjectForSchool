@@ -21,10 +21,10 @@ Bu dosya Emre'nin yapası gereken adımları ve güncel ilerlemesini takip eder.
   - **Emre'nin Görevi:** Farklı düşman türlerinin hız ve boyutlarının oyunda doğru yansıdığını test etmek.
   - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
 
-- [ ] **Adım 4: Düşman Dalga Üreticisi**
+- [x] **Adım 4: Düşman Dalga Üreticisi**
   - **Yapay Zeka Görevi:** `DusmanUretici.java` sınıfını yazmak. Oyuncunun o anki görüş alanının hemen dışında (kamera sınırlarına bağlı olarak) zamanla artan sayılarda düşman doğmasını (spawn) sağlamak. Zamanla düşman statlarını (can ve hız) yüzdelik olarak artırmak.
   - **Emre'nin Görevi:** Düşmanların ekran dışında doğup doğmadığını ve zaman geçtikçe düşmanların güçlendiğini gözlemlemek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 5: Karakter Görsellerinin Pixel Tasarımları**
   - **Yapay Zeka Görevi:** Karakterlerin ve düşmanların çizim metotlarını `assets/` içerisindeki piksel karakter görsellerini (`FreeCharactersAnimationsAssetPack` veya `Heroes99_free`) yükleyip çizecek şekilde güncellemek. Resim yüklenemezse çalışacak geometrik yedek çizim mekanizmasını yazmak.

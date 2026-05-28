@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import varliklar.Oyuncu;
 import varliklar.Dusman;
+import varliklar.DusmanUretici;
 import mekanikler.Silah;
 import mekanikler.Mermi;
 import mekanikler.DeneyimKristali;
@@ -50,6 +51,8 @@ public class OyunPaneli extends JPanel {
     
     // Oyuncu karakteri nesnesi
     public final Oyuncu oyuncu;
+    // Dusman dalga ureticisi nesnesi (Emre)
+    public final DusmanUretici dusmanUretici;
 
     // Kurucu metot: Panelin boyutlarini ve arka planini ayarlar
     public OyunPaneli() {
@@ -70,6 +73,9 @@ public class OyunPaneli extends JPanel {
         this.tusKontrol = new TusKontrolcu(this);
         // Fare kontrolcusunu olusturur
         this.fareKontrol = new FareKontrolcu(this);
+        
+        // Dusman ureticisini baslatir (Emre)
+        this.dusmanUretici = new DusmanUretici(this);
         
         // Panelin klavye girdilerini dinlemesini saglar
         this.addKeyListener(this.tusKontrol);
@@ -180,6 +186,9 @@ public class OyunPaneli extends JPanel {
             for (int i = 0; i < dusmanlar.size(); i++) {
                 dusmanlar.get(i).guncelle(oyuncu);
             }
+            
+            // Dusman ureticisini gunceller ve yeni dalgalari dogurur (Emre)
+            this.dusmanUretici.guncelle();
             
             // Kamerayi oyuncuyu tam ortalayacak sekilde konumlandirir
             kameraX = oyuncu.x - EKRAN_GENISLIGI / 2.0;
