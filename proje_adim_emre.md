@@ -11,10 +11,10 @@ Bu dosya Emre'nin yapası gereken adımları ve güncel ilerlemesini takip eder.
   - **Emre'nin Görevi:** Oyuncu karakterinin ekrandaki hareketini kontrol etmek ve hareket sınırlarını test etmek.
   - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
 
-- [ ] **Adım 2: Temel Düşman Sınıfı, Takip ve Geri İtme (Knockback)**
+- [x] **Adım 2: Temel Düşman Sınıfı, Takip ve Geri İtme (Knockback)**
   - **Yapay Zeka Görevi:** `Dusman.java` sınıfını yazmak. Düşmanın oyuncuya doğru doğrudan yürümesini sağlayan basit vektörel takip kodunu hazırlamak. Hasar aldığında merminin geliş yönünün tersine doğru geriye itilmesini sağlayan `geriIt(double yonX, double yonY, double miktar)` mekanizmasını eklemek.
   - **Emre'nin Görevi:** Düşmanların oyuncuyu takip ettiğini ve mermiyle vurulduklarında hafifçe geriye savrulduklarını test etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 3: Düşman Çeşitlerinin Oluşturulması**
   - **Yapay Zeka Görevi:** Hızlı Düşman (`HizliDusman.java`) ve Golem Boss (`GolemDusman.java`) sınıflarını `Dusman` sınıfından kalıtım alarak yazmak. Hız, can ve geri itilme direnci değerlerini ayarlamak (örn. Golem çok az geri itilecek).
