@@ -26,7 +26,7 @@ Bu dosya Emre'nin yapası gereken adımları ve güncel ilerlemesini takip eder.
   - **Emre'nin Görevi:** Düşmanların ekran dışında doğup doğmadığını ve zaman geçtikçe düşmanların güçlendiğini gözlemlemek.
   - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
 
-- [x] **Adım 5: Karakter Görsellerinin Pixel Tasarımları**
-  - **Yapay Zeka Görevi:** Karakterlerin ve düşmanların çizim metotlarını `assets/` içerisindeki piksel karakter görsellerini (`FreeCharactersAnimationsAssetPack` veya `Heroes99_free`) yükleyip çizecek şekilde güncellemek. Resim yüklenemezse çalışacak geometrik yedek çizim mekanizmasını yazmak.
-  - **Emre'nin Görevi:** Oyuncu ve düşmanlar için doğru piksel görsellerin yüklendiğini test etmek.
-  - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
+- [/] **Adım 5: Animasyonlu Karakter Görselleri ve Düşman Renklendirmeleri**
+  - **Yapay Zeka Görevi:** `Heroes99` spritesheet'inden yönlü ve hareket durumuna göre (Idle/Walk) animasyon kareleri kesip oynatacak kodu yazmak. `Monster_Slime` spritesheet'inden hareket animasyonu hazırlamak. Golem (Gri taş rengi) ve Hızlı Düşman (Ateş kırmızısı) için programatik renklendirme uygulayarak görsel varyasyonları oluşturmak.
+  - **Emre'nin Görevi:** Oyuncu ve düşmanların yürüme/bekleme animasyonlarını ve Golem/Hızlı Düşman renk varyasyonlarını test edip onaylamak.
+  - *Durum:* Görseller yüklendi, animasyonlar ve programatik renklendirme filtreleri kodlanıyor (AI Blocker).

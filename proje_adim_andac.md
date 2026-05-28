@@ -31,7 +31,7 @@ Bu dosya Andaç'ın yapması gereken adımları ve güncel ilerlemesini takip ed
   - **Andaç'ın Görevi:** Çarpışmaların doğru çalıştığını ve öldükten sonra `R` tuşuyla oyunun sorunsuz sıfırlanıp baştan başladığını test etmek.
   - *Durum:* Tamamlandı ve onaylandı.
 
-- [x] **Adım 6: Pixel Arka Plan Çizimi ve Ortak Entegrasyon**
-  - **Yapay Zeka Görevi:** Haritanın zeminini `assets/` içerisindeki piksel bataklık/yer karoları (`Dark_Swamp_Starter_Pack_v1.0`) ile kaplayarak (tiling) çizmek. Emre ve Gizem'in kodlarını ana sisteme bağlamak.
-  - **Andaç'ın Görevi:** Görsellerin doğru yüklenip çizildiğini test etmek.
-  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
+- [/] **Adım 6: Pixel Arka Plan Çizimi, Efektler ve Ortak Entegrasyon**
+  - **Yapay Zeka Görevi:** Haritanın zeminini `assets/` içerisindeki piksel bataklık/yer karoları (`Dark_Swamp_Starter_Pack_v1.0`) ile kaplayarak (tiling) çizmek, piksel netliğini (Interpolation rendering hints) korumak. `GorselYukleyici.java` içine programatik gri tonlama ve renklendirme filtreleri eklemek.
+  - **Andaç'ın Görevi:** Zemin kaplaması ve renklendirme efektlerinin sorunsuz çalıştığını doğrulamak.
+  - *Durum:* Görsel yükleyici ve zemin çizimleri güncellendi, efektler kodlanıyor (AI Blocker).
