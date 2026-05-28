@@ -108,3 +108,38 @@ Eğer bu projede bir kod yazıyorsanız veya bir geliştiriciye yardım ediyorsa
    - **Kod Değişikliği Sonrası (Commit & Push):** Değişiklikleri başarıyla tamamladıktan ve test ettikten sonra, kodları göndermeden önce tekrar bir `git pull` yapın (kod yazarken bir başkası push etmiş olabilir). Ardından değişiklikleri stage edin (`git add`), kısa ve net bir Türkçe commit mesajı yazın (örn: `git commit -m "Oyuncu sinifi ve temel hareket mekanigi eklendi"`) ve değişiklikleri uzak sunucuya push edin (`git push`).
    - **Çakışma (Merge Conflict) Yönetimi:** Eğer `git pull` veya merge işlemi sırasında çakışma (conflict) meydana gelirse, **kesinlikle zorla push (`git push --force`) yapmayın**. Çakışan dosyaları inceleyin, çakışmaları mantıklı bir şekilde (Andaç, Emre ve Gizem'in kodlarını koruyarak) yerelde çözün (resolve) veya çözemediğiniz karmaşık durumlarda durup kullanıcıya bilgi vererek onay isteyin.
    - **Görev Sınırları Uyarısı:** Çakışmaları en aza indirmek için sadece kullanıcınızın paket klasörlerinde çalışın. Ortak entegrasyon dosyalarında (`AnaGiris.java`, `OyunPaneli.java`) değişiklik yaparken diğer paketlerin de güncel hallerini çekmiş olduğunuzdan emin olun.
+
+---
+
+## 6. Teknik Tasarım ve Mimari Tavsiyeler (Technical Design Recommendations)
+
+Yazılacak kodların 1. sınıf müfredatına uygun, kolay açıklanabilir olması ve çökmeleri/performans sorunlarını önlemek için şu mimari kararlar alınmıştır:
+
+### A. Swing Timer ile Güvenli Oyun Döngüsü
+- **Karar:** Oyun döngüsü (`OyunDongusu`) için Java `Thread` veya karmaşık `Runnable` yapıları yerine **`javax.swing.Timer`** kullanılacaktır.
+- **Neden:** Swing kütüphanesi iş parçacığı güvenli (thread-safe) değildir. Ayrı bir Thread kullanıldığında liste çakışmaları (`ConcurrentModificationException`) yaşanabilir. `javax.swing.Timer` ise doğrudan Event Dispatch Thread (EDT) üzerinde çalışır ve senkronizasyon gerektirmeden 60 FPS (yaklaşık 16ms gecikme) hızında ekranı günceller. Sunumu hocaya açıklamak çok daha kolaydır.
+
+### B. Daire Tabanlı Basit Çarpışma Testi (Collision Detection)
+- **Karar:** Oyuncu, Düşman ve Mermi arasındaki çarpışmalar için karmaşık dikdörtgen kesişimleri yerine **daire tabanlı (uzaklık formülü)** çarpışma kontrolü yapılacaktır.
+- **Formül:** `(dx * dx) + (dy * dy) < (r1 + r2) * (r1 + r2)`
+- **Neden:** İki nesne arasındaki merkez uzaklığının karelerinin toplamı, yarıçaplar toplamının karesinden küçükse çarpışma gerçekleşmiştir. Bu, karekök (`Math.sqrt`) kullanmadığı için hem yüksek performanslıdır hem de sadece temel geometri bilgisiyle hocaya kolayca açıklanabilir.
+
+### C. Düşmanların Kamera Görüş Alanına Göre Doğması (Spawning)
+- **Karar:** Düşmanlar haritanın rastgele uzak bir köşesinde değil, oyuncunun o anki kamera ekranının **hemen dış sınırlarında** (örneğin ekran genişliğinin +50 piksel dışında) doğacaktır.
+- **Neden:** Harita kayan ekran olacağı için (örn: 2000x2000 piksel), düşmanlar harita sınırında doğarsa oyuncuya ulaşmaları çok uzun sürer. Kamera koordinatlarına göre (ekran sınırının hemen dışında) doğmaları oyunu her an aksiyon dolu tutar.
+
+### D. Çapraz Hareket Hızı Dengelemesi (Normalization)
+- **Karar:** Oyuncu hem dikey hem yatay yöne (örneğin W ve D tuşlarına aynı anda) bastığında, hızı doğrudan toplanarak 1.41 kat daha hızlı gitmemelidir.
+- **Formül:** Çapraz harekette hız bileşenleri normalize edilmeli ya da hız değeri `hiz * 0.707` ile çarpılarak hareket ettirilmelidir.
+
+### E. Görsel Yükleme Hatalarına Karşı Güvenli Yapı (Asset Fallback)
+- **Karar:** Oyundaki tüm resimler (`ImageIO.read`) yüklenirken bir `try-catch` bloğu kullanılacak ve resim yüklenemezse oyun çökmeyecektir.
+- **Yöntem:** Resim bulunamazsa sistem otomatik olarak `g.fillOval()` veya `g.fillRect()` kullanarak renkli geometrik şekiller (Oyuncu için Mavi Daire, Zombi için Yeşil Daire vb.) çizecektir. Bu sayede sunum gününde dosya yolu hataları nedeniyle oyunun açılmaması gibi felaketlerin önüne geçilecektir.
+
+### F. Oyun Durum Yönetimi (Game State Machine)
+- **Karar:** Oyun, `OyunDurumu` adında bir Enum veya tamsayı (`int`) değişkeni ile yönetilecektir:
+  - `MENU` (Ana menü ekranı)
+  - `OYUN` (Aktif oynanış)
+  - `GELISIM` (Seviye atlandığında oyunun donduğu ve kart seçim arayüzünün açıldığı an)
+  - `OYUN_BITTI` (Oyuncunun öldüğü ekran)
+- **Neden:** `GELISIM` durumunda oyun döngüsü arka plandaki düşman hareketlerini güncellemeyi durdurur (pause), ancak ekrandaki çizimi ve kart seçim arayüzünü çizmeye devam eder.
