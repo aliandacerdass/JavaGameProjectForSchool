@@ -16,10 +16,10 @@ Bu dosya Emre'nin yapası gereken adımları ve güncel ilerlemesini takip eder.
   - **Emre'nin Görevi:** Düşmanların oyuncuyu takip ettiğini ve mermiyle vurulduklarında hafifçe geriye savrulduklarını test etmek.
   - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
 
-- [ ] **Adım 3: Düşman Çeşitlerinin Oluşturulması**
+- [x] **Adım 3: Düşman Çeşitlerinin Oluşturulması**
   - **Yapay Zeka Görevi:** Hızlı Düşman (`HizliDusman.java`) ve Golem Boss (`GolemDusman.java`) sınıflarını `Dusman` sınıfından kalıtım alarak yazmak. Hız, can ve geri itilme direnci değerlerini ayarlamak (örn. Golem çok az geri itilecek).
   - **Emre'nin Görevi:** Farklı düşman türlerinin hız ve boyutlarının oyunda doğru yansıdığını test etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 4: Düşman Dalga Üreticisi**
   - **Yapay Zeka Görevi:** `DusmanUretici.java` sınıfını yazmak. Oyuncunun o anki görüş alanının hemen dışında (kamera sınırlarına bağlı olarak) zamanla artan sayılarda düşman doğmasını (spawn) sağlamak. Zamanla düşman statlarını (can ve hız) yüzdelik olarak artırmak.
