@@ -44,11 +44,14 @@ public class DeneyimKristali {
     }
     
     // Her oyun karesinde (tick) kristalin konumunu ve oyuncuya olan mesafesini gunceller
-    public void guncelle(Oyuncu oyuncu) {
+    public void guncelle(motor.OyunPaneli panel) {
         // Eger zaten toplandiysa guncelleme yapmaz
         if (toplandi) {
             return;
         }
+        
+        // Oyuncu referansini panelden alir
+        varliklar.Oyuncu oyuncu = panel.oyuncu;
         
         // Oyuncu ile kristal arasindaki yatay ve dikey mesafe farklarini hesaplar
         double dx = oyuncu.x - this.x;
@@ -103,7 +106,8 @@ public class DeneyimKristali {
                 // Konsola seviye atlama logu yazdirir
                 System.out.println("OYUNCU SEVİYE ATLADI! Yeni Seviye: " + oyuncu.seviye);
                 
-                // NOT: Adım 4'te burası SeviyeArayuzu.java entegrasyonu ile dondurulup secenek ekranı acacaktır.
+                // Seviye atlama kart arayüzünü tetikler (Oyunu duraklatıp seçim menüsünü açar)
+                panel.seviyeArayuzu.aktifEt();
             }
         }
     }
