@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
+import varliklar.Oyuncu;
 
 // OyunPaneli sinifi, oyunun cizimlerinin yapildigi ve ekranda gosterildigi ana alandir
 public class OyunPaneli extends JPanel {
@@ -18,6 +19,9 @@ public class OyunPaneli extends JPanel {
     public final TusKontrolcu tusKontrol;
     // Fare girdi kontrolcusu
     public final FareKontrolcu fareKontrol;
+    
+    // Oyuncu karakteri nesnesi
+    public final Oyuncu oyuncu;
 
     // Kurucu metot: Panelin boyutlarini ve arka planini ayarlar
     public OyunPaneli() {
@@ -27,6 +31,10 @@ public class OyunPaneli extends JPanel {
         this.setBackground(Color.BLACK);
         // Odaklanabilirlik ozelligini aktif eder (klavye girdilerini alabilmek icin)
         this.setFocusable(true);
+        
+        // Oyuncuyu ekranin ortasinda dogacak sekilde baslatir (Gecici olarak 400, 300)
+        // Adim 4'te kamera gelince haritanin ortasinda (1500, 1500) dogacaktir
+        this.oyuncu = new Oyuncu(400, 300);
         
         // Klavye kontrolcusunu olusturur
         this.tusKontrol = new TusKontrolcu(this);
@@ -51,15 +59,19 @@ public class OyunPaneli extends JPanel {
         
         // Test cizimi: Ekranin ortasina gecici bir yazi yazar
         g2.setColor(Color.WHITE);
-        g2.drawString("Piksel Hayatta Kalma Oyunu - Motor Baslatildi!", 250, 200);
-        g2.drawString("Girdi Test Ekrani (Adim 2):", 250, 240);
-        g2.drawString("YUKARI (W): " + (tusKontrol.yukari ? "BASILI" : "SERBEST"), 250, 270);
-        g2.drawString("ASAGI (S): " + (tusKontrol.asagi ? "BASILI" : "SERBEST"), 250, 290);
-        g2.drawString("SOLA (A): " + (tusKontrol.sola ? "BASILI" : "SERBEST"), 250, 310);
-        g2.drawString("SAGA (D): " + (tusKontrol.saga ? "BASILI" : "SERBEST"), 250, 330);
-        g2.drawString("Son Tiklanan Fare Konumu: X=" + fareKontrol.getTiklamaX() + ", Y=" + fareKontrol.getTiklamaY(), 250, 370);
+        g2.drawString("Piksel Hayatta Kalma Oyunu - Motor Baslatildi!", 250, 50);
+        g2.drawString("Klavye/Hareket Kontrolu: WASD veya Yon Tuslari", 250, 80);
+        
+        // Oyuncu karakterini ekrana cizer (Emre'nin Oyuncu sinifindaki ciz metodu)
+        oyuncu.ciz(g2);
         
         // Cizim islemlerinin bellek temizligini yapar
         g2.dispose();
+    }
+    
+    // Oyun durumlarini guncelleyen metot (OyunDongusu tarafindan periyodik olarak tetiklenir)
+    public void guncelle() {
+        // Oyuncunun hareketlerini ve konumunu gunceller
+        oyuncu.guncelle(this.tusKontrol);
     }
 }
