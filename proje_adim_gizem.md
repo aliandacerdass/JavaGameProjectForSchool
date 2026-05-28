@@ -16,10 +16,10 @@ Bu dosya Gizem'in yapması gereken adımları ve güncel ilerlemesini takip eder
   - **Gizem'in Görevi:** Silahların otomatik olarak tetiklendiğini ve mermilerin doğru yönde hareket ettiğini test etmek.
   - *Durum:* Yapay zeka görevi tamamlandı. Gizem'in test edip onaylaması bekleniyor (AI Blocker).
 
-- [ ] **Adım 3: Deneyim Kristali ve Mıknatıs Sistemi**
+- [x] **Adım 3: Deneyim Kristali ve Mıknatıs Sistemi**
   - **Yapay Zeka Görevi:** `DeneyimKristali.java` sınıfını yazmak. Düşman öldüğünde doğmasını ve oyuncu belirli bir menzile yaklaştığında (`toplamaMenzili`) oyuncuya doğru hızlanarak çekilmesini sağlamak.
   - **Gizem'in Görevi:** Kristallerin doğru şekilde düştüğünü ve oyuncuya pürüzsüzce çekilip toplandığını doğrulamak.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Gizem'in test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 4: Seviye Atlama Menüsü (Kart Arayüzü)**
   - **Yapay Zeka Görevi:** Seviye atlandığında oyunu duraklatıp ekranda 3 adet rastgele geliştirme seçeneği (Silah geliştir, Can doldur, Hızlan vb.) sunan `SeviyeArayuzu.java` kart arayüzünü kodlamak.
