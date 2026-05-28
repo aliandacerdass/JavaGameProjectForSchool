@@ -34,18 +34,23 @@ public class GorselYukleyici {
                 return ImageIO.read(stream);
             }
             
-            // 5. Yol: GorselYukleyici.class konumuna göre kök dizini bularak yükleme
+            // 5. Yol: GorselYukleyici.class konumuna göre yukarı doğru çıkıp "assets" klasörünü arama
             try {
                 java.net.URL classURL = GorselYukleyici.class.getResource("GorselYukleyici.class");
                 if (classURL != null && classURL.getProtocol().equals("file")) {
-                    String classPath = classURL.getPath();
-                    int index = classPath.indexOf("JavaGameProjectForSchool");
-                    if (index != -1) {
-                        String rootPath = classPath.substring(0, index + "JavaGameProjectForSchool".length());
-                        File mutlakDosya = new File(rootPath, dosyaYolu);
-                        if (mutlakDosya.exists()) {
-                            return ImageIO.read(mutlakDosya);
+                    // Sınıf dosyasının klasöründen başlayarak yukarı doğru parent klasörleri tararız
+                    File guncelKlasor = new File(classURL.getPath()).getParentFile();
+                    while (guncelKlasor != null) {
+                        File assetsKlasoru = new File(guncelKlasor, "assets");
+                        if (assetsKlasoru.exists() && assetsKlasoru.isDirectory()) {
+                            // "assets" klasörünü bulduğumuzda onun üst dizinini proje kök dizini kabul edip görseli yükleriz
+                            File mutlakDosya = new File(assetsKlasoru.getParentFile(), dosyaYolu);
+                            if (mutlakDosya.exists()) {
+                                return ImageIO.read(mutlakDosya);
+                            }
                         }
+                        // Bir üst dizine çık
+                        guncelKlasor = guncelKlasor.getParentFile();
                     }
                 }
             } catch (Exception ex) {
