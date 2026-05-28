@@ -344,6 +344,7 @@ Projedeki her geliştiricinin yaptığı geliştirmeler ve tamamladığı adıml
 - **Adım 1: Temel Motor ve Pencere Kurulumu** [TAMAMLANDI] -> `Pencere`, `OyunPaneli`, `OyunDurumu`, `GorselYukleyici` oluşturuldu.
 - **Adım 2: Klavye ve Fare Kontrol Mekanizması** [TAMAMLANDI] -> `TusKontrolcu` ve `FareKontrolcu` kodlandı.
 - **Adım 3: Swing Timer Tabanlı Oyun Döngüsü** [TAMAMLANDI] -> `OyunDongusu` ile 60 FPS oyun döngüsü kuruldu.
+- **Adım 4: Kayan Kamera Sistemi ve Harita Sınırları** [TAMAMLANDI] -> `Graphics2D.translate` tabanlı ekran kaydırma kamerası ve 3000x3000px harita sınırı panelde kuruldu.
 
 ### Emre (Geliştirici B):
 - **Adım 1: Oyuncu Karakter Sınıfı** [TAMAMLANDI] -> `Oyuncu` temel nitelikleri, hareket dengelemesi, harita sınırı ve yedek çizim mekanizması ile tamamlandı.
@@ -354,3 +355,4 @@ Projedeki her geliştiricinin yaptığı geliştirmeler ve tamamladığı adıml
 - **Adım 1: Temel Silah ve Mermi Sınıfları** [TAMAMLANDI] -> `Silah` ve `Mermi` üst sınıfları kodlandı.
 - **Adım 2: Ateş Topu ve Döner Bıçak Mekanikleri** [TAMAMLANDI] -> `AtesTopu`, `DonerBicak` ve `DonerBicakMermi` yazıldı.
 - **Adım 3: Deneyim Kristali ve Mıknatıs Sistemi** [TAMAMLANDI] -> `DeneyimKristali` ile ivmeli çekilme fiziği kodlandı.
+- **Adım 4: Seviye Atlama Menüsü (Kart Arayüzü)** [TAMAMLANDI] -> `SeviyeArayuzu` ile seviye atlandığında oyunu duraklatıp kart seçimi yaptıran arayüz kodlandı.
