@@ -32,7 +32,7 @@ Bu dosya, projedeki tüm geliştiricilerin ve onların kullandığı yapay zeka 
 
 ## 3. Roller ve Görev Dağılımı (3 Kişi)
 
-### **Andaç (Geliştirici A): Motor, Grafikler ve Çarpışma Denetimi (Core Engine, Graphics & Collision) - *Zor Görev***
+### **Andaç (Geliştirici A): Motor, Grafikler ve Çarpışma Denetimi (Core Engine, Graphics & Collision)**
 - **Görevler:**
   - Oyun döngüsünün (`OyunDongusu`) kurulması (Sabit FPS/UPS yönetimi).
   - Grafik ekranının (`OyunPaneli` ve `Pencere`) tasarlanması, tuş girdi kontrolü (`TusKontrolcu`).
