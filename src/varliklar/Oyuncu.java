@@ -56,12 +56,12 @@ public class Oyuncu {
         this.sonrakiSeviyeDeneyimi = 100;
         
         // Oyuncu gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
-        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Human_Soldier_Sword_Shield/With_Shadows/Human_Soldier_Sword_Shield_Idle-Sheet.png");
+        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/Heroes99_free 23.13.22/character_spritesheet.png");
         if (sheet != null) {
             try {
-                // Karakterin gorseldeki merkezini (32, 37) koordinatlarindan 24x24 boyutunda keseriz
-                // Boylece seffaf kisimlar temizlenir, karakter tam ortalanir ve ekranda dolgun gozukmus olur (Emre)
-                this.oyuncuGorseli = sheet.getSubimage(32, 37, 24, 24);
+                // Heroes99 spritesheet'i uzerinden ilk kahramani (28, 4) koordinatlarindan 24x30 boyutunda keseriz
+                // Boylece karakter tam ortalanmis ve gereksiz seffaf alanlar atilmis olur (Emre)
+                this.oyuncuGorseli = sheet.getSubimage(28, 4, 24, 30);
             } catch (Exception e) {
                 System.out.println("UYARI: Oyuncu gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
                 this.oyuncuGorseli = null;
@@ -113,10 +113,11 @@ public class Oyuncu {
     public void ciz(Graphics2D g2) {
         // Eger oyuncu gorseli basariyla yuklendiyse resmi cizer
         if (oyuncuGorseli != null) {
-            // Resmi oyuncunun merkez koordinatlarina hizalayarak cizer
-            int cizimX = (int) (x - yariCap);
-            int cizimY = (int) (y - yariCap);
-            g2.drawImage(oyuncuGorseli, cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2), null);
+            // Resmi oyuncunun merkez koordinatlarina ve en-boy oranina gore (32x40px) hizalayarak cizer
+            // Ayaklarinin carpisma dairesinin altina tam basmasi icin dikey cizim offseti y - 24 olarak ayarlanir (Emre)
+            int cizimX = (int) (x - 16);
+            int cizimY = (int) (y - 24);
+            g2.drawImage(oyuncuGorseli, cizimX, cizimY, 32, 40, null);
         } else {
             // Resim bulunamazsa veya yuklenemezse mavi renkli yedek bir daire cizer
             g2.setColor(Color.BLUE);
