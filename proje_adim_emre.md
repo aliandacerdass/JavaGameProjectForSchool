@@ -6,10 +6,10 @@ Bu dosya Emre'nin yapası gereken adımları ve güncel ilerlemesini takip eder.
 
 ## 📋 İlerleme Durumu
 
-- [ ] **Adım 1: Oyuncu Karakter Sınıfı**
+- [x] **Adım 1: Oyuncu Karakter Sınıfı**
   - **Yapay Zeka Görevi:** `Oyuncu.java` sınıfını oluşturmak. Can (Sağlık), Hız, Seviye, Deneyim ve Konum (x, y) değişkenlerini tanımlamak. Andaç'ın yazdığı klavye kontrolcüsüne göre hareket metodunu yazmak. Çapraz hareket hızı dengelemesini (`hiz * 0.707`) eklemek.
   - **Emre'nin Görevi:** Oyuncu karakterinin ekrandaki hareketini kontrol etmek ve hareket sınırlarını test etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 2: Temel Düşman Sınıfı, Takip ve Geri İtme (Knockback)**
   - **Yapay Zeka Görevi:** `Dusman.java` sınıfını yazmak. Düşmanın oyuncuya doğru doğrudan yürümesini sağlayan basit vektörel takip kodunu hazırlamak. Hasar aldığında merminin geliş yönünün tersine doğru geriye itilmesini sağlayan `geriIt(double yonX, double yonY, double miktar)` mekanizmasını eklemek.
