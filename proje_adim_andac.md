@@ -19,12 +19,12 @@ Bu dosya Andaç'ın yapması gereken adımları ve güncel ilerlemesini takip ed
 - [x] **Adım 3: Swing Timer Tabanlı Oyun Döngüsü**
   - **Yapay Zeka Görevi:** `OyunDongusu.java` sınıfını (60 FPS hızında çalışan `javax.swing.Timer` ile) kurmak ve panel güncelleme tetikleyicilerini yazmak.
   - **Andaç'ın Görevi:** Oyunun stabil 60 FPS çalıştığını ve CPU'yu aşırı tüketmediğini doğrulamak.
-  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
+  - *Durum:* Tamamlandı ve onaylandı.
 
-- [ ] **Adım 4: Kayan Kamera Sistemi ve Harita Sınırları**
+- [x] **Adım 4: Kayan Kamera Sistemi ve Harita Sınırları**
   - **Yapay Zeka Görevi:** Oyuncunun konumuna göre ekranı kaydıran kamera koordinat sistemini yazmak, `Graphics2D.translate(-kameraX, -kameraY)` yöntemini oyun paneline entegre etmek. 3000x3000px boyutlarında harita sınırları tanımlamak ve oyuncunun bu sınırların dışına çıkmasını engellemek.
   - **Andaç'ın Görevi:** Oyuncu hareket ettikçe ekranın pürüzsüzce kaydığını ve harita sınırlarına çarptığında durduğunu test etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 5: Daire Tabanlı Çarpışma Denetleyici ve Yeniden Başlatma (Restart)**
   - **Yapay Zeka Görevi:** `CarpismaDenetleyici.java` sınıfını yazmak (daire çarpışma formülüyle). Oyuncu öldüğünde (canı sıfırlandığında) oyunu durduran ve klavyeden `R` tuşuna basıldığında düşman listesini, mermileri, oyuncu canını ve süreyi sıfırlayan `oyunuSifirla()` yapısını kurmak.
