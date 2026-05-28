@@ -13,6 +13,14 @@ public class FareKontrolcu extends MouseAdapter {
     // Fare tiklama bilgisini tutan bayrak (flag)
     private boolean tiklandiMi = false;
     
+    // Oyun paneli referansi
+    private final OyunPaneli panel;
+    
+    // Kurucu metot: Oyun paneli referansini alir
+    public FareKontrolcu(OyunPaneli panel) {
+        this.panel = panel;
+    }
+    
     // Fare tusuna basildiginda tetiklenen metot
     @Override
     public void mousePressed(MouseEvent e) {
@@ -21,6 +29,11 @@ public class FareKontrolcu extends MouseAdapter {
         tiklamaY = e.getY();
         // Tiklandi bayragini dogru (true) yapar
         tiklandiMi = true;
+        
+        // Ekrani yenilemek icin panelin repaint metodunu tetikleriz
+        if (panel != null) {
+            panel.repaint();
+        }
     }
     
     // Tiklama bilgisini sorgulayan ve sorguladiktan sonra sifirlayan metot

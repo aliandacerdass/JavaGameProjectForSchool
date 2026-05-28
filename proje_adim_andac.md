@@ -11,10 +11,10 @@ Bu dosya Andaç'ın yapması gereken adımları ve güncel ilerlemesini takip ed
   - **Andaç'ın Görevi:** Kodu test etmek, pencerenin ekranda doğru boyutta açıldığını doğrulamak.
   - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
 
-- [ ] **Adım 2: Klavye ve Fare Kontrol Mekanizması**
+- [x] **Adım 2: Klavye ve Fare Kontrol Mekanizması**
   - **Yapay Zeka Görevi:** `TusKontrolcu.java` ve `FareKontrolcu.java` sınıflarını oluşturmak. Boolean dizi (`tuslar[256]`) kullanarak tuş basışlarını kaydetmek, fare tıklamalarını saklamak.
   - **Andaç'ın Görevi:** Tuş girdilerinin (WASD) ve fare tıklamalarının gecikmesiz algılandığını kontrol etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 3: Swing Timer Tabanlı Oyun Döngüsü**
   - **Yapay Zeka Görevi:** `OyunDongusu.java` sınıfını (60 FPS hızında çalışan `javax.swing.Timer` ile) kurmak ve panel güncelleme tetikleyicilerini yazmak.
