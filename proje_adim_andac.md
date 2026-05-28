@@ -24,12 +24,12 @@ Bu dosya Andaç'ın yapması gereken adımları ve güncel ilerlemesini takip ed
 - [x] **Adım 4: Kayan Kamera Sistemi ve Harita Sınırları**
   - **Yapay Zeka Görevi:** Oyuncunun konumuna göre ekranı kaydıran kamera koordinat sistemini yazmak, `Graphics2D.translate(-kameraX, -kameraY)` yöntemini oyun paneline entegre etmek. 3000x3000px boyutlarında harita sınırları tanımlamak ve oyuncunun bu sınırların dışına çıkmasını engellemek.
   - **Andaç'ın Görevi:** Oyuncu hareket ettikçe ekranın pürüzsüzce kaydığını ve harita sınırlarına çarptığında durduğunu test etmek.
-  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
+  - *Durum:* Tamamlandı ve onaylandı.
 
-- [ ] **Adım 5: Daire Tabanlı Çarpışma Denetleyici ve Yeniden Başlatma (Restart)**
+- [x] **Adım 5: Daire Tabanlı Çarpışma Denetleyici ve Yeniden Başlatma (Restart)**
   - **Yapay Zeka Görevi:** `CarpismaDenetleyici.java` sınıfını yazmak (daire çarpışma formülüyle). Oyuncu öldüğünde (canı sıfırlandığında) oyunu durduran ve klavyeden `R` tuşuna basıldığında düşman listesini, mermileri, oyuncu canını ve süreyi sıfırlayan `oyunuSifirla()` yapısını kurmak.
   - **Andaç'ın Görevi:** Çarpışmaların doğru çalıştığını ve öldükten sonra `R` tuşuyla oyunun sorunsuz sıfırlanıp baştan başladığını test etmek.
-  - *Durum:* Henüz başlanmadı.
+  - *Durum:* Yapay zeka görevi tamamlandı. Andaç'ın test edip onaylaması bekleniyor (AI Blocker).
 
 - [ ] **Adım 6: Pixel Arka Plan Çizimi ve Ortak Entegrasyon**
   - **Yapay Zeka Görevi:** Haritanın zeminini `assets/` içerisindeki piksel bataklık/yer karoları (`Dark_Swamp_Starter_Pack_v1.0`) ile kaplayarak (tiling) çizmek. Emre ve Gizem'in kodlarını ana sisteme bağlamak.
