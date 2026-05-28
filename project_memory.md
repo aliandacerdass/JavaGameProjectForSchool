@@ -32,29 +32,28 @@ Bu dosya, projedeki tüm geliştiricilerin ve onların kullandığı yapay zeka 
 
 ## 3. Roller ve Görev Dağılımı (3 Kişi)
 
-### **Geliştirici 1 (Geliştirici A): Motor ve Arayüz (Core Engine & GUI)**
+### **Andaç (Geliştirici A): Motor, Grafikler ve Çarpışma Denetimi (Core Engine, Graphics & Collision) - *Zor Görev***
 - **Görevler:**
-  - Oyun penceresinin (`JFrame`) ve oyun panelinin (`JPanel`) oluşturulması.
-  - Oyun döngüsünün (`Game Loop` - Thread veya Swing Timer kullanarak) kurulması.
-  - Klavye/Fare girdilerinin (`KeyListener` / `MouseListener`) dinlenmesi.
-  - Ekran yönetimi (Ana Menü, Oyun Ekranı, Oyun Bitti, Duraklatma Ekranı).
-- **Hedef Paket:** `motor`
+  - Oyun döngüsünün (`OyunDongusu`) kurulması (Sabit FPS/UPS yönetimi).
+  - Grafik ekranının (`OyunPaneli` ve `Pencere`) tasarlanması, tuş girdi kontrolü (`TusKontrolcu`).
+  - Çarpışma algılama sisteminin (`CarpismaDenetleyici`) yazılması (Oyuncu-Düşman çarpışması ve Mermi-Düşman çarpışması). Bu sistemin performanslı çalışmasını sağlamak.
+- **Hedef Paketler:** `motor/` ve `varliklar/CarpismaDenetleyici.java`
 
-### **Geliştirici 2 (Geliştirici B): Karakterler ve Çarpışma (Entities & Collisions)**
+### **Emre (Geliştirici B): Varlıklar ve Düşman Yapay Zekası (Entities & Enemy AI)**
 - **Görevler:**
-  - `Oyuncu` sınıfının yazılması (Can, konum, hız, deneyim seviyesi, hareket metotları).
-  - `Dusman` sınıfının ve farklı düşman türlerinin tanımlanması.
-  - Düşmanların oyuncuyu takip etmesini sağlayan basit yapay zeka algoritmasının yazılması.
-  - Çarpışma algılama (`CarpismaDenetleyici`) sisteminin kurulması (oyuncu-düşman çarpışması, mermi-düşman çarpışması).
-- **Hedef Paket:** `varliklar`
+  - `Oyuncu` sınıfının temel can, hız, seviye ve hareket mekaniğinin yazılması.
+  - `Dusman` temel sınıfı ve oyuncuyu takip eden hareket yapay zekasının (basit takip vektörü) yazılması.
+  - Farklı düşman türlerinin (`HizliDusman`, `GucluDusman` vb.) kodlanması.
+  - Belirli süre aralıklarıyla düşman üreten `DusmanUretici` mekanizmasının yapılması.
+- **Hedef Paket:** `varliklar/` (CarpismaDenetleyici hariç)
 
-### **Geliştirici 3 (Geliştirici C): Silahlar, Gelişim ve Eşyalar (Weapons & Progression)**
+### **Gizem (Geliştirici C): Silahlar, Gelişim ve Arayüz Ekranları (Weapons, Progression & UI)**
 - **Görevler:**
-  - Temel `Silah` ve `Mermi` (veya Proje) sınıflarının yazılması.
-  - Döner Bıçak (oyuncunun etrafında dönen) ve Ateş Topu (en yakın düşmana atılan) gibi farklı silah mekaniklerinin yapılması.
-  - Seviye atlama sistemi ve seviye atlandığında çıkan yükseltme seçim ekranı (`SeviyeArayuzu`).
-  - Düşmanlar öldüğünde yere düşen Deneyim Kristallerinin (`DeneyimKristali`) oluşturulması ve toplanması.
-- **Hedef Paket:** `mekanikler`
+  - `Silah` ve `Mermi` üst sınıflarının yazılması.
+  - Döner Bıçak (oyuncu etrafında dönen) ve Ateş Topu (en yakın düşmana giden) mermi hareketlerinin yapılması.
+  - Seviye atlama ekranının (`SeviyeArayuzu` - 3 kartlı seçim arayüzü) ve Can/Deneyim barlarının çizimi.
+  - Düşman öldüğünde yere düşen ve oyuncuya çekilen deneyim kristallerinin (`DeneyimKristali`) kodlanması.
+- **Hedef Paket:** `mekanikler/`
 
 ---
 
@@ -64,19 +63,20 @@ Kodların çakışmaması için projenin `src` klasörü altında şu şekilde p
 
 ```
 src/
-├── motor/               # Geliştirici A
+├── motor/               # Andaç'ın Sorumluluğu
 │   ├── Pencere.java     # JFrame ekranı
 │   ├── OyunPaneli.java  # Ana çizim ve güncelleme paneli
 │   ├── TusKontrolcu.java# Klavye girdi kontrolü
 │   └── OyunDongusu.java # FPS ve UPS kontrolünü sağlayan döngü
 │
-├── varliklar/           # Geliştirici B
-│   ├── Oyuncu.java      # Oyuncu karakteri
-│   ├── Dusman.java      # Düşman temel sınıfı
-│   ├── HızlıDusman.java # Farklı düşman türleri
-│   └── CarpismaDenetleyici.java # Çarpışmaları yöneten sınıf
+├── varliklar/           # Emre ve Andaç Sorumluluğu
+│   ├── Oyuncu.java      # Oyuncu karakteri (Emre)
+│   ├── Dusman.java      # Düşman temel sınıfı (Emre)
+│   ├── HizliDusman.java # Farklı düşman türleri (Emre)
+│   ├── DusmanUretici.java # Düşman dalgaları üreten sınıf (Emre)
+│   └── CarpismaDenetleyici.java # Çarpışmaları yöneten sınıf (Andaç)
 │
-├── mekanikler/          # Geliştirici C
+├── mekanikler/          # Gizem'ın Sorumluluğu
 │   ├── Silah.java       # Silah üst sınıfı
 │   ├── Mermi.java       # Mermilerin hareketi ve çizimi
 │   ├── DonerBicak.java  # Oyuncu etrafında dönen bıçak silahı
@@ -84,17 +84,17 @@ src/
 │   ├── DeneyimKristali.java # Yere düşen tecrübe puanları
 │   └── SeviyeArayuzu.java # Yükseltme kartları arayüzü
 │
-└── AnaGiris.java        # Main metodu (Oyunu başlatan sınıf)
+└── AnaGiris.java        # Main metodu (Ortak entegrasyon sınıfı)
 ```
 
 ---
 
 ## 5. Yapay Zeka Yardımcılarına Talimatlar (AI Prompt Instructions)
 Eğer bu projede bir kod yazıyorsanız veya bir geliştiriciye yardım ediyorsanız, şu talimatlara uyun:
-1. Sınıf ve değişken isimlerini her zaman Türkçe yazın, fakat Türkçe karakter kullanmayın (`oyuncu`, `dusman`, `hiz`).
-2. Kodları aşırı optimize etmek yerine, 1. sınıf öğrencisinin anlayabileceği ve sunabileceği sadelikte tutun.
-3. Her satıra açıklayıcı Türkçe yorumlar ekleyin (`// Oyuncunun x konumunu hizina göre gunceller`).
-4. Sadece kendi geliştiricinizin modül paketindeki (`motor`, `varliklar`, `mekanikler`) dosyalarda değişiklik yapın. Diğer paketlerdeki dosyaları değiştirmek için geliştiriciden onay isteyin.
+1. **Geliştirici Kimlik Sorgulaması:** Projeyi açtığınızda kullanıcıya ilk olarak **ismini sorun** (Andaç, Emre veya Gizem). Kullanıcının verdiği isme göre yukarıdaki görev dağılımını referans alarak sadece o kişiye ait görev paketleri üzerinde kod yazın. Diğer geliştiricilerin görev alanına izinsiz müdahale etmeyin.
+2. Sınıf ve değişken isimlerini her zaman Türkçe yazın, fakat Türkçe karakter kullanmayın (`oyuncu`, `dusman`, `hiz`).
+3. Kodları aşırı optimize etmek yerine, 1. sınıf öğrencisinin anlayabileceği ve sunabileceği sadelikte tutun.
+4. Her satıra açıklayıcı Türkçe yorumlar ekleyin (`// Oyuncunun x konumunu hizina göre gunceller`).
 5. **Otomatik Git Akışı (Git Push/Pull):** Projede yapılan güncellemelerin kaybolmaması ve diğer ekip üyelerinin kodlarının güncel kalması için, başarılı her kodlama adımından veya dosya güncellenmesinden sonra değişiklikleri otomatik olarak commit edin ve uzak sunucuya push yapın.
    - Değişiklikleri push etmeden önce mutlaka `git pull` yaparak güncel kodları alın.
    - Commit mesajlarını kısa ve net Türkçe yazın (örn: `git commit -m "Oyuncu sinifi ve temel hareket mekanigi eklendi"`).
