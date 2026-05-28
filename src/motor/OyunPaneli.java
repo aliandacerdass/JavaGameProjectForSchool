@@ -43,6 +43,9 @@ public class OyunPaneli extends JPanel {
     // Seviye atlama kart arayüzü nesnesi (Gizem)
     public final SeviyeArayuzu seviyeArayuzu;
     
+    // Oyunda gecen sureyi saniye bazinda hesaplamak icin kare/frame sayaci (Gizem)
+    public int oyunSuresiKareSayisi = 0;
+    
     // Klavye girdi kontrolcusu
     public final TusKontrolcu tusKontrol;
     // Fare girdi kontrolcusu
@@ -124,12 +127,122 @@ public class OyunPaneli extends JPanel {
         // 2. SABİT EKRAN ARAYÜZÜNÜ ÇİZ (Kamerayi geri cevir / translate geri al)
         g2.translate(kameraX, kameraY);
         
-        // Sabit ekran yazilari (Kameradan etkilenmeyen HUD elemanlari)
+        // --- 2a. EN TEPEDE YATAY DENEYİM BARI (XP BAR) ---
+        int xpBarX = 20;
+        int xpBarY = 10;
+        int xpBarGenislik = EKRAN_GENISLIGI - 40; // 760 piksel genislik
+        int xpBarYukseklik = 14;
+        
+        // XP Bar Arka Plani (Koyu Cam)
+        g2.setColor(new Color(30, 30, 40, 220));
+        g2.fillRect(xpBarX, xpBarY, xpBarGenislik, xpBarYukseklik);
+        
+        // XP Bar Doluluk Orani
+        double xpOran = oyuncu.deneyim / oyuncu.sonrakiSeviyeDeneyimi;
+        int xpDolulukGenislik = (int) (xpBarGenislik * Math.min(1.0, Math.max(0.0, xpOran)));
+        
+        // XP Bar Dolu Alanı (Neon Mor/Eflatun renk - Premium hissi için)
+        g2.setColor(new Color(138, 43, 226));
+        g2.fillRect(xpBarX, xpBarY, xpDolulukGenislik, xpBarYukseklik);
+        
+        // XP Bar Çift Çerçevesi (Piksel stil)
         g2.setColor(Color.WHITE);
-        g2.drawString("Piksel Hayatta Kalma Oyunu - Kamera ve Harita Sinirlari Entegre Edildi!", 20, 30);
-        g2.drawString("Oyuncu Konumu: X=" + (int) oyuncu.x + ", Y=" + (int) oyuncu.y, 20, 55);
-        g2.drawString("Can: " + (int) oyuncu.can + "/" + (int) oyuncu.maksCan + " | Seviye: " + oyuncu.seviye + " | DP: " + (int) oyuncu.deneyim + "/" + (int) oyuncu.sonrakiSeviyeDeneyimi, 20, 80);
-        g2.drawString("Aktif Silah Sayısı: " + silahlar.size() + " | Mermi Sayısı: " + mermiler.size(), 20, 105);
+        g2.drawRect(xpBarX, xpBarY, xpBarGenislik, xpBarYukseklik);
+        
+        // XP Metni (Barın üstüne ortalanmış)
+        g2.setColor(Color.WHITE);
+        String xpMetni = "SEVIYE: " + oyuncu.seviye + "  |  DP: " + (int) oyuncu.deneyim + " / " + (int) oyuncu.sonrakiSeviyeDeneyimi;
+        g2.drawString(xpMetni, EKRAN_GENISLIGI / 2 - 100, xpBarY + 11);
+        
+        // --- 2b. SOL ÜST CAN BARI (HP BAR) ---
+        int hpBarX = 20;
+        int hpBarY = 35;
+        int hpBarGenislik = 200;
+        int hpBarYukseklik = 22;
+        
+        // HP Bar Arka Plani (Koyu Gri)
+        g2.setColor(new Color(50, 50, 50, 200));
+        g2.fillRect(hpBarX, hpBarY, hpBarGenislik, hpBarYukseklik);
+        
+        // HP Bar Doluluk Orani
+        double hpOran = oyuncu.can / oyuncu.maksCan;
+        int hpDolulukGenislik = (int) (hpBarGenislik * Math.min(1.0, Math.max(0.0, hpOran)));
+        
+        // HP Bar Dolu Alanı (Göz Alıcı Koyu Kırmızı)
+        g2.setColor(new Color(220, 20, 60));
+        g2.fillRect(hpBarX, hpBarY, hpDolulukGenislik, hpBarYukseklik);
+        
+        // HP Bar Çerçevesi (Piksel Altın Rengi Çift Çerçeve)
+        g2.setColor(new Color(218, 165, 32)); // Altın rengi
+        g2.drawRect(hpBarX, hpBarY, hpBarGenislik, hpBarYukseklik);
+        g2.drawRect(hpBarX + 2, hpBarY + 2, hpBarGenislik - 4, hpBarYukseklik - 4);
+        
+        // HP Metni (Can Barı üzerine ortalanmış)
+        g2.setColor(Color.WHITE);
+        String hpMetni = "CAN: " + (int) oyuncu.can + " / " + (int) oyuncu.maksCan;
+        g2.drawString(hpMetni, hpBarX + 45, hpBarY + 16);
+        
+        // --- 2c. ÜST ORTA KRONOMETRE (STOPWATCH) ---
+        // Saniye ve dakika hesaplaması (60 kare = 1 saniye)
+        int saniye = oyunSuresiKareSayisi / 60;
+        int dakika = saniye / 60;
+        int kalanSaniye = saniye % 60;
+        String zamanMetni = String.format("%02d:%02d", dakika, kalanSaniye);
+        
+        // Kronometre Kutusu (Piksel cam tasarım)
+        int kronoX = EKRAN_GENISLIGI / 2 - 45;
+        int kronoY = 35;
+        int kronoGenislik = 90;
+        int kronoYukseklik = 26;
+        
+        g2.setColor(new Color(15, 23, 42, 220));
+        g2.fillRect(kronoX, kronoY, kronoGenislik, kronoYukseklik);
+        g2.setColor(Color.CYAN);
+        g2.drawRect(kronoX, kronoY, kronoGenislik, kronoYukseklik);
+        
+        // Zaman Yazısı
+        g2.setColor(Color.YELLOW);
+        g2.drawString(zamanMetni, kronoX + 26, kronoY + 18);
+        
+        // --- 2d. SAĞ ÜST ENVANTER VE DURUM GÖSTERGESİ ---
+        int envX = EKRAN_GENISLIGI - 220;
+        int envY = 35;
+        int envGenislik = 200;
+        int envYukseklik = 45;
+        
+        // Envanter Kutusu (Koyu Cam Görünümü)
+        g2.setColor(new Color(15, 23, 42, 220));
+        g2.fillRect(envX, envY, envGenislik, envYukseklik);
+        g2.setColor(Color.CYAN);
+        g2.drawRect(envX, envY, envGenislik, envYukseklik);
+        
+        // Envanter İçeriği (Aktif silahları küçük sembollerle listeler)
+        g2.setColor(Color.WHITE);
+        g2.drawString("ENVANTER:", envX + 10, envY + 18);
+        
+        int ikonX = envX + 85;
+        for (int i = 0; i < silahlar.size(); i++) {
+            Silah s = silahlar.get(i);
+            if (s.ad.equals("Ates Topu")) {
+                // Ateş Topu İkonu (Turuncu daire)
+                g2.setColor(Color.ORANGE);
+                g2.fillOval(ikonX, envY + 6, 12, 12);
+                g2.setColor(Color.WHITE);
+                g2.drawString("L" + s.seviye, ikonX + 15, envY + 17);
+                ikonX += 45;
+            } else if (s.ad.equals("Doner Bicak")) {
+                // Döner Bıçak İkonu (Cyan daire)
+                g2.setColor(Color.CYAN);
+                g2.fillOval(ikonX, envY + 6, 12, 12);
+                g2.setColor(Color.WHITE);
+                g2.drawString("L" + s.seviye, ikonX + 15, envY + 17);
+                ikonX += 45;
+            }
+        }
+        
+        // Genel İpuçları Yazısı (Ekranın sol altında)
+        g2.setColor(new Color(200, 200, 200, 150));
+        g2.drawString("Hareket: WASD | Durum: Seviye atlayarak yeni silahlar kazanın ve güçlenin!", 20, EKRAN_YUKSEKLIGI - 20);
         
         // Eger oyun GELISIM (seviye atlama duraklamasi) durumundaysa, kart seçim arayuzunu en uste cizer
         if (durum == OyunDurumu.GELISIM) {
@@ -150,6 +263,9 @@ public class OyunPaneli extends JPanel {
         
         // Eger oyun normal OYUN durumundaysa tum fizik ve hareketleri gunceller
         if (durum == OyunDurumu.OYUN) {
+            // Saniye sayacı için kare sayısını artırır (Gizem)
+            oyunSuresiKareSayisi++;
+            
             // Oyuncunun hareketlerini ve konumunu gunceller
             oyuncu.guncelle(this.tusKontrol);
             
