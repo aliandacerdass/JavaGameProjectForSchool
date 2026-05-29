@@ -176,14 +176,16 @@ Projedeki her geliştiricinin yaptığı geliştirmeler ve tamamladığı adıml
 - **Adım 3: Swing Timer Tabanlı Oyun Döngüsü** [TAMAMLANDI] -> `OyunDongusu` ile 60 FPS oyun döngüsü kuruldu.
 - **Adım 4: Kayan Kamera Sistemi ve Harita Sınırları** [TAMAMLANDI] -> `Graphics2D.translate` tabanlı ekran kaydırma kamerası ve 3000x3000px harita sınırı panelde kuruldu.
 - **Adım 5: Daire Tabanlı Çarpışma Denetleyici ve Yeniden Başlatma** [TAMAMLANDI] -> `CarpismaDenetleyici` (Oyuncu-Düşman, Mermi-Düşman, Oyuncu-Kristal çarpışmaları) ve `oyunuSifirla()` metodu kodlandı.
-- **Adım 6: Pixel Arka Plan Çizimi, Efektler ve Entegrasyon** [YAPILIYOR] -> Görsel yükleyiciye programatik renklendirme ve gri tonlama efektleri eklenecek, tiling sorunsuzlaştırılacak.
+- **Adım 6: Pixel Arka Plan Çizimi, Efektler ve Entegrasyon** [TAMAMLANDI] -> Görsel yükleyiciye programatik renklendirme ve gri tonlama efektleri eklendi, tiling sorunsuzlaştırıldı.
+- **Adım 7: Ekran Sarsıntısı (Screen Shake) ve Hasar Flaş Efektleri** [YAPILACAK] -> Hasar alındığında kameranın titremesi ve ekrana kırmızı flaş çizilmesi sağlanacak.
 
 ### Emre (Geliştirici B):
 - **Adım 1: Oyuncu Karakter Sınıfı** [TAMAMLANDI] -> `Oyuncu` temel nitelikleri, hareket dengelemesi, harita sınırı ve yedek çizim mekanizması ile tamamlandı.
 - **Adım 2: Temel Düşman Sınıfı, Takip ve Geri İtme (Knockback)** [TAMAMLANDI] -> `Dusman` temel sınıfı, takip yapay zekası ve knockback mekanizması yazıldı.
 - **Adım 3: Düşman Çeşitlerinin Oluşturulması** [TAMAMLANDI] -> `HizliDusman` ve `GolemDusman` alt sınıfları hız, can, hasar ve knockback çarpanlarıyla kodlandı.
 - **Adım 4: Düşman Dalga Üreticisi** [TAMAMLANDI] -> `DusmanUretici` ile kamera sınırlarının hemen dışında zamanla zorlaşan düşmanlar doğuran spawn sistemi kuruldu.
-- **Adım 5: Animasyonlu Karakter Görselleri ve Düşman Renklendirmeleri** [YAPILIYOR] -> Kahraman yönlü animasyonları eklenecek, Slime animasyonu yapılacak, Golem (Gri) ve Hızlı Düşman (Kırmızı) renklendirmeleri entegre edilecek.
+- **Adım 5: Animasyonlu Karakter Görselleri ve Düşman Renklendirmeleri** [TAMAMLANDI] -> Kahraman yönlü animasyonları eklendi, Slime animasyonu yapıldı, Golem (Gri) ve Hızlı Düşman (Kırmızı) renklendirmeleri ve animasyonları entegre edildi.
+- **Adım 6: Golem Boss Saldırı Yeteneği (Dash) ve Yeni Menzilli Düşman** [YAPILACAK] -> Golemin ani hücum yapabilmesi ve menzilli saldıran canavarlar kodlanacak.
 
 ### Gizem (Geliştirici C):
 - **Adım 1: Temel Silah ve Mermi Sınıfları** [TAMAMLANDI] -> `Silah` ve `Mermi` üst sınıfları kodlandı.
@@ -191,3 +193,4 @@ Projedeki her geliştiricinin yaptığı geliştirmeler ve tamamladığı adıml
 - **Adım 3: Deneyim Kristali ve Mıknatıs Sistemi** [TAMAMLANDI] -> `DeneyimKristali` ile ivmeli çekilme fiziği kodlandı.
 - **Adım 4: Seviye Atlama Menüsü (Kart Arayüzü)** [TAMAMLANDI] -> `SeviyeArayuzu` ile seviye atlandığında oyunu duraklatıp kart seçimi yaptıran arayüz kodlandı.
 - **Adım 5: Arayüz (UI) ve Pixel Detayları** [TAMAMLANDI] -> Ekranın üst kısmında pixel tarzı Can Barı, Seviye Çubuğu (XP Bar), Kronometre (stopwatch) ve envanter hud elemanları çizildi.
+- **Adım 6: Uçan Hasar Sayıları (Floating Damage) ve Kalkan Silahı** [YAPILACAK] -> Hasar alındığında uçan sayılar çizilecek ve oyuncunun etrafını saran kalkan silahı eklenecek.

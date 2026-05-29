@@ -31,7 +31,12 @@ Bu dosya Andaç'ın yapması gereken adımları ve güncel ilerlemesini takip ed
   - **Andaç'ın Görevi:** Çarpışmaların doğru çalıştığını ve öldükten sonra `R` tuşuyla oyunun sorunsuz sıfırlanıp baştan başladığını test etmek.
   - *Durum:* Tamamlandı ve onaylandı.
 
-- [/] **Adım 6: Pixel Arka Plan Çizimi, Efektler ve Ortak Entegrasyon**
+- [x] **Adım 6: Pixel Arka Plan Çizimi, Efektler ve Ortak Entegrasyon**
   - **Yapay Zeka Görevi:** Haritanın zeminini `assets/` içerisindeki piksel bataklık/yer karoları (`Dark_Swamp_Starter_Pack_v1.0`) ile kaplayarak (tiling) çizmek, piksel netliğini (Interpolation rendering hints) korumak. `GorselYukleyici.java` içine programatik gri tonlama ve renklendirme filtreleri eklemek.
   - **Andaç'ın Görevi:** Zemin kaplaması ve renklendirme efektlerinin sorunsuz çalıştığını doğrulamak.
-  - *Durum:* Görsel yükleyici ve zemin çizimleri güncellendi, efektler kodlanıyor (AI Blocker).
+  - *Durum:* Tamamlandı ve onaylandı.
+
+- [ ] **Adım 7: Ekran Sarsıntısı (Screen Shake) ve Hasar Gösterge Efektleri**
+  - **Yapay Zeka Görevi:** Oyuncu hasar aldığında ekranın kısa süreliğine sarsılmasını (screen shake) sağlayan kamera sarsıntı sınıfını entegre etmek. Hasar alındığında ekrana hafif bir kırmızı flaş efekti çizmek.
+  - **Andaç'ın Görevi:** Hasar alındığında ekranın sarsıldığını ve kırmızı flaş efektinin vuruş hissini artırdığını test etmek.
+  - *Durum:* Tasarım aşamasında.

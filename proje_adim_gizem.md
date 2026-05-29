@@ -29,4 +29,9 @@ Bu dosya Gizem'in yapması gereken adımları ve güncel ilerlemesini takip eder
 - [x] **Adım 5: Arayüz (UI) ve Pixel Detayları**
   - **Yapay Zeka Görevi:** Ekranın üst kısmında pixel tarzı Can Barı, Seviye Çubuğu ve kronometre çizimlerini kodlamak. Menü butonlarını piksel temalı tasarlamak.
   - **Gizem'in Görevi:** UI elemanları için piksel fontları veya menü arka plan görsellerini projenin `res/` klasörüne eklemek.
-  - *Durum:* Yapay zeka görevi tamamlandı. Gizem'in test edip onaylaması bekleniyor (AI Blocker).
+  - *Durum:* Tamamlandı ve onaylandı.
+
+- [ ] **Adım 6: Havada Uçan Hasar Sayıları (Floating Damage Numbers) ve Yeni Savunma Silahı**
+  - **Yapay Zeka Görevi:** Düşmanlar hasar aldığında kafalarının üzerinde kırmızı hasar sayılarının havaya doğru yükselip kaybolmasını (floating numbers) sağlayan parçacık sistemini yazmak. Oyuncunun etrafında dönen ve mermileri engelleyen Kalkan (KalkanSilahi) silahını eklemek.
+  - **Gizem'in Görevi:** Hasar sayılarının ekranda pürüzsüzce kaybolduğunu doğrulamak ve kalkan yükseltmesini test etmek.
+  - *Durum:* Tasarım aşamasında.

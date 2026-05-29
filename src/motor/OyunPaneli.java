@@ -344,9 +344,12 @@ public class OyunPaneli extends JPanel {
             
             // Eger haritada hic dusman kalmadiysa test amaciyla yeni dusmanlar spawn eder (Andac test edebilsin diye)
             if (dusmanlar.isEmpty()) {
+                // Standart yesil slime dusman ekleriz
                 dusmanlar.add(new Dusman(oyuncu.x + 300, oyuncu.y, 40.0, 1.8, 15.0, 16.0));
-                dusmanlar.add(new Dusman(oyuncu.x - 300, oyuncu.y, 40.0, 1.8, 15.0, 16.0));
-                dusmanlar.add(new Dusman(oyuncu.x, oyuncu.y + 350, 100.0, 1.0, 30.0, 24.0));
+                // Hizli kirmizi slime dusman ekleriz
+                dusmanlar.add(new HizliDusman(oyuncu.x - 300, oyuncu.y));
+                // Golem gri kaya slime boss ekleriz
+                dusmanlar.add(new GolemDusman(oyuncu.x, oyuncu.y + 350));
             }
             
             // Oyuncunun aktif silahlarini gunceller ve ates etmelerini saglar

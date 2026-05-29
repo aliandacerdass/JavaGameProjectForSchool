@@ -26,7 +26,16 @@ public class Dusman {
     public double geriItmeCarpani;
     
     // Dusman karakterinin gorsel resmi (piksel art)
-    private BufferedImage dusmanGorseli;
+    protected BufferedImage dusmanGorseli;
+    
+    // Animasyon parametreleri (Emre)
+    protected BufferedImage dusmanSheet;
+    // Animasyonun o anki oynatilan kare indeksini tutar
+    protected int animasyonKaresi = 0;
+    // Karenin gecis hizini ayarlayan sayac
+    protected int kareSayaci = 0;
+    // Animasyonun toplam kare sayisi (varsayilan olarak slime idle icin 6 kare)
+    protected int maksAnimasyonKaresi = 6;
     
     // Kurucu metot: Dusmani baslangic degerleriyle olusturur
     public Dusman(double x, double y, double can, double hiz, double hasar, double yariCap) {
@@ -42,6 +51,7 @@ public class Dusman {
         // Dusman gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
         BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Idle-Sheet.png");
         if (sheet != null) {
+            this.dusmanSheet = sheet;
             try {
                 // Slime karakterinin gorseldeki merkezini (37, 42) koordinatlarindan 20x20 boyutunda keseriz
                 // Boylece seffaf bosluklar atilir ve dusmanlar ekranda net bir sekilde gorunur hale gelir (Emre)
@@ -73,6 +83,16 @@ public class Dusman {
         // Sinir degerleri 0 ile 3000 arasinda tutulur (Matematiksel sinirlama)
         this.x = Math.max(0, Math.min(this.x, 3000));
         this.y = Math.max(0, Math.min(this.y, 3000));
+        
+        // Animasyon sayacini bir artirarak zaman akisini simule eder
+        kareSayaci++;
+        // Her 7 oyun karesinde bir animasyonun diger karesine gecisi tetikler
+        if (kareSayaci >= 7) {
+            // Animasyon gecis sayacini sifirlar
+            kareSayaci = 0;
+            // Bir sonraki kareye gecer ve maksimum kare limitine gore mod alir
+            animasyonKaresi = (animasyonKaresi + 1) % maksAnimasyonKaresi;
+        }
     }
     
     // Dusmanin bir mermiyle vuruldugunda geriye savrulmasini saglayan metot (Knockback)
@@ -88,24 +108,49 @@ public class Dusman {
     
     // Dusmani ekrana cizen metot
     public void ciz(Graphics2D g2) {
-        // Eger dusman gorseli basariyla yuklendiyse resmi cizer
-        if (dusmanGorseli != null) {
-            // Resmi dusmanin merkez koordinatlarina hizalayarak cizer
+        // Eger dusman sheet dosyasi varsa animasyonlu cizer (Emre)
+        if (dusmanSheet != null) {
+            try {
+                // Dinamik olarak o anki zıplama animasyon karesini spritesheet'ten keseriz (96px genisliginde grid)
+                int cellX = animasyonKaresi * 96 + 37;
+                int cellY = 42;
+                BufferedImage kareGorseli = dusmanSheet.getSubimage(cellX, cellY, 20, 20);
+                
+                int cizimX = (int) (x - yariCap);
+                int cizimY = (int) (y - yariCap);
+                g2.drawImage(kareGorseli, cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2), null);
+            } catch (Exception e) {
+                yedekGorselCiz(g2);
+            }
+        } else if (dusmanGorseli != null) {
+            // Statik gorsel cizimi
             int cizimX = (int) (x - yariCap);
             int cizimY = (int) (y - yariCap);
             g2.drawImage(dusmanGorseli, cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2), null);
         } else {
-            // Resim bulunamazsa veya yuklenemezse yesil renkli yedek bir daire cizer (Zombi hissi icin)
-            g2.setColor(Color.GREEN);
-            // Dusmanin dairesini merkezler
+            // Resim bulunamazsa veya yuklenemezse yesil renkli yedek bir daire cizer
+            yedekGeometrikCiz(g2);
+        }
+    }
+
+    // Harici yedek metotlar (Emre)
+    protected void yedekGorselCiz(Graphics2D g2) {
+        if (dusmanGorseli != null) {
             int cizimX = (int) (x - yariCap);
             int cizimY = (int) (y - yariCap);
-            g2.fillOval(cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2));
-            
-            // Dusman oldugunu belli etmek icin icine kirmizi kucuk gozler cizelim
-            g2.setColor(Color.RED);
-            g2.fillOval((int) (x - 6), (int) (y - 4), 4, 4);
-            g2.fillOval((int) (x + 2), (int) (y - 4), 4, 4);
+            g2.drawImage(dusmanGorseli, cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2), null);
+        } else {
+            yedekGeometrikCiz(g2);
         }
+    }
+
+    protected void yedekGeometrikCiz(Graphics2D g2) {
+        g2.setColor(Color.GREEN);
+        int cizimX = (int) (x - yariCap);
+        int cizimY = (int) (y - yariCap);
+        g2.fillOval(cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2));
+        g2.setColor(Color.RED);
+        g2.fillOval((int) (x - 6), (int) (y - 4), 4, 4);
+        g2.fillOval((int) (x + 2), (int) (y - 4), 4, 4);
     }
 }

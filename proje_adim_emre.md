@@ -26,7 +26,12 @@ Bu dosya Emre'nin yapası gereken adımları ve güncel ilerlemesini takip eder.
   - **Emre'nin Görevi:** Düşmanların ekran dışında doğup doğmadığını ve zaman geçtikçe düşmanların güçlendiğini gözlemlemek.
   - *Durum:* Yapay zeka görevi tamamlandı. Emre'nin test edip onaylaması bekleniyor (AI Blocker).
 
-- [/] **Adım 5: Animasyonlu Karakter Görselleri ve Düşman Renklendirmeleri**
+- [x] **Adım 5: Animasyonlu Karakter Görselleri ve Düşman Renklendirmeleri**
   - **Yapay Zeka Görevi:** `Heroes99` spritesheet'inden yönlü ve hareket durumuna göre (Idle/Walk) animasyon kareleri kesip oynatacak kodu yazmak. `Monster_Slime` spritesheet'inden hareket animasyonu hazırlamak. Golem (Gri taş rengi) ve Hızlı Düşman (Ateş kırmızısı) için programatik renklendirme uygulayarak görsel varyasyonları oluşturmak.
   - **Emre'nin Görevi:** Oyuncu ve düşmanların yürüme/bekleme animasyonlarını ve Golem/Hızlı Düşman renk varyasyonlarını test edip onaylamak.
-  - *Durum:* Görseller yüklendi, animasyonlar ve programatik renklendirme filtreleri kodlanıyor (AI Blocker).
+  - *Durum:* Tamamlandı ve onaylandı.
+
+- [ ] **Adım 6: Golem Boss Saldırı Yeteneği (Dash) ve Yeni Menzilli Düşman**
+  - **Yapay Zeka Görevi:** Golem canavarının belirli aralıklarla oyuncuya doğru hızlıca atılmasını (Dash/Hücum) sağlayan yapay zeka davranışını kodlamak. Oyuncuya uzaktan ateş eden yeni bir slime türü (MenzilliDusman) eklemek.
+  - **Emre'nin Görevi:** Golemin hücum saldırısını savuşturmayı test etmek ve menzilli slime'ların atışlarını denetlemek.
+  - *Durum:* Tasarım aşamasında.

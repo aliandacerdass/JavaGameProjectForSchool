@@ -8,50 +8,54 @@ import motor.GorselYukleyici;
 // HizliDusman sinifi, normal dusmanlardan daha hizli ancak daha az cana sahip olan bir dusman turudur
 public class HizliDusman extends Dusman {
     
-    // Hizli dusmana ozel gorsel (piksel art)
-    private BufferedImage hizliDusmanGorseli;
-    
     // Kurucu metot: Hizli dusmani baslangic koordinatlariyla olusturur
     public HizliDusman(double x, double y) {
-        // Koordinatlar, Can (15.0), Hiz (3.0), Hasar (5.0), Yaricap (12.0)
+        // Ust sinifin kurucu metodunu cagirir: Konum (x, y), Can (15.0), Hiz (3.0), Hasar (5.0), Yaricap (12.0)
         super(x, y, 15.0, 3.0, 5.0, 12.0);
         
         // Hizli dusmana ozel geri itilme carpani (hafif oldugu icin mermiler onu daha cok iter)
         this.geriItmeCarpani = 1.3;
         
-        // Hizli dusman gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
+        // Hizli dusman yuruyus animasyonu sheet dosyasi 8 kareden olusmaktadir
+        this.maksAnimasyonKaresi = 8;
+        
+        // Hizli dusman gorseli icin slime yurume animasyonu sheet dosyasini yukler
         BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
+        // Eger sheet dosyasi basariyla yuklendiyse
         if (sheet != null) {
+            // Slime sheet gorselini programatik olarak hizli dusmana ozel kirmizi renge boyar (R=2.0, G=0.5, B=0.5 carpanlariyla)
+            this.dusmanSheet = GorselYukleyici.gorselRenklendir(sheet, 2.0, 0.5, 0.5);
+            // Kirpma veya yukleme sirasinda hata ihtimaline karsi koruma saglar
             try {
-                // Slime yurus spritesheet'i uzerinden hizli dusman icin de ayni merkez alanini (37, 42, 20, 20) kesiyoruz
-                // Bu dusman kucuk yaricapli (12px) cizildigi icin ekranda kucuk ve hizli bir slime olarak gorunur (Emre)
-                this.hizliDusmanGorseli = sheet.getSubimage(37, 42, 20, 20);
+                // Eger renklendirilmis sheet basariyla olusturulduysa
+                if (this.dusmanSheet != null) {
+                    // Ilk kareyi yedek statik gorsel olarak kirpar (37, 42) konumundan 20x20 boyutunda
+                    this.dusmanGorseli = this.dusmanSheet.getSubimage(37, 42, 20, 20);
+                }
             } catch (Exception e) {
-                System.out.println("UYARI: Hizli dusman gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
-                this.hizliDusmanGorseli = null;
+                // Hata durumunda konsola uyari yazdirir
+                System.out.println("UYARI: Hizli dusman gorseli kesilirken hata olustu. Yedek sekil cizilecek. Detay: " + e.getMessage());
             }
         }
     }
     
-    // Hizli dusmanin ekranda cizilmesini saglayan metot
+    // Gorsel bulunamazsa veya yuklenemezse cizilecek geometrik yedek sekil metodu
     @Override
-    public void ciz(Graphics2D g2) {
-        // Eger gorsel yuklendiyse resmi cizer
-        if (hizliDusmanGorseli != null) {
-            int cizimX = (int) (x - yariCap);
-            int cizimY = (int) (y - yariCap);
-            g2.drawImage(hizliDusmanGorseli, cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2), null);
-        } else {
-            // Resim bulunamazsa mor renkli yedek bir daire cizer
-            g2.setColor(Color.MAGENTA);
-            int cizimX = (int) (x - yariCap);
-            int cizimY = (int) (y - yariCap);
-            g2.fillOval(cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2));
-            
-            // Gozler
-            g2.setColor(Color.YELLOW);
-            g2.fillOval((int) (x - 4), (int) (y - 3), 3, 3);
-            g2.fillOval((int) (x + 1), (int) (y - 3), 3, 3);
-        }
+    protected void yedekGeometrikCiz(Graphics2D g2) {
+        // Hizli dusman oldugu icin mor/magenta renk secer
+        g2.setColor(Color.MAGENTA);
+        // Cizilecek dairenin sol ust kose x koordinatini hesaplar
+        int cizimX = (int) (x - yariCap);
+        // Cizilecek dairenin sol ust kose y koordinatini hesaplar
+        int cizimY = (int) (y - yariCap);
+        // Mor renkle hizli dusman bedeni olarak yedek daireyi doldurur
+        g2.fillOval(cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2));
+        
+        // Gozler
+        g2.setColor(Color.YELLOW);
+        // Sol goz dairesini doldurur
+        g2.fillOval((int) (x - 4), (int) (y - 3), 3, 3);
+        // Sag goz dairesini doldurur
+        g2.fillOval((int) (x + 1), (int) (y - 3), 3, 3);
     }
 }

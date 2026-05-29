@@ -66,4 +66,62 @@ public class GorselYukleyici {
             return null;
         }
     }
+
+    // Resmi gri tonlamali (tas/golem) rengine ceviren metot (Andaç)
+    public static BufferedImage gorseliGriyap(BufferedImage src) {
+        if (src == null) return null;
+        // Orijinal resimle ayni boyutlarda yari saydam (ARGB) yeni bir resim olusturur
+        BufferedImage dest = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < src.getHeight(); y++) {
+            for (int x = 0; x < src.getWidth(); x++) {
+                int rgba = src.getRGB(x, y);
+                int alpha = (rgba >> 24) & 0xFF;
+                if (alpha > 0) {
+                    int red = (rgba >> 16) & 0xFF;
+                    int green = (rgba >> 8) & 0xFF;
+                    int blue = rgba & 0xFF;
+                    // Gri tonlama formulu (luminosity yontemiyle)
+                    int gray = (int) (0.299 * red + 0.587 * green + 0.114 * blue);
+                    // Tas rengi icin hafifce koyulastiririz (griyi biraz azaltarak)
+                    int yeniKirmizi = Math.max(0, Math.min(255, (int)(gray * 0.8)));
+                    int yeniYesil = Math.max(0, Math.min(255, (int)(gray * 0.85)));
+                    int yeniMavi = Math.max(0, Math.min(255, (int)(gray * 0.9)));
+                    // Yeni piksel degerini birlestirir
+                    int yeniRgba = (alpha << 24) | (yeniKirmizi << 16) | (yeniYesil << 8) | yeniMavi;
+                    dest.setRGB(x, y, yeniRgba);
+                } else {
+                    dest.setRGB(x, y, 0); // Tamamen seffaf pikselleri korur
+                }
+            }
+        }
+        return dest;
+    }
+
+    // Resmi belirli renk carpanlariyla harmanlayan metot (Andaç)
+    public static BufferedImage gorselRenklendir(BufferedImage src, double rMul, double gMul, double bMul) {
+        if (src == null) return null;
+        // Orijinal resimle ayni boyutlarda ARGB yeni bir resim olusturur
+        BufferedImage dest = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < src.getHeight(); y++) {
+            for (int x = 0; x < src.getWidth(); x++) {
+                int rgba = src.getRGB(x, y);
+                int alpha = (rgba >> 24) & 0xFF;
+                if (alpha > 0) {
+                    int red = (rgba >> 16) & 0xFF;
+                    int green = (rgba >> 8) & 0xFF;
+                    int blue = rgba & 0xFF;
+                    // Renk kanallarini girilen carpanlarla carparak harmanlar (0-255 arasinda sinirlar)
+                    int yeniKirmizi = Math.max(0, Math.min(255, (int)(red * rMul)));
+                    int yeniYesil = Math.max(0, Math.min(255, (int)(green * gMul)));
+                    int yeniMavi = Math.max(0, Math.min(255, (int)(blue * bMul)));
+                    // Yeni pikseli kaydeder
+                    int yeniRgba = (alpha << 24) | (yeniKirmizi << 16) | (yeniYesil << 8) | yeniMavi;
+                    dest.setRGB(x, y, yeniRgba);
+                } else {
+                    dest.setRGB(x, y, 0); // Seffaf pikselleri korur
+                }
+            }
+        }
+        return dest;
+    }
 }

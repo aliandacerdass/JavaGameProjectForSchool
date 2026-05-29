@@ -34,6 +34,12 @@ public class Oyuncu {
     // Oyuncu karakterinin gorsel resmi (piksel art)
     private BufferedImage oyuncuGorseli;
     
+    // Oyuncunun animasyon parametreleri (Emre)
+    private BufferedImage oyuncuSheet;
+    private int animasyonKaresi = 0;
+    private int kareSayaci = 0;
+    private int aktifSatir = 0; // 0: Idle, 1: Sol/Asagi, 2: Sag, 6: Yukari
+    
     // Kurucu metot: Karakteri baslangic degerleriyle olusturur
     public Oyuncu(double x, double y) {
         // Baslangic konumlarini atar
@@ -58,6 +64,7 @@ public class Oyuncu {
         // Oyuncu gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
         BufferedImage sheet = GorselYukleyici.gorselYukle("assets/Heroes99_free 23.13.22/character_spritesheet.png");
         if (sheet != null) {
+            this.oyuncuSheet = sheet;
             try {
                 // Heroes99 spritesheet'i uzerinden ilk kahramani (28, 4) koordinatlarindan 24x30 boyutunda keseriz
                 // Boylece karakter tam ortalanmis ve gereksiz seffaf alanlar atilmis olur (Emre)
@@ -107,28 +114,86 @@ public class Oyuncu {
             x = Math.max(0, Math.min(x, 3000));
             y = Math.max(0, Math.min(y, 3000));
         }
+
+        // Hareket yonune ve durumuna gore animasyon ve aktif satiri gunceller (Emre)
+        boolean hareketVar = false;
+        if (tusKontrol.yukari) {
+            aktifSatir = 6; // Yukari yuruyus satiri
+            hareketVar = true;
+        } else if (tusKontrol.asagi) {
+            aktifSatir = 1; // Asagi/Sol yuruyus satiri
+            hareketVar = true;
+        } else if (tusKontrol.sola) {
+            aktifSatir = 1; // Sola yuruyus satiri
+            hareketVar = true;
+        } else if (tusKontrol.saga) {
+            aktifSatir = 2; // Saga yuruyus satiri
+            hareketVar = true;
+        }
+        
+        if (hareketVar) {
+            // Hareket ediyorsa yuruyus animasyon karesini gunceller (8 karelik yorunge)
+            kareSayaci++;
+            if (kareSayaci >= 5) { // Her 5 karede bir kare degisir
+                kareSayaci = 0;
+                animasyonKaresi = (animasyonKaresi + 1) % 8;
+            }
+        } else {
+            // Duruyorsa idle (Satir 0, 6 karelik) animasyonunu oynatir
+            aktifSatir = 0;
+            kareSayaci++;
+            if (kareSayaci >= 8) { // Dururken animasyon daha yavas akar
+                kareSayaci = 0;
+                animasyonKaresi = (animasyonKaresi + 1) % 6;
+            }
+        }
     }
     
     // Oyuncuyu ekrana cizen metot
     public void ciz(Graphics2D g2) {
-        // Eger oyuncu gorseli basariyla yuklendiyse resmi cizer
-        if (oyuncuGorseli != null) {
-            // Resmi oyuncunun merkez koordinatlarina ve en-boy oranina gore (32x40px) hizalayarak cizer
-            // Ayaklarinin carpisma dairesinin altina tam basmasi icin dikey cizim offseti y - 24 olarak ayarlanir (Emre)
+        // Eger oyuncu sheet dosyasi yuklendiyse animasyonlu cizer (Emre)
+        if (oyuncuSheet != null) {
+            try {
+                // Dinamik olarak o anki animasyon karesini spritesheet'ten keseriz (100x40 grid)
+                int cellX = animasyonKaresi * 100 + 28;
+                int cellY = aktifSatir * 40 + 4;
+                BufferedImage kareGorseli = oyuncuSheet.getSubimage(cellX, cellY, 24, 30);
+                
+                int cizimX = (int) (x - 16);
+                int cizimY = (int) (y - 24);
+                g2.drawImage(kareGorseli, cizimX, cizimY, 32, 40, null);
+            } catch (Exception e) {
+                // Herhangi bir hata durumunda statik resim cizimine duser
+                yedekGorselCiz(g2);
+            }
+        } else if (oyuncuGorseli != null) {
+            // Statik gorsel cizimi
             int cizimX = (int) (x - 16);
             int cizimY = (int) (y - 24);
             g2.drawImage(oyuncuGorseli, cizimX, cizimY, 32, 40, null);
         } else {
             // Resim bulunamazsa veya yuklenemezse mavi renkli yedek bir daire cizer
-            g2.setColor(Color.BLUE);
-            // Oyuncunun dairesini merkezler
-            int cizimX = (int) (x - yariCap);
-            int cizimY = (int) (y - yariCap);
-            g2.fillOval(cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2));
-            
-            // Karakter hissi vermesi icin icine kucuk siyah bir goz cizelim
-            g2.setColor(Color.BLACK);
-            g2.fillOval((int) (x - 4), (int) (y - 4), 8, 8);
+            yedekGeometrikCiz(g2);
         }
+    }
+
+    // Harici yedek metotlar (Emre)
+    private void yedekGorselCiz(Graphics2D g2) {
+        if (oyuncuGorseli != null) {
+            int cizimX = (int) (x - 16);
+            int cizimY = (int) (y - 24);
+            g2.drawImage(oyuncuGorseli, cizimX, cizimY, 32, 40, null);
+        } else {
+            yedekGeometrikCiz(g2);
+        }
+    }
+
+    private void yedekGeometrikCiz(Graphics2D g2) {
+        g2.setColor(Color.BLUE);
+        int cizimX = (int) (x - yariCap);
+        int cizimY = (int) (y - yariCap);
+        g2.fillOval(cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2));
+        g2.setColor(Color.BLACK);
+        g2.fillOval((int) (x - 4), (int) (y - 4), 8, 8);
     }
 }

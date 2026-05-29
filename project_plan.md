@@ -30,6 +30,9 @@ Bu plan, Andaç, Emre ve Gizem'den oluşan 3 kişilik üniversite 1. sınıf eki
 [x] Modül 3 (Gizem): Deneyim Kristali, Çekim Mıknatısı ve Seviye Atlama Arayüzünün Yapılması
 [x] Tüm Modüllerin Entegrasyonu ve Oyun Dengesi Ayarları
 [x] Kodların Türkçe Yorum Satırları ile Tam Belgelenmesi ve Test Edilmesi
+- [ ] Faz 2 - Andaç: Ekran Sarsıntısı (Screen Shake) ve Hasar Gösterge Efektleri
+- [ ] Faz 2 - Emre: Golem Boss Saldırı Yeteneği (Dash) ve Menzilli Düşman Sınıfı
+- [ ] Faz 2 - Gizem: Uçan Hasar Sayıları (Floating Damage) ve Kalkan Silahı
 
 ## Açık Sorular ve Çözümleri (Resolved Questions)
 - **Soru:** Grafik olarak hazır 2D sprite resimleri mi kullanacağız, yoksa basit geometrik şekillerle mi çizdireceğiz?
