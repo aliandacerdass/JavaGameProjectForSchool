@@ -202,9 +202,8 @@ public class Oyuncu {
                 int h = 40;
                 
                 // Yansitma/Cevirme Mantigi:
-                // - Yururken (Satir 3) varsayilan sagdir -> sola bakarken ceviririz (!sagaBakiyor)
-                // - Beklerken (Satir 5, kare 0-1) varsayilan soldur -> saga bakarken ceviririz (sagaBakiyor)
-                boolean cevir = (aktifSatir == 3 && !sagaBakiyor) || (aktifSatir == 5 && animasyonKaresi < 2 && sagaBakiyor);
+                // - Yururken (Satir 3) ve Beklerken (Satir 5, kare 0-1) varsayilan sagdir -> sola bakarken ceviririz (!sagaBakiyor)
+                boolean cevir = (aktifSatir == 3 || (aktifSatir == 5 && animasyonKaresi < 2)) && !sagaBakiyor;
                 
                 if (cevir) {
                     g2.drawImage(kareGorseli, cizimX + w, cizimY, -w, h, null);
@@ -221,7 +220,7 @@ public class Oyuncu {
             int cizimY = (int) (y - 24);
             int w = 32;
             int h = 40;
-            boolean cevir = (aktifSatir == 3 && !sagaBakiyor) || (aktifSatir == 5 && animasyonKaresi < 2 && sagaBakiyor);
+            boolean cevir = (aktifSatir == 3 || (aktifSatir == 5 && animasyonKaresi < 2)) && !sagaBakiyor;
             if (cevir) {
                 g2.drawImage(oyuncuGorseli, cizimX + w, cizimY, -w, h, null);
             } else {
@@ -240,7 +239,7 @@ public class Oyuncu {
             int cizimY = (int) (y - 24);
             int w = 32;
             int h = 40;
-            boolean cevir = (aktifSatir == 3 && !sagaBakiyor) || (aktifSatir == 5 && animasyonKaresi < 2 && sagaBakiyor);
+            boolean cevir = (aktifSatir == 3 || (aktifSatir == 5 && animasyonKaresi < 2)) && !sagaBakiyor;
             if (cevir) {
                 g2.drawImage(oyuncuGorseli, cizimX + w, cizimY, -w, h, null);
             } else {
