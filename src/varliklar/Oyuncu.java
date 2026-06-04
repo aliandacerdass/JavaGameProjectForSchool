@@ -126,7 +126,7 @@ public class Oyuncu {
             yeniSatir = 1; // Asagi yuruyus satiri (Satir 1)
             hareketVar = true;
         } else if (tusKontrol.sola) {
-            yeniSatir = 3; // Sola yuruyus satiri (Saga yuruyus satiri 3'u yukleyip cizimde yatayda ters cevirecegiz)
+            yeniSatir = 3; // Sola yuruyus satiri (Saga yuruyus satiri 3'u kullanip cizimde cevirecegiz)
             this.sagaBakiyor = false;
             hareketVar = true;
         } else if (tusKontrol.saga) {
@@ -149,22 +149,39 @@ public class Oyuncu {
                 animasyonKaresi = (animasyonKaresi + 1) % 8;
             }
         } else {
-            // Duruyorsa idle animasyonu oynatir.
-            // Eger daha once yukari yuruyorsa arkası donuk idle (satir 5), degilse on yuz idle (satir 0) oynatir
-            int hedefIdleSatiri = (aktifSatir == 6 || aktifSatir == 5) ? 5 : 0;
-            int maksKare = (hedefIdleSatiri == 5) ? 4 : 6; // Satir 5 -> 4 karelik, Satir 0 -> 6 karelik animasyon
+            // Duruyorsa yonune gore uygun idle animasyonunu secip oynatir (Andaç/Emre)
+            int hedefIdleSatiri = 0;
+            int minKare = 0;
+            int maksKare = 6;
             
-            // Idle durumuna gecerken veya durum degisirken kareleri sifirlayarak kirpma tasmalarini (RasterFormatException) engelleriz
-            if (aktifSatir != hedefIdleSatiri || animasyonKaresi >= maksKare) {
+            if (aktifSatir == 6 || (aktifSatir == 5 && animasyonKaresi >= 2)) {
+                // En son yukari yurunuyorduysa -> Idle Yukari (Satir 5, kare 2-3)
+                hedefIdleSatiri = 5;
+                minKare = 2;
+                maksKare = 4;
+            } else if (aktifSatir == 3 || (aktifSatir == 5 && animasyonKaresi < 2)) {
+                // En son sag/sol yurunuyorduysa -> Idle Sol/Sag (Satir 5, kare 0-1)
+                hedefIdleSatiri = 5;
+                minKare = 0;
+                maksKare = 2;
+            } else {
+                // En son asagi yurunuyorduysa veya ilk durum -> Idle Asagi (Satir 0, kare 0-5)
+                hedefIdleSatiri = 0;
+                minKare = 0;
+                maksKare = 6;
+            }
+            
+            // Idle durumuna gecerken veya durum degisirken tasmayi onlemek icin kareleri sinirlariz
+            if (aktifSatir != hedefIdleSatiri || animasyonKaresi < minKare || animasyonKaresi >= maksKare) {
                 aktifSatir = hedefIdleSatiri;
-                animasyonKaresi = 0;
+                animasyonKaresi = minKare;
                 kareSayaci = 0;
             }
             
             kareSayaci++;
             if (kareSayaci >= 8) { // Dururken animasyon daha yavas akar
                 kareSayaci = 0;
-                animasyonKaresi = (animasyonKaresi + 1) % maksKare;
+                animasyonKaresi = minKare + ((animasyonKaresi - minKare + 1) % (maksKare - minKare));
             }
         }
     }
@@ -184,8 +201,12 @@ public class Oyuncu {
                 int w = 32;
                 int h = 40;
                 
-                // Sola yurunuyorsa (aktifSatir == 3 ve sagaBakiyor false) resmi yatay cevirerek ciz (Andaç/Emre)
-                if (aktifSatir == 3 && !sagaBakiyor) {
+                // Yansitma/Cevirme Mantigi:
+                // - Yururken (Satir 3) varsayilan sagdir -> sola bakarken ceviririz (!sagaBakiyor)
+                // - Beklerken (Satir 5, kare 0-1) varsayilan soldur -> saga bakarken ceviririz (sagaBakiyor)
+                boolean cevir = (aktifSatir == 3 && !sagaBakiyor) || (aktifSatir == 5 && animasyonKaresi < 2 && sagaBakiyor);
+                
+                if (cevir) {
                     g2.drawImage(kareGorseli, cizimX + w, cizimY, -w, h, null);
                 } else {
                     g2.drawImage(kareGorseli, cizimX, cizimY, w, h, null);
@@ -200,7 +221,8 @@ public class Oyuncu {
             int cizimY = (int) (y - 24);
             int w = 32;
             int h = 40;
-            if (aktifSatir == 3 && !sagaBakiyor) {
+            boolean cevir = (aktifSatir == 3 && !sagaBakiyor) || (aktifSatir == 5 && animasyonKaresi < 2 && sagaBakiyor);
+            if (cevir) {
                 g2.drawImage(oyuncuGorseli, cizimX + w, cizimY, -w, h, null);
             } else {
                 g2.drawImage(oyuncuGorseli, cizimX, cizimY, w, h, null);
@@ -218,7 +240,8 @@ public class Oyuncu {
             int cizimY = (int) (y - 24);
             int w = 32;
             int h = 40;
-            if (aktifSatir == 3 && !sagaBakiyor) {
+            boolean cevir = (aktifSatir == 3 && !sagaBakiyor) || (aktifSatir == 5 && animasyonKaresi < 2 && sagaBakiyor);
+            if (cevir) {
                 g2.drawImage(oyuncuGorseli, cizimX + w, cizimY, -w, h, null);
             } else {
                 g2.drawImage(oyuncuGorseli, cizimX, cizimY, w, h, null);
