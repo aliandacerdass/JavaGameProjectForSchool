@@ -155,17 +155,17 @@ public class Oyuncu {
             int maksKare = 6;
             
             if (aktifSatir == 6 || (aktifSatir == 5 && animasyonKaresi >= 2)) {
-                // En son yukari yurunuyorduysa -> Idle Yukari (Satir 5, kare 2-3)
+                // En son yukari yurunuyorduysa -> Idle Yukari (Satir 5, kare 2 statik, saldiri bug'ini onler)
                 hedefIdleSatiri = 5;
                 minKare = 2;
-                maksKare = 4;
+                maksKare = 3; 
             } else if (aktifSatir == 3 || (aktifSatir == 5 && animasyonKaresi < 2)) {
-                // En son sag/sol yurunuyorduysa -> Idle Sol/Sag (Satir 5, kare 0-1)
+                // En son sag/sol yurunuyorduysa -> Idle Sol/Sag (Satir 5, kare 0 statik, saldiri bug'ini onler)
                 hedefIdleSatiri = 5;
                 minKare = 0;
-                maksKare = 2;
+                maksKare = 1;
             } else {
-                // En son asagi yurunuyorduysa veya ilk durum -> Idle Asagi (Satir 0, kare 0-5)
+                // En son asagi yurunuyorduysa veya ilk durum -> Idle Asagi (Satir 0, kare 0-5 hareketli)
                 hedefIdleSatiri = 0;
                 minKare = 0;
                 maksKare = 6;

@@ -27,6 +27,32 @@ public class CarpismaDenetleyici {
                 if (oyuncu.can < 0) {
                     oyuncu.can = 0;
                 }
+                
+                // --- İÇ İÇE GİRMEYİ ENGELLEME VE GERİ SEKME (PUSHBACK) ---
+                double mesafe = Math.sqrt(mesafeKaresi);
+                if (mesafe > 0) {
+                    double overlap = (oyuncu.yariCap + dusman.yariCap) - mesafe;
+                    // Birbirlerinden uzaklasma yonunde itme vektorunu hesaplariz
+                    double itmeX = (dx / mesafe) * overlap;
+                    double itmeY = (dy / mesafe) * overlap;
+                    
+                    // Oyuncuyu geriye sekme hissiyati vermek icin %60 oraninda geriye iteriz
+                    oyuncu.x += itmeX * 0.6;
+                    oyuncu.y += itmeY * 0.6;
+                    
+                    // Dusmani da geriye dogru %40 oraninda iteriz
+                    dusman.x -= itmeX * 0.4;
+                    dusman.y -= itmeY * 0.4;
+                    
+                    // Harita sinirlari disina tasmalarini engelleriz (Andaç)
+                    oyuncu.x = Math.max(0, Math.min(oyuncu.x, 3000));
+                    oyuncu.y = Math.max(0, Math.min(oyuncu.y, 3000));
+                    dusman.x = Math.max(0, Math.min(dusman.x, 3000));
+                    dusman.y = Math.max(0, Math.min(dusman.y, 3000));
+                } else {
+                    // Tam olarak ust uste bindilerse ufak bir itisle ayiririz
+                    oyuncu.x += 1;
+                }
             }
         }
         
