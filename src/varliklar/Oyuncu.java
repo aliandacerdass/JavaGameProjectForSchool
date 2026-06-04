@@ -117,21 +117,28 @@ public class Oyuncu {
 
         // Hareket yonune ve durumuna gore animasyon ve aktif satiri gunceller (Emre)
         boolean hareketVar = false;
+        int yeniSatir = aktifSatir;
         if (tusKontrol.yukari) {
-            aktifSatir = 6; // Yukari yuruyus satiri
+            yeniSatir = 6; // Yukari yuruyus satiri (Satir 6)
             hareketVar = true;
         } else if (tusKontrol.asagi) {
-            aktifSatir = 1; // Asagi/Sol yuruyus satiri
+            yeniSatir = 2; // Asagi yuruyus satiri (Satir 2)
             hareketVar = true;
         } else if (tusKontrol.sola) {
-            aktifSatir = 1; // Sola yuruyus satiri
+            yeniSatir = 1; // Sola yuruyus satiri (Satir 1)
             hareketVar = true;
         } else if (tusKontrol.saga) {
-            aktifSatir = 2; // Saga yuruyus satiri
+            yeniSatir = 3; // Saga yuruyus satiri (Satir 3)
             hareketVar = true;
         }
         
         if (hareketVar) {
+            // Yon degistiyse veya durmaktan harekete gectiysek animasyon karelerini sifirlariz
+            if (aktifSatir != yeniSatir || animasyonKaresi >= 8) {
+                aktifSatir = yeniSatir;
+                animasyonKaresi = 0;
+                kareSayaci = 0;
+            }
             // Hareket ediyorsa yuruyus animasyon karesini gunceller (8 karelik yorunge)
             kareSayaci++;
             if (kareSayaci >= 5) { // Her 5 karede bir kare degisir
@@ -139,12 +146,22 @@ public class Oyuncu {
                 animasyonKaresi = (animasyonKaresi + 1) % 8;
             }
         } else {
-            // Duruyorsa idle (Satir 0, 6 karelik) animasyonunu oynatir
-            aktifSatir = 0;
+            // Duruyorsa idle animasyonu oynatir.
+            // Eger daha once yukari yuruyorsa arkası donuk idle (satir 5), degilse on yuz idle (satir 0) oynatir
+            int hedefIdleSatiri = (aktifSatir == 6 || aktifSatir == 5) ? 5 : 0;
+            int maksKare = (hedefIdleSatiri == 5) ? 4 : 6; // Satir 5 -> 4 karelik, Satir 0 -> 6 karelik animasyon
+            
+            // Idle durumuna gecerken veya durum degisirken kareleri sifirlayarak kirpma tasmalarini (RasterFormatException) engelleriz
+            if (aktifSatir != hedefIdleSatiri || animasyonKaresi >= maksKare) {
+                aktifSatir = hedefIdleSatiri;
+                animasyonKaresi = 0;
+                kareSayaci = 0;
+            }
+            
             kareSayaci++;
             if (kareSayaci >= 8) { // Dururken animasyon daha yavas akar
                 kareSayaci = 0;
-                animasyonKaresi = (animasyonKaresi + 1) % 6;
+                animasyonKaresi = (animasyonKaresi + 1) % maksKare;
             }
         }
     }

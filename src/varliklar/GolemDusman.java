@@ -16,11 +16,11 @@ public class GolemDusman extends Dusman {
         // Goleme ozel geri itilme carpani (cok agir oldugu icin mermiler onu neredeyse hic itmez)
         this.geriItmeCarpani = 0.15;
         
-        // Golemin animasyon kare sayisi idle sayfasi ile uyumlu olarak 6 karedir
-        this.maksAnimasyonKaresi = 6;
+        // Golemin animasyon kare sayisi yuruyus sayfasi ile uyumlu olarak 8 karedir (Emre)
+        this.maksAnimasyonKaresi = 8;
         
-        // Golem gorseli icin temel slime bekleme animasyonu sheet dosyasini yukler
-        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Idle-Sheet.png");
+        // Golem gorseli icin temel slime yuruyus animasyonu sheet dosyasini yukler
+        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
         // Eger sheet dosyasi basariyla yuklendiyse
         if (sheet != null) {
             // Slime sheet gorselini programatik olarak goleme ozel gri kaya rengine donusturur

@@ -54,10 +54,46 @@ public class FareKontrolcu extends MouseAdapter {
         return tiklamaY;
     }
     
+    // Anlik fare konumu koordinatlari (hover efektleri icin)
+    private int fareX = -1;
+    private int fareY = -1;
+
+    // Fare hareket ettirildiginde tetiklenen metot (Andaç)
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        fareX = e.getX();
+        fareY = e.getY();
+        // Hover durumlarinin hemen cizilebilmesi icin repaint tetikleriz
+        if (panel != null) {
+            panel.repaint();
+        }
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        fareX = e.getX();
+        fareY = e.getY();
+        if (panel != null) {
+            panel.repaint();
+        }
+    }
+
+    // Fare X koordinatini getiren metot
+    public int getFareX() {
+        return fareX;
+    }
+
+    // Fare Y koordinatini getiren metot
+    public int getFareY() {
+        return fareY;
+    }
+
     // Girdileri temizleyen/sifirlayan metot
     public void temizle() {
         tiklamaX = -1;
         tiklamaY = -1;
         tiklandiMi = false;
+        fareX = -1;
+        fareY = -1;
     }
 }

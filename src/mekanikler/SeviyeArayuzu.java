@@ -7,6 +7,7 @@ import varliklar.Oyuncu;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -184,52 +185,119 @@ public class SeviyeArayuzu {
         }
     }
     
-    // Seviye atlama arayuzunu ekrana cizen metot (Piksel art tasarim detaylari icerir)
+    // Seviye atlama arayuzunu ekrana cizen metot (Piksel art ve Premium Tasarim)
     public void ciz(Graphics2D g2) {
         // 1. Ekranı loşlaştırmak için yarı saydam siyah bir katman çizer
-        g2.setColor(new Color(0, 0, 0, 180));
+        g2.setColor(new Color(10, 10, 18, 200)); // Hafif koyu lacivert yari saydam perde
         g2.fillRect(0, 0, OyunPaneli.EKRAN_GENISLIGI, OyunPaneli.EKRAN_YUKSEKLIGI);
         
         // 2. Ana Başlık Çizimi
+        g2.setFont(new Font("Arial", Font.BOLD, 36));
         g2.setColor(Color.YELLOW);
-        // Piksel font hissiyati vermek icin kalın ve buyuk yazariz
-        g2.drawString("SEVIYE ATLADINIZ!", 330, 80);
+        g2.drawString("SEVIYE ATLADINIZ!", 235, 75);
+        
+        g2.setFont(new Font("Arial", Font.PLAIN, 16));
         g2.setColor(Color.WHITE);
-        g2.drawString("Karakterinizi guclendirmek icin bir kart secin:", 250, 120);
+        g2.drawString("Karakterinizi guclendirmek icin bir kart secin:", 235, 115);
+        
+        int fareX = panel.fareKontrol.getFareX();
+        int fareY = panel.fareKontrol.getFareY();
         
         // 3. 3 Adet Kartın Çizimi
         for (GelistirmeSecenegi secenek : sunulanSecenekler) {
             Rectangle r = secenek.kartAlani;
             
-            // Kart arka planı (Koyu mavi retro cam görünümü - Glassmorphism)
-            g2.setColor(new Color(15, 23, 42, 245));
-            g2.fillRect(r.x, r.y, r.width, r.height);
+            // Fare kartın üzerinde mi?
+            boolean hover = r.contains(fareX, fareY);
+            int yShift = hover ? -15 : 0; // Kart hover oldugunda 15 piksel havaya kalkar
             
-            // Kart kenar çerçevesi (Piksel çizgisini korumak için kalınlığı drawRect ile yaparız)
-            g2.setColor(Color.CYAN);
-            g2.drawRect(r.x, r.y, r.width, r.height);
-            g2.drawRect(r.x + 2, r.y + 2, r.width - 4, r.height - 4); // Cift cerceve piksel stil
+            // Kart arka planı (Koyu mavi retro cam görünümü - Glassmorphism)
+            g2.setColor(hover ? new Color(25, 35, 60, 250) : new Color(15, 23, 42, 240));
+            g2.fillRect(r.x, r.y + yShift, r.width, r.height);
+            
+            // Kart kenar çerçevesi (Piksel stil cift cerceve)
+            if (hover) {
+                g2.setColor(new Color(255, 215, 0)); // Altın sarısı glow
+            } else {
+                g2.setColor(Color.CYAN);
+            }
+            g2.drawRect(r.x, r.y + yShift, r.width, r.height);
+            g2.drawRect(r.x + 2, r.y + yShift + 2, r.width - 4, r.height - 4);
             
             // Kart başlığı (Geliştirme Adı)
-            g2.setColor(Color.YELLOW);
-            g2.drawString(secenek.baslik, r.x + 15, r.y + 45);
+            g2.setFont(new Font("Arial", Font.BOLD, 15));
+            g2.setColor(hover ? Color.WHITE : Color.YELLOW);
+            g2.drawString(secenek.baslik, r.x + 12, r.y + yShift + 40);
             
             // Alt ayırıcı piksel çizgisi
-            g2.setColor(Color.CYAN);
-            g2.drawLine(r.x + 10, r.y + 70, r.x + r.width - 10, r.y + 70);
+            g2.setColor(hover ? new Color(255, 215, 0) : Color.CYAN);
+            g2.drawLine(r.x + 10, r.y + yShift + 60, r.x + r.width - 10, r.y + yShift + 60);
+            
+            // --- KART İKON ÇİZİMİ ---
+            int iconX = r.x + r.width / 2 - 25; // 50px genislik icin ortalar
+            int iconY = r.y + yShift + 75;
+            
+            // İkon arka planı (Koyu daire/kare)
+            g2.setColor(new Color(30, 41, 59, 200));
+            g2.fillRoundRect(iconX - 5, iconY - 5, 60, 60, 10, 10);
+            g2.setColor(hover ? new Color(255, 215, 0, 150) : new Color(0, 255, 255, 100));
+            g2.drawRoundRect(iconX - 5, iconY - 5, 60, 60, 10, 10);
+            
+            // İkon türüne göre çizim yapar (Gizem)
+            if (secenek.tip == 1) { // Sağlık Paketi - Piksel Kalp
+                g2.setColor(Color.RED);
+                g2.fillRect(iconX + 10, iconY + 10, 12, 12);
+                g2.fillRect(iconX + 28, iconY + 10, 12, 12);
+                g2.fillRect(iconX + 15, iconY + 22, 20, 8);
+                g2.fillRect(iconX + 20, iconY + 30, 10, 8);
+                g2.fillRect(iconX + 23, iconY + 38, 4, 4);
+                // Highlight
+                g2.setColor(Color.WHITE);
+                g2.fillRect(iconX + 12, iconY + 12, 4, 4);
+            } else if (secenek.tip == 2) { // Kevlar Botlar - Piksel Bot
+                g2.setColor(new Color(139, 69, 19)); // Kahverengi deri
+                g2.fillRect(iconX + 15, iconY + 10, 15, 20);
+                g2.fillRect(iconX + 15, iconY + 30, 25, 12);
+                g2.setColor(Color.DARK_GRAY); // Taban
+                g2.fillRect(iconX + 13, iconY + 40, 28, 4);
+                g2.setColor(Color.YELLOW); // Bağcıklar
+                g2.fillRect(iconX + 22, iconY + 15, 4, 3);
+                g2.fillRect(iconX + 22, iconY + 22, 4, 3);
+            } else if (secenek.tip == 3) { // Ateş Topu - Alev Topu
+                g2.setColor(Color.RED);
+                g2.fillOval(iconX + 10, iconY + 10, 30, 30);
+                g2.fillRect(iconX + 20, iconY + 5, 10, 10);
+                g2.fillRect(iconX + 12, iconY + 8, 8, 8);
+                g2.setColor(Color.ORANGE);
+                g2.fillOval(iconX + 15, iconY + 15, 20, 20);
+                g2.fillRect(iconX + 22, iconY + 10, 6, 8);
+                g2.setColor(Color.YELLOW);
+                g2.fillOval(iconX + 20, iconY + 20, 10, 10);
+            } else if (secenek.tip == 4) { // Döner Bıçak - Dönen Bıçak
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.fillRect(iconX + 5, iconY + 20, 40, 10);
+                g2.fillRect(iconX + 20, iconY + 5, 10, 40);
+                g2.setColor(Color.CYAN);
+                g2.fillRect(iconX + 20, iconY + 20, 10, 10);
+                g2.setColor(Color.GRAY);
+                g2.fillRect(iconX + 5, iconY + 20, 5, 5);
+                g2.fillRect(iconX + 40, iconY + 25, 5, 5);
+                g2.fillRect(iconX + 25, iconY + 5, 5, 5);
+                g2.fillRect(iconX + 20, iconY + 40, 5, 5);
+            }
             
             // Açıklama Metni (Satır sığdırma ve piksel hizalama)
+            g2.setFont(new Font("Arial", Font.PLAIN, 12));
             g2.setColor(Color.WHITE);
             String[] kelimeler = secenek.aciklama.split(" ");
             StringBuilder satir = new StringBuilder();
-            int yaziY = r.y + 110;
+            int yaziY = r.y + yShift + 155;
             
             for (String kelime : kelimeler) {
-                // Basit kelime bazli satir sarma mekanizmasi
                 if (satir.length() + kelime.length() > 20) {
                     g2.drawString(satir.toString(), r.x + 15, yaziY);
                     satir = new StringBuilder();
-                    yaziY += 25;
+                    yaziY += 20;
                 }
                 satir.append(kelime).append(" ");
             }
@@ -238,11 +306,14 @@ public class SeviyeArayuzu {
             }
             
             // Kart Altındaki "SEC" Buton Alanı Çizimi
-            g2.setColor(new Color(0, 120, 120));
-            g2.fillRect(r.x + 20, r.y + r.height - 50, r.width - 40, 30);
+            g2.setColor(hover ? new Color(218, 165, 32) : new Color(0, 120, 120));
+            g2.fillRect(r.x + 20, r.y + yShift + r.height - 50, r.width - 40, 30);
+            
             g2.setColor(Color.WHITE);
-            g2.drawRect(r.x + 20, r.y + r.height - 50, r.width - 40, 30);
-            g2.drawString("SEC", r.x + 75, r.y + r.height - 30);
+            g2.drawRect(r.x + 20, r.y + yShift + r.height - 50, r.width - 40, 30);
+            
+            g2.setFont(new Font("Arial", Font.BOLD, 13));
+            g2.drawString("SEC", r.x + 73, r.y + yShift + r.height - 30);
         }
     }
 }

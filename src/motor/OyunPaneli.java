@@ -170,6 +170,11 @@ public class OyunPaneli extends JPanel {
         // 2. SABİT EKRAN ARAYÜZÜNÜ ÇİZ (Kamerayi geri cevir / translate geri al)
         g2.translate(kameraX, kameraY);
         
+        // Varsayılan fontları ayarla (her frame sıfırlamak için)
+        Font varsayilanFont = new Font("Arial", Font.PLAIN, 12);
+        Font boldFont = new Font("Arial", Font.BOLD, 12);
+        g2.setFont(varsayilanFont);
+        
         // --- 2a. EN TEPEDE YATAY DENEYİM BARI (XP BAR) ---
         int xpBarX = 20;
         int xpBarY = 10;
@@ -193,12 +198,13 @@ public class OyunPaneli extends JPanel {
         g2.drawRect(xpBarX, xpBarY, xpBarGenislik, xpBarYukseklik);
         
         // XP Metni (Barın üstüne ortalanmış)
+        g2.setFont(boldFont);
         g2.setColor(Color.WHITE);
         String xpMetni = "SEVIYE: " + oyuncu.seviye + "  |  DP: " + (int) oyuncu.deneyim + " / " + (int) oyuncu.sonrakiSeviyeDeneyimi;
         g2.drawString(xpMetni, EKRAN_GENISLIGI / 2 - 100, xpBarY + 11);
         
         // --- 2b. SOL ÜST CAN BARI (HP BAR) ---
-        int hpBarX = 20;
+        int hpBarX = 35; // Kalp ikonuna yer acmak icin saga kaydirildi
         int hpBarY = 35;
         int hpBarGenislik = 200;
         int hpBarYukseklik = 22;
@@ -211,8 +217,12 @@ public class OyunPaneli extends JPanel {
         double hpOran = oyuncu.can / oyuncu.maksCan;
         int hpDolulukGenislik = (int) (hpBarGenislik * Math.min(1.0, Math.max(0.0, hpOran)));
         
-        // HP Bar Dolu Alanı (Göz Alıcı Koyu Kırmızı)
-        g2.setColor(new Color(220, 20, 60));
+        // HP Bar Dolu Alanı (Göz Alıcı Koyu Kırmızı - Kritik canda yanıp söner)
+        if (hpOran < 0.3 && (oyunSuresiKareSayisi / 15) % 2 == 0) {
+            g2.setColor(Color.ORANGE);
+        } else {
+            g2.setColor(new Color(220, 20, 60));
+        }
         g2.fillRect(hpBarX, hpBarY, hpDolulukGenislik, hpBarYukseklik);
         
         // HP Bar Çerçevesi (Piksel Altın Rengi Çift Çerçeve)
@@ -221,9 +231,21 @@ public class OyunPaneli extends JPanel {
         g2.drawRect(hpBarX + 2, hpBarY + 2, hpBarGenislik - 4, hpBarYukseklik - 4);
         
         // HP Metni (Can Barı üzerine ortalanmış)
+        g2.setFont(boldFont);
         g2.setColor(Color.WHITE);
         String hpMetni = "CAN: " + (int) oyuncu.can + " / " + (int) oyuncu.maksCan;
         g2.drawString(hpMetni, hpBarX + 45, hpBarY + 16);
+        
+        // Can barının soluna küçük bir kalp ikonu (piksel)
+        int kalpX = hpBarX - 18;
+        int kalpY = hpBarY + 3;
+        g2.setColor(Color.RED);
+        g2.fillRect(kalpX + 2, kalpY, 3, 3);
+        g2.fillRect(kalpX + 7, kalpY, 3, 3);
+        g2.fillRect(kalpX, kalpY + 3, 12, 5);
+        g2.fillRect(kalpX + 2, kalpY + 8, 8, 3);
+        g2.fillRect(kalpX + 4, kalpY + 11, 4, 3);
+        g2.fillRect(kalpX + 5, kalpY + 14, 2, 2);
         
         // --- 2c. ÜST ORTA KRONOMETRE (STOPWATCH) ---
         int saniye = oyunSuresiKareSayisi / 60;
@@ -243,8 +265,17 @@ public class OyunPaneli extends JPanel {
         g2.drawRect(kronoX, kronoY, kronoGenislik, kronoYukseklik);
         
         // Zaman Yazısı
+        g2.setFont(new Font("Arial", Font.BOLD, 14));
         g2.setColor(Color.YELLOW);
         g2.drawString(zamanMetni, kronoX + 26, kronoY + 18);
+        
+        // Saat simgesi (piksel)
+        int saatX = kronoX + 8;
+        int saatY = kronoY + 7;
+        g2.setColor(Color.WHITE);
+        g2.drawOval(saatX, saatY, 12, 12);
+        g2.drawLine(saatX + 6, saatY + 6, saatX + 6, saatY + 3);
+        g2.drawLine(saatX + 6, saatY + 6, saatX + 9, saatY + 6);
         
         // --- 2d. SAĞ ÜST ENVANTER VE DURUM GÖSTERGESİ ---
         int envX = EKRAN_GENISLIGI - 220;
@@ -258,31 +289,52 @@ public class OyunPaneli extends JPanel {
         g2.setColor(Color.CYAN);
         g2.drawRect(envX, envY, envGenislik, envYukseklik);
         
-        // Envanter İçeriği (Aktif silahları küçük sembollerle listeler)
+        // Envanter Başlığı
+        g2.setFont(boldFont);
         g2.setColor(Color.WHITE);
-        g2.drawString("ENVANTER:", envX + 10, envY + 18);
+        g2.drawString("ENVANTER:", envX + 10, envY + 26);
         
-        int ikonX = envX + 85;
-        for (int i = 0; i < silahlar.size(); i++) {
-            Silah s = silahlar.get(i);
-            if (s.ad.equals("Ates Topu")) {
-                // Ateş Topu İkonu (Turuncu daire)
-                g2.setColor(Color.ORANGE);
-                g2.fillOval(ikonX, envY + 6, 12, 12);
-                g2.setColor(Color.WHITE);
-                g2.drawString("L" + s.seviye, ikonX + 15, envY + 17);
-                ikonX += 45;
-            } else if (s.ad.equals("Doner Bicak")) {
-                // Döner Bıçak İkonu (Cyan daire)
-                g2.setColor(Color.CYAN);
-                g2.fillOval(ikonX, envY + 6, 12, 12);
-                g2.setColor(Color.WHITE);
-                g2.drawString("L" + s.seviye, ikonX + 15, envY + 17);
-                ikonX += 45;
+        // Slot kutularını ciz (Gizem/Andaç)
+        int slotX = envX + 90;
+        int slotY = envY + 6;
+        int slotBoyut = 32;
+        
+        for (int i = 0; i < 3; i++) {
+            // Slot kutusu arka planı
+            g2.setColor(new Color(30, 41, 59, 200));
+            g2.fillRect(slotX, slotY, slotBoyut, slotBoyut);
+            
+            // Slot kutusu çerçevesi (Piksel stil)
+            g2.setColor(Color.GRAY);
+            g2.drawRect(slotX, slotY, slotBoyut, slotBoyut);
+            
+            // Eğer o slotta silah varsa silahı ve seviyesini çiz
+            if (i < silahlar.size()) {
+                Silah s = silahlar.get(i);
+                if (s.ad.equals("Ates Topu")) {
+                    // Ateş Topu İkonu (Turuncu/Kırmızı alev)
+                    g2.setColor(Color.ORANGE);
+                    g2.fillOval(slotX + 8, slotY + 8, 16, 16);
+                    g2.setColor(Color.RED);
+                    g2.drawOval(slotX + 8, slotY + 8, 16, 16);
+                } else if (s.ad.equals("Doner Bicak")) {
+                    // Döner Bıçak İkonu (Cyan çarpı şeklinde bıçak)
+                    g2.setColor(Color.CYAN);
+                    g2.fillRect(slotX + 14, slotY + 6, 4, 20);
+                    g2.fillRect(slotX + 6, slotY + 14, 20, 4);
+                }
+                
+                // Silah Seviyesi (Sağ altta küçük sarı yazı)
+                g2.setFont(new Font("Arial", Font.BOLD, 10));
+                g2.setColor(Color.YELLOW);
+                g2.drawString("" + s.seviye, slotX + 22, slotY + 28);
             }
+            
+            slotX += 38;
         }
         
         // Genel İpuçları Yazısı (Ekranın sol altında)
+        g2.setFont(new Font("Arial", Font.PLAIN, 11));
         g2.setColor(new Color(200, 200, 200, 150));
         g2.drawString("Hareket: WASD | Durum: Seviye atlayarak yeni silahlar kazanın ve güçlenin!", 20, EKRAN_YUKSEKLIGI - 20);
         
@@ -293,19 +345,47 @@ public class OyunPaneli extends JPanel {
         
         // --- 2e. OYUN BİTTİ EKRANI ÇİZİMİ ---
         if (durum == OyunDurumu.OYUN_BITTI) {
-            // Ekrana yari saydam siyah perde çekeriz
-            g2.setColor(new Color(0, 0, 0, 180));
+            // Ekrana yari saydam koyu siyah perde çekeriz
+            g2.setColor(new Color(5, 5, 10, 220));
             g2.fillRect(0, 0, EKRAN_GENISLIGI, EKRAN_YUKSEKLIGI);
+            
+            // Retro bir panel kutusu
+            int panelW = 400;
+            int panelH = 260;
+            int panelX = (EKRAN_GENISLIGI - panelW) / 2;
+            int panelY = (EKRAN_YUKSEKLIGI - panelH) / 2;
+            
+            g2.setColor(new Color(15, 23, 42, 245));
+            g2.fillRect(panelX, panelY, panelW, panelH);
+            
+            // Kırmızı ve altın çift çerçeve
+            g2.setColor(Color.RED);
+            g2.drawRect(panelX, panelY, panelW, panelH);
+            g2.setColor(new Color(218, 165, 32));
+            g2.drawRect(panelX + 3, panelY + 3, panelW - 6, panelH - 6);
             
             // OYUN BITTI yazisi
             g2.setColor(Color.RED);
-            g2.setFont(new Font("Arial", Font.BOLD, 48));
-            g2.drawString("OYUN BITTI", 270, 240);
+            g2.setFont(new Font("Arial", Font.BOLD, 40));
+            g2.drawString("OYUN BITTI", panelX + 85, panelY + 60);
+            
+            // İnce ayırıcı çizgi
+            g2.setColor(Color.DARK_GRAY);
+            g2.drawLine(panelX + 40, panelY + 80, panelX + panelW - 40, panelY + 80);
+            
+            // Skor ve İstatistikler
+            g2.setFont(new Font("Arial", Font.BOLD, 16));
+            g2.setColor(Color.WHITE);
+            g2.drawString("Ulasilan Seviye: " + oyuncu.seviye, panelX + 60, panelY + 120);
+            g2.drawString("Hayatta Kalma Suresi: " + zamanMetni, panelX + 60, panelY + 155);
+            
+            // İnce ayırıcı çizgi
+            g2.drawLine(panelX + 40, panelY + 185, panelX + panelW - 40, panelY + 185);
             
             // R tusu ile yeniden baslatma talimati yazisi
-            g2.setColor(Color.WHITE);
-            g2.setFont(new Font("Arial", Font.PLAIN, 20));
-            g2.drawString("Yeniden baslamak icin 'R' tusuna basin.", 220, 310);
+            g2.setColor(Color.CYAN);
+            g2.setFont(new Font("Arial", Font.BOLD, 14));
+            g2.drawString("Yeniden baslamak icin 'R' tusuna basin.", panelX + 65, panelY + 220);
         }
         
         // Cizim islemlerinin bellek temizligini yapar

@@ -26,16 +26,17 @@ public class Dusman {
     public double geriItmeCarpani;
     
     // Dusman karakterinin gorsel resmi (piksel art)
-    protected BufferedImage dusmanGorseli;
-    
+    protected BufferedImage dusmanGorseli;    
     // Animasyon parametreleri (Emre)
     protected BufferedImage dusmanSheet;
     // Animasyonun o anki oynatilan kare indeksini tutar
     protected int animasyonKaresi = 0;
     // Karenin gecis hizini ayarlayan sayac
     protected int kareSayaci = 0;
-    // Animasyonun toplam kare sayisi (varsayilan olarak slime idle icin 6 kare)
-    protected int maksAnimasyonKaresi = 6;
+    // Animasyonun toplam kare sayisi (varsayilan olarak slime walk icin 8 kare)
+    protected int maksAnimasyonKaresi = 8;
+    // Dusmanın baktıgı yon (true: sag, false: sol - Slime varsayılan olarak sola bakar)
+    protected boolean sagaBakiyor = false;
     
     // Kurucu metot: Dusmani baslangic degerleriyle olusturur
     public Dusman(double x, double y, double can, double hiz, double hasar, double yariCap) {
@@ -49,9 +50,11 @@ public class Dusman {
         this.geriItmeCarpani = 1.0;
         
         // Dusman gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
-        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Idle-Sheet.png");
+        // Daha dinamik bir gorunum elde etmek icin Idle-Sheet yerine Walk-Sheet yukluyoruz (Emre)
+        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
         if (sheet != null) {
             this.dusmanSheet = sheet;
+            this.maksAnimasyonKaresi = 8;
             try {
                 // Slime karakterinin gorseldeki merkezini (37, 42) koordinatlarindan 20x20 boyutunda keseriz
                 // Boylece seffaf bosluklar atilir ve dusmanlar ekranda net bir sekilde gorunur hale gelir (Emre)
@@ -77,6 +80,13 @@ public class Dusman {
             // Yon vektorunu normalize ederek (uzunlugunu 1 birim yaparak) hiziyla carpar ve konumu gunceller
             this.x += (dx / mesafe) * this.hiz;
             this.y += (dy / mesafe) * this.hiz;
+        }
+        
+        // Baktigi yonu yatay hareketine gore gunceller (Slime varsayılan olarak sola bakar)
+        if (dx > 0) {
+            this.sagaBakiyor = true;
+        } else if (dx < 0) {
+            this.sagaBakiyor = false;
         }
         
         // Dusmanin 3000x3000px harita sinirlarinin disina cikmasini engeller
@@ -118,7 +128,15 @@ public class Dusman {
                 
                 int cizimX = (int) (x - yariCap);
                 int cizimY = (int) (y - yariCap);
-                g2.drawImage(kareGorseli, cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2), null);
+                int w = (int) (yariCap * 2);
+                int h = (int) (yariCap * 2);
+                
+                // Baktigi yone gore resmi yatay olarak cevirir (Andaç/Emre)
+                if (sagaBakiyor) {
+                    g2.drawImage(kareGorseli, cizimX + w, cizimY, -w, h, null);
+                } else {
+                    g2.drawImage(kareGorseli, cizimX, cizimY, w, h, null);
+                }
             } catch (Exception e) {
                 yedekGorselCiz(g2);
             }
@@ -126,7 +144,13 @@ public class Dusman {
             // Statik gorsel cizimi
             int cizimX = (int) (x - yariCap);
             int cizimY = (int) (y - yariCap);
-            g2.drawImage(dusmanGorseli, cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2), null);
+            int w = (int) (yariCap * 2);
+            int h = (int) (yariCap * 2);
+            if (sagaBakiyor) {
+                g2.drawImage(dusmanGorseli, cizimX + w, cizimY, -w, h, null);
+            } else {
+                g2.drawImage(dusmanGorseli, cizimX, cizimY, w, h, null);
+            }
         } else {
             // Resim bulunamazsa veya yuklenemezse yesil renkli yedek bir daire cizer
             yedekGeometrikCiz(g2);
@@ -138,7 +162,13 @@ public class Dusman {
         if (dusmanGorseli != null) {
             int cizimX = (int) (x - yariCap);
             int cizimY = (int) (y - yariCap);
-            g2.drawImage(dusmanGorseli, cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2), null);
+            int w = (int) (yariCap * 2);
+            int h = (int) (yariCap * 2);
+            if (sagaBakiyor) {
+                g2.drawImage(dusmanGorseli, cizimX + w, cizimY, -w, h, null);
+            } else {
+                g2.drawImage(dusmanGorseli, cizimX, cizimY, w, h, null);
+            }
         } else {
             yedekGeometrikCiz(g2);
         }
