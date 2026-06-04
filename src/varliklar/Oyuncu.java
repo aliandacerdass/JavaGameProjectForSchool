@@ -39,6 +39,7 @@ public class Oyuncu {
     private int animasyonKaresi = 0;
     private int kareSayaci = 0;
     private int aktifSatir = 0; // 0: Idle, 1: Sol/Asagi, 2: Sag, 6: Yukari
+    private boolean sagaBakiyor = true; // Oyuncunun baktigi yon (true: sag, false: sol)
     
     // Kurucu metot: Karakteri baslangic degerleriyle olusturur
     public Oyuncu(double x, double y) {
@@ -122,13 +123,15 @@ public class Oyuncu {
             yeniSatir = 6; // Yukari yuruyus satiri (Satir 6)
             hareketVar = true;
         } else if (tusKontrol.asagi) {
-            yeniSatir = 2; // Asagi yuruyus satiri (Satir 2)
+            yeniSatir = 1; // Asagi yuruyus satiri (Satir 1)
             hareketVar = true;
         } else if (tusKontrol.sola) {
-            yeniSatir = 1; // Sola yuruyus satiri (Satir 1)
+            yeniSatir = 3; // Sola yuruyus satiri (Saga yuruyus satiri 3'u yukleyip cizimde yatayda ters cevirecegiz)
+            this.sagaBakiyor = false;
             hareketVar = true;
         } else if (tusKontrol.saga) {
             yeniSatir = 3; // Saga yuruyus satiri (Satir 3)
+            this.sagaBakiyor = true;
             hareketVar = true;
         }
         
@@ -178,7 +181,15 @@ public class Oyuncu {
                 
                 int cizimX = (int) (x - 16);
                 int cizimY = (int) (y - 24);
-                g2.drawImage(kareGorseli, cizimX, cizimY, 32, 40, null);
+                int w = 32;
+                int h = 40;
+                
+                // Sola yurunuyorsa (aktifSatir == 3 ve sagaBakiyor false) resmi yatay cevirerek ciz (Andaç/Emre)
+                if (aktifSatir == 3 && !sagaBakiyor) {
+                    g2.drawImage(kareGorseli, cizimX + w, cizimY, -w, h, null);
+                } else {
+                    g2.drawImage(kareGorseli, cizimX, cizimY, w, h, null);
+                }
             } catch (Exception e) {
                 // Herhangi bir hata durumunda statik resim cizimine duser
                 yedekGorselCiz(g2);
@@ -187,7 +198,13 @@ public class Oyuncu {
             // Statik gorsel cizimi
             int cizimX = (int) (x - 16);
             int cizimY = (int) (y - 24);
-            g2.drawImage(oyuncuGorseli, cizimX, cizimY, 32, 40, null);
+            int w = 32;
+            int h = 40;
+            if (aktifSatir == 3 && !sagaBakiyor) {
+                g2.drawImage(oyuncuGorseli, cizimX + w, cizimY, -w, h, null);
+            } else {
+                g2.drawImage(oyuncuGorseli, cizimX, cizimY, w, h, null);
+            }
         } else {
             // Resim bulunamazsa veya yuklenemezse mavi renkli yedek bir daire cizer
             yedekGeometrikCiz(g2);
@@ -199,7 +216,13 @@ public class Oyuncu {
         if (oyuncuGorseli != null) {
             int cizimX = (int) (x - 16);
             int cizimY = (int) (y - 24);
-            g2.drawImage(oyuncuGorseli, cizimX, cizimY, 32, 40, null);
+            int w = 32;
+            int h = 40;
+            if (aktifSatir == 3 && !sagaBakiyor) {
+                g2.drawImage(oyuncuGorseli, cizimX + w, cizimY, -w, h, null);
+            } else {
+                g2.drawImage(oyuncuGorseli, cizimX, cizimY, w, h, null);
+            }
         } else {
             yedekGeometrikCiz(g2);
         }
