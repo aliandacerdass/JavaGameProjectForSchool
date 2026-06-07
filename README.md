@@ -45,10 +45,10 @@ Projenin temiz ve çakışmasız ilerlemesi için aşağıdaki kurallar belirlen
 
 Kodlar `src/` klasörü altında aşağıdaki paket yapısında tutulmaktadır:
 
-*   [`motor/`](file:///Users/aliandacerdass/JavaGameProjectForSchool/src/motor): Ekran, çizim paneli, girdiler ve ana döngü.
-*   [`varliklar/`](file:///Users/aliandacerdass/JavaGameProjectForSchool/src/varliklar): Karakter, düşmanlar, yapay zekalar ve çarpışma kontrolü.
-*   [`mekanikler/`](file:///Users/aliandacerdass/JavaGameProjectForSchool/src/mekanikler): Silahlar, mermiler, deneyim kristalleri ve seviye arayüzleri.
-*   [`AnaGiris.java`](file:///Users/aliandacerdass/JavaGameProjectForSchool/src/AnaGiris.java): Oyunu başlatan ana sınıf.
+*   [`src/motor/`](src/motor): Ekran, çizim paneli, girdiler ve ana döngü.
+*   [`src/varliklar/`](src/varliklar): Karakter, düşmanlar, yapay zekalar ve çarpışma kontrolü.
+*   [`src/mekanikler/`](src/mekanikler): Silahlar, mermiler, deneyim kristalleri ve seviye arayüzleri.
+*   [`src/AnaGiris.java`](src/AnaGiris.java): Oyunu başlatan ana sınıf.
 
 ---
 
@@ -70,8 +70,8 @@ java -cp bin AnaGiris
 
 ## 📝 Proje Takip ve Yapay Zeka Dosyaları
 
-*   [Proje Planı](file:///Users/aliandacerdass/JavaGameProjectForSchool/project_plan.md) - Proje genel yol haritası.
-*   [Proje Hafızası](file:///Users/aliandacerdass/JavaGameProjectForSchool/project_memory.md) - Yapay zekalar için teknik talimatlar ve Git kuralları.
-*   [Andaç Adımları](file:///Users/aliandacerdass/JavaGameProjectForSchool/proje_adim_andac.md) - Andaç için ilerleme listesi.
-*   [Emre Adımları](file:///Users/aliandacerdass/JavaGameProjectForSchool/proje_adim_emre.md) - Emre için ilerleme listesi.
-*   [Gizem Adımları](file:///Users/aliandacerdass/JavaGameProjectForSchool/proje_adim_gizem.md) - Gizem için ilerleme listesi.
+*   [Proje Planı](project_plan.md) - Proje genel yol haritası.
+*   [Proje Hafızası](project_memory.md) - Yapay zekalar için teknik talimatlar ve Git kuralları.
+*   [Andaç Adımları](proje_adim_andac.md) - Andaç için ilerleme listesi.
+*   [Emre Adımları](proje_adim_emre.md) - Emre için ilerleme listesi.
+*   [Gizem Adımları](proje_adim_gizem.md) - Gizem için ilerleme listesi.
