@@ -10,10 +10,9 @@
 \usepackage{titlesec}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{positioning, arrows.meta, babel}
-\usepackage{graphicx}
-
 
 % Kod blokları için renk ve biçim tanımlamaları (Premium stil)
 \definecolor{codegreen}{rgb}{0,0.5,0}
@@ -21,6 +20,7 @@
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.96,0.96,0.96}
 
+% --- TÜRKÇE KARAKTER HATALARINI ÇÖZEN GÜVENLİ LISTINGS AYARI ---
 \lstdefinestyle{javastyle}{
     backgroundcolor=\color{backcolour},   
     commentstyle=\color{codegreen}\itshape,
@@ -38,7 +38,9 @@
     showstringspaces=false,
     showtabs=false,                  
     tabsize=2,
-    language=Java
+    language=Java,
+    extendedchars=true,
+    literate={â}{{\^{a}}}1 {Â}{{\^{A}}}1 {ç}{{\c{c}}}1 {Ç}{{\c{C}}}1 {ğ}{{\u{g}}}1 {Ğ}{{\u{G}}}1 {ı}{{\i}}1 {İ}{{\.{I}}}1 {ö}{{\"o}}1 {Ö}{{\"O}}1 {ş}{{\c{s}}}1 {Ş}{{\c{S}}}1 {ü}{{\"u}}1 {Ü}{{\"U}}1
 }
 \lstset{style=javastyle}
 
@@ -80,17 +82,21 @@ Bu rapor; okul projesi kapsamında Java platformunun grafik arayüz kütüphanel
 \subsection{Oyunun Amacı}
 \textbf{slimeSlayer}, oyuncunun bataklık temalı bir harita üzerinde hayatta kalma mücadelesini ele alan 2D roguelite türünde bir oyundur. Oyuncu WASD tuşları yardımıyla hareket ederken, otomatik saldıran üç temel yetenek (Ateş Topu, Döner Bıçak ve Kalkan) ile sürekli çoğalan Slime ve Golem ordularına karşı direnir. Düşmanlardan düşen deneyim kristallerini topladıkça seviye atlar, kart seçim ekranından yeteneklerini geliştirir, haritada doğan kırmızı güç meyvelerini yiyerek geçici hız kazanır. Ayrıca oyunda hasar anında uçuşan hasar sayıları, sentezlenmiş retro ses efektleri, ses seviyesi ve zorluk ayarlarının yapılabildiği interaktif bir giriş ekranı bulunur.
 
----
+\bigskip
+\hrule
+\bigskip
 
 \section{Proje Ekibi ve Rol Dağılımı}
 Projede yer alan ekip üyeleri ve geliştirme süreçlerindeki katkıları şu şekildedir:
 \begin{itemize}
     \item \textbf{Gizem Öksüz:} Seviye atlama kart arayüzü (\texttt{SeviyeArayuzu}), slot temelli envanter arayüzü, can/xp barları tasarımı ve entegrasyonu.
     \item \textbf{Ali Andaç Erdaş:} Zemin çizim optimizasyonu, mıknatıslı kristaller, kırmızı hız meyvesi, döner bıçakların yörüngesi, hasar anında uçuşan renkli hasar sayıları (\texttt{HasarSayisi}), retro ses sentezleyici motoru (\texttt{SesSentezleyici}) ve ana giriş arayüzü (\texttt{MenuArayuzu}).
-    \item \textbf{İsmail Emre Türkbay:} Düşman yapay zekası (\texttt{Dusman}), zıplama/yürüme animasyonlarının spritesheet üzerinden kesilmesi, Golem ve Hızlı düşman varyasyonları, dalga uretim algoritması ve itme/fizik motoru.
+    \item \textbf{İsmail Emre Türkbay:} Düşman yapay zekası (\texttt{Dusman}), zıplama/yürüme animasyonlarının spritesheet üzerinden kesilmesi, Golem ve Hızlı düşman varyasyonları, dalga üretim algoritması ve itme/fizik motoru.
 \end{itemize}
 
----
+\bigskip
+\hrule
+\bigskip
 
 \section{Oyun Mekanikleri ve Kod Tasarımı}
 
@@ -110,17 +116,18 @@ y += hareketY * toplamHiz;
 
 \subsection{Düşman Spawn Algoritması ve Zorluk Ölçeklemesi}
 \texttt{DusmanUretici.java} sınıfı, oyuncu etrafındaki ekran sınırlarının hemen dışındaki 4 kenardan (+60px ofset) düşman spawn eder. Zorluk derecesi, ana menüden seçilen \texttt{zorlukModu} çarpanı ile çarpılarak düşmanların can ve hasarlarına etki eder:
-\begin{equation}
-    \text{Zorluk Carpani} = \left( 1.0 + \frac{\text{Gecen Sure (ms)}}{120000.0} \right) \times \text{zorlukModu}
+\begin{equation{Zorluk Çarpanı} = \left( 1.0 + \frac{\text{Geçen Süre (ms)}}{120000.0} \right) \times \text{zorlukModu}
 \end{equation}
 
 \subsection{Mıknatıs Çekimli Tecrübe Kristalleri}
 Düşmanlar elendiğinde yere tecrübe kristalleri düşer. Oyuncu 120 piksel toplama menziline girdiğinde mıknatıs çekim alanı devreye girer:
 \begin{equation}
-    \vec{V}_{cekme} = \vec{u}_{yon} \times \min(12.0, V_{eski} + 0.25)
+    \vec{V}_{\text{çekme}} = \vec{u}_{\text{yön}} \times \min(12.0, V_{\text{eski}} + 0.25)
 \end{equation}
 
----
+\bigskip
+\hrule
+\bigskip
 
 \section{Grafik, Görsel Efektler ve Çizim Yönetimi}
 
@@ -174,11 +181,13 @@ if (hasarFlasiSuresi > 0) {
 }
 \end{lstlisting}
 
----
+\bigskip
+\hrule
+\bigskip
 
-\section{Retro Ses Efektı Sentezleyici Motoru}
+\section{Retro Ses Efekti Sentezleyici Motoru}
 
-Ses sentezleyici motoru, diskteki `.wav` dosyalarının kaybolması veya işletim sisteminin ses sürücelerinin hata vermesi risklerini bertaraf etmek amacıyla tamamen **Java Sound API** (\texttt{javax.sound.sampled}) kullanılarak sıfırdan yazılmıştır. Sentezlenen 16-bit PCM dalgalar ayrı bir thread (iş parçacığı) üzerinden asenkron olarak çalınarak FPS düşüşleri engellenir.
+Ses sentezleyici motoru, diskteki \texttt{.wav} dosyalarının kaybolması veya işletim sisteminin ses sürücülerinin hata vermesi risklerini bertaraf etmek amacıyla tamamen \textbf{Java Sound API} (\texttt{javax.sound.sampled}) kullanılarak sıfırdan yazılmıştır. Sentezlenen 16-bit PCM dalgalar ayrı bir thread (iş parçacığı) üzerinden asenkron olarak çalınarak FPS düşüşleri engellenir.
 
 \begin{lstlisting}[caption={Asenkron 16-bit PCM Mono Ses Çalma Modülü}, label={list:sessentezleyici}]
 private static void sesCal(float[] data) {
@@ -204,7 +213,9 @@ private static void sesCal(float[] data) {
 }
 \end{lstlisting}
 
----
+\bigskip
+\hrule
+\bigskip
 
 \section{Önemli Kod Blokları ve Teknik Analiz}
 
@@ -236,10 +247,10 @@ if (mesafeKaresi < yariCapToplam * yariCapToplam) {
 \subsection{Döner Bıçakların Yörüngesi ve Hasar Cooldown Sistemi}
 Döner bıçak mermileri oyuncu etrafında dairesel yörüngede döner. Denge sağlamak amacıyla düşman bazlı hasar zaman damgası takibi yapılmıştır:
 \begin{equation}
-    x_{bicak} = x_{oyuncu} + \cos(\theta) \times r_{yorunge}
+    x_{\text{bıçak}} = x_{\text{oyuncu}} + \cos(\theta) \times r_{\text{yörünge}}
 \end{equation}
 \begin{equation}
-    y_{bicak} = y_{oyuncu} + \sin(\theta) \times r_{yorunge}
+    y_{\text{bıçak}} = y_{\text{oyuncu}} + \sin(\theta) \times r_{\text{yörünge}}
 \end{equation}
 
 \begin{lstlisting}[caption={Döner Bıçak Hasar Zaman Damgası Takibi}, label={list:hashmapcooldown}]
@@ -260,14 +271,16 @@ if (mermi instanceof DonerBicakMermi) {
 }
 \end{lstlisting}
 
----
+\bigskip
+\hrule
+\bigskip
 
 \section{UML Sınıf Diyagramı ve Sistem Mimarisi}
-Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose coupling) ve yüksek uyum (high cohesion) prensipleri doğrultusunda geliştirilmiştir. Sistem mimarisi, oyun döngüsünü, girdi kontrollerini ve nesne koleksiyonlarını yöneten merkezi bir arayüz paneli (\texttt{OyunPaneli}) üzerine kurulmuştur. Sınıflar arasındaki yapısal ilişkiler, hiyerarşiler ve bağlantılar Şekil \ref{fig:uml}'deki UML sınıf diyagramında gösterilmiştir.
+Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose coupling) ve yüksek uyum (high cohesion) prensipleri doğrultusunda geliştirilmiştir. Sistem mimarisi, oyun döngüsünü, girdi kontrollerini ve nesne koleksiyonlarını yöneten merkezi bir arayüz paneli (\texttt{OyunPaneli}) üzerine kurulmuştur. Sınıflar arasındaki yapısal ilişkiler, hiyerarşiler ve bağlantılar Şekil \ref{fig:uml}'deki UML sınıf diyagramında ayrıntılı olarak gösterilmiştir.
 
 \begin{figure}[htbp]
     \centering
-    \scalebox{0.75}{
+    \scalebox{0.6}{
     \begin{tikzpicture}[
         class/.style={
             draw=blue!60!black,
@@ -309,167 +322,193 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
     ]
         % Sınıf Tanımlamaları
         % OyunPaneli (Üst Merkez)
-        \node[class] (OyunPaneli) at (0, 7.0) {
+        \node[class] (OyunPaneli) at (0, 8.0) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{OyunPaneli}} \\
             \hline
+            + durum: OyunDurumu \\
             + oyuncu: Oyuncu \\
             + dusmanlar: ArrayList\textless Dusman\textgreater \\
             + mermiler: ArrayList\textless Mermi\textgreater \\
             + silahlar: ArrayList\textless Silah\textgreater \\
+            - zeminKarosu: BufferedImage \\
             \hline
             + paintComponent(g: Graphics) \\
             + oyunGuncelle() \\
-            + yeniOyunBaslat()
+            + yeniOyunBaslat() \\
+            + hasarFlasiTetikle()
             \end{tabular}
         };
 
         % Oyuncu (Sol)
-        \node[class] (Oyuncu) at (-5.2, 3.5) {
+        \node[class] (Oyuncu) at (-9.0, 3.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{Oyuncu}} \\
             \hline
             + x, y: double \\
             + can, maksCan: double \\
-            + seviye, deneyim: int \\
+            + seviye: int \\
+            + deneyim: double \\
+            - oyuncuSheet: BufferedImage \\
+            - ekstraHiz: double \\
             \hline
-            + guncelle() \\
-            + ciz(g: Graphics2D) \\
-            + hasarAl(miktar: double)
+            + guncelle(tus: TusKontrolcu) \\
+            + ciz(g2: Graphics2D) \\
+            + hizBoostuUygula(m, s) \\
+            + durumSifirla()
             \end{tabular}
         };
 
         % Silah (Orta Sol - Abstract)
-        \node[abstract] (Silah) at (-1.8, 3.5) {
+        \node[abstract] (Silah) at (-3.0, 3.5) {
             \begin{tabular}{l}
-            \multicolumn{1}{c}{\textbf{Silah}} \\
+            \multicolumn{1}{c}{\textbf{\textit{Silah}}} \\
             \hline
             + ad: String \\
             + seviye: int \\
             + hasar: double \\
+            + saldiriBeklemeSuresi: long \\
+            + oyuncu: Oyuncu \\
             \hline
+            + guncelle(panel: OyunPaneli) \\
             + \textit{saldir(panel: OyunPaneli)} \\
+            + \textit{ciz(g2: Graphics2D)} \\
             + seviyeAtla()
             \end{tabular}
         };
 
         % Mermi (Orta Sağ)
-        \node[class] (Mermi) at (1.8, 3.5) {
+        \node[class] (Mermi) at (3.0, 3.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{Mermi}} \\
             \hline
             + x, y: double \\
             + yonX, yonY: double \\
             + hasar, hiz: double \\
+            + aktif: boolean \\
+            + yariCap: double \\
             \hline
             + guncelle() \\
-            + ciz(g: Graphics2D)
+            + ciz(g2: Graphics2D)
             \end{tabular}
         };
 
         % Dusman (Sağ)
-        \node[class] (Dusman) at (5.2, 3.5) {
+        \node[class] (Dusman) at (9.0, 3.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{Dusman}} \\
             \hline
             + x, y: double \\
             + can, hiz: double \\
             + hasar: double \\
+            + geriItmeCarpani: double \\
+            # dusmanSheet: BufferedImage \\
             \hline
-            + guncelle() \\
-            + ciz(g: Graphics2D) \\
+            + guncelle(oyuncu: Oyuncu) \\
+            + ciz(g2: Graphics2D) \\
             + geriIt(dx, dy, guc)
             \end{tabular}
         };
 
         % Alt Sınıflar (Silah, Mermi ve Düşman Özelleştirmeleri)
         % Silah Alt Sınıfları
-        \node[class] (KalkanSilahi) at (-3.6, 0.2) {
+        \node[class] (KalkanSilahi) at (-6.0, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{KalkanSilahi}} \\
             \hline
+            + kalkanYaricapi: double \\
             \hline
-            + saldir(panel)
+            + saldir(panel) \\
+            + ciz(g2) \\
+            + seviyeAtla()
             \end{tabular}
         };
 
-        \node[class] (AtesTopu) at (-1.8, 0.2) {
+        \node[class] (AtesTopu) at (-3.0, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{AtesTopu}} \\
             \hline
             \hline
-            + saldir(panel)
+            + saldir(panel) \\
+            + ciz(g2)
             \end{tabular}
         };
 
-        \node[class] (DonerBicak) at (0.0, 0.2) {
+        \node[class] (DonerBicak) at (0.0, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{DonerBicak}} \\
             \hline
-            - bicakAdedi: int \\
+            - yorungeYaricapi: double \\
+            - donusHizi: double \\
             \hline
-            + saldir(panel)
+            + saldir(panel) \\
+            + seviyeAtla() \\
+            + ciz(g2)
             \end{tabular}
         };
 
         % Mermi Alt Sınıfı
-        \node[class] (DonerBicakMermi) at (1.8, 0.2) {
+        \node[class] (DonerBicakMermi) at (3.0, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{DonerBicakMermi}} \\
             \hline
             - yorungeYaricapi: double \\
             - aci, donusHizi: double \\
+            - sonVurusZamanlari: HashMap \\
             \hline
-            + guncelle()
+            + guncelle() \\
+            + ciz(g2) \\
+            + dusmanaVurabilirMi(d, s) \\
+            + vurulanDusmaniEkle(d, s)
             \end{tabular}
         };
 
         % Dusman Alt Sınıfları
-        \node[class] (GolemDusman) at (4.2, 0.2) {
+        \node[class] (GolemDusman) at (7.5, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{GolemDusman}} \\
             \hline
             \hline
-            + guncelle()
+            # yedekGeometrikCiz(g2)
             \end{tabular}
         };
 
-        \node[class] (HizliDusman) at (6.2, 0.2) {
+        \node[class] (HizliDusman) at (10.5, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{HizliDusman}} \\
             \hline
             \hline
-            + guncelle()
+            # yedekGeometrikCiz(g2)
             \end{tabular}
         };
 
         % İlişkiler (Bağlantılar)
         % OyunPaneli Sahiplikleri (Aggregation)
-        \draw[thick, draw=black!70] (-5.2, 5.2) -- (5.2, 5.2);
-        \draw[thick, draw=black!70] (Oyuncu.north) -- (-5.2, 5.2);
-        \draw[thick, draw=black!70] (Silah.north) -- (-1.8, 5.2);
-        \draw[thick, draw=black!70] (Mermi.north) -- (1.8, 5.2);
-        \draw[thick, draw=black!70] (Dusman.north) -- (5.2, 5.2);
-        \draw[aggregates] (OyunPaneli.south) -- (0, 5.2);
+        \draw[thick, draw=black!70] (-9.0, 5.8) -- (9.0, 5.8);
+        \draw[thick, draw=black!70] (Oyuncu.north) -- (-9.0, 5.8);
+        \draw[thick, draw=black!70] (Silah.north) -- (-3.0, 5.8);
+        \draw[thick, draw=black!70] (Mermi.north) -- (3.0, 5.8);
+        \draw[thick, draw=black!70] (Dusman.north) -- (9.0, 5.8);
+        \draw[aggregates] (OyunPaneli.south) -- (0, 5.8);
 
         % Oyuncu - Silah İlişkisi
         \draw[associates] (Silah.west) -- (Oyuncu.east);
 
         % Kalıtım Hiyerarşisi - Silahlar (Ortak Ok Başlı)
-        \draw[thick, draw=black!70] (KalkanSilahi.north) -- (-3.6, 1.8);
-        \draw[thick, draw=black!70] (DonerBicak.north) -- (0.0, 1.8);
-        \draw[thick, draw=black!70] (-3.6, 1.8) -- (0.0, 1.8);
-        \draw[thick, draw=black!70] (AtesTopu.north) -- (-1.8, 1.8);
-        \draw[inherits] (-1.8, 1.8) -- (Silah.south);
+        \draw[thick, draw=black!70] (KalkanSilahi.north) -- (-6.0, 1.0);
+        \draw[thick, draw=black!70] (DonerBicak.north) -- (0.0, 1.0);
+        \draw[thick, draw=black!70] (-6.0, 1.0) -- (0.0, 1.0);
+        \draw[thick, draw=black!70] (AtesTopu.north) -- (-3.0, 1.0);
+        \draw[inherits] (-3.0, 1.0) -- (Silah.south);
 
         % Kalıtım Hiyerarşisi - Mermi
         \draw[inherits] (DonerBicakMermi.north) -- (Mermi.south);
 
         % Kalıtım Hiyerarşisi - Düşmanlar (Ortak Ok Başlı)
-        \draw[thick, draw=black!70] (GolemDusman.north) -- (4.2, 1.8);
-        \draw[thick, draw=black!70] (HizliDusman.north) -- (6.2, 1.8);
-        \draw[thick, draw=black!70] (4.2, 1.8) -- (6.2, 1.8);
-        \draw[inherits] (5.2, 1.8) -- (Dusman.south);
+        \draw[thick, draw=black!70] (GolemDusman.north) -- (7.5, 1.0);
+        \draw[thick, draw=black!70] (HizliDusman.north) -- (10.5, 1.0);
+        \draw[thick, draw=black!70] (7.5, 1.0) -- (10.5, 1.0);
+        \draw[inherits] (9.0, 1.0) -- (Dusman.south);
 
         % DonerBicak -> DonerBicakMermi Bağımlılığı (Dashed arrow)
         \draw[associates, dashed] (DonerBicak.east) -- (DonerBicakMermi.west);
@@ -487,7 +526,9 @@ Mimari yapının temel özellikleri şunlardır:
     \item \textbf{Gevşek Bağlılık ve Polimorfizm:} \texttt{OyunPaneli} içindeki döngüler nesneleri genel tipleriyle (\texttt{Dusman}, \texttt{Mermi}, \texttt{Silah}) ele alır. Bu sayede yeni bir canavar türü veya silah eklendiğinde ana panel kodlarında neredeyse hiçbir değişiklik gerekmez.
 \end{itemize}
 
----
+\bigskip
+\hrule
+\bigskip
 
 \section{Kullanılan Java Yapıları ve Tercih Nedenleri}
 
@@ -501,10 +542,12 @@ Mimari yapının temel özellikleri şunlardır:
 \subsection{Koleksiyon Yapısı (Collections Framework)}
 \begin{itemize}
     \item \textbf{ArrayList:} Haritadaki dinamik varlık listelerini (mermiler, kristaller, düşmanlar) yönetmek için \texttt{ArrayList} yapısı seçilmiştir.
-    \item \textbf{HashMap:} Dönen bıçak hasar cooldown takibinde düşman referanslarını anahtar (\texttt{key}), son vuruş zaman damgalarını değer (\texttt{value}) olarak saklayan \texttt{HashMap<Dusman, Long>} yapısı kullanılmıştır.
+    \item \textbf{HashMap:} Dönen bıçak hasar cooldown takibinde düşman referanslarını anahtar (\texttt{key}), son vuruş zaman damgalarını değer (\texttt{value}) olarak saklayan \texttt{HashMap\textless Dusman, Long\textgreater} yapısı kullanılmıştır.
 \end{itemize}
 
----
+\bigskip
+\hrule
+\bigskip
 
 \section{Kaynakça}
 \begin{enumerate}
