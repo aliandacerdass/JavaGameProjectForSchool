@@ -118,7 +118,8 @@ y += hareketY * toplamHiz;
 
 \subsection{Düşman Spawn Algoritması ve Zorluk Ölçeklemesi}
 \texttt{DusmanUretici.java} sınıfı, oyuncu etrafındaki ekran sınırlarının hemen dışındaki 4 kenardan (+60px ofset) düşman spawn eder. Zorluk derecesi, ana menüden seçilen \texttt{zorlukModu} çarpanı ile çarpılarak düşmanların can ve hasarlarına etki eder:
-\begin{equation{Zorluk Çarpanı} = \left( 1.0 + \frac{\text{Geçen Süre (ms)}}{120000.0} \right) \times \text{zorlukModu}
+\begin{equation}
+    \text{Zorluk Çarpanı} = \left( 1.0 + \frac{\text{Geçen Süre (ms)}}{120000.0} \right) \times \text{zorlukModu}
 \end{equation}
 
 \subsection{Mıknatıs Çekimli Tecrübe Kristalleri}
