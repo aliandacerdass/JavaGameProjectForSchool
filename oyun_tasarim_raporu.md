@@ -56,38 +56,244 @@ Projede kullanılan sınıflar ve bunların oyundaki doğrudan etkileri aşağı
 
 ---
 
-## 3. Kullanılan Java Yapıları ve Tercih Nedenleri
+## 3. Detaylı Oyun Mekanikleri ve Kod Tasarımı
 
-Projenin geliştirilmesinde Java dilinin temel yapısal avantajlarından yararlanılmıştır:
+### A. Karakter Hareketi ve Çapraz Hız Normalizasyonu
+Oyuncu `WASD` veya Yön tuşlarıyla 8 yönlü hareket edebilir. Klasik 2D oyunlardaki en büyük sorunlardan biri, hem yatay hem dikey tuşa aynı anda basıldığında (çapraz hareket) karakterin normalden $\sqrt{2} \approx 1.414$ kat daha hızlı gitmesidir. Bu durum Pisagor Teoreminden kaynaklanır.
 
-### 1. Nesne Yönelimli Programlama (OOP) Yaklaşımı
-* **Kalıtım (Inheritance):** Düşman türleri (`GolemDusman`, `HizliDusman`) ortak hareket ve animasyon kodlarını paylaşabilmek için `Dusman` sınıfından türetilmiştir. Aynı şekilde tüm mermi türleri `Mermi` sınıfından, tüm yetenekler de `Silah` sınıfından kalıtım almıştır. Bu sayede kod tekrarı engellenmiştir.
-* **Çok Biçimlilik (Polymorphism):** `Silah` üst sınıfında tanımlanan soyut `saldir(..)` ve `ciz(..)` metotları, her alt sınıfta (Ateş topunun hedefe mermi atması, kalkanın oyuncu etrafında daire çizmesi) kendilerine özgü şekilde ezilmiştir (method overriding).
-* **Soyut Sınıflar (Abstract Classes):** `Silah` sınıfı soyut yapılarak doğrudan türetilmesi (instantiation) engellenmiş, yeni eklenecek silahlar için kurumsal bir şablon oluşturulmuştur.
+Projede bu durum [Oyuncu.java](file:///Users/aliandacerdass/SlimeSlayer/src/varliklar/Oyuncu.java) sınıfında hareket vektörünün normalizasyonu ile çözülmüştür:
 
-### 2. Grafik ve UI Yönetimi (Swing & AWT)
-* Harici bir oyun motoru (LibGDX, Slick2D vb.) kullanılmadan, Java'nın kendi bünyesindeki hafif bileşen mimarisine sahip **Java Swing** (`JPanel`, `JFrame`) ve temel grafik kütüphanesi **AWT** (`Graphics2D`, `BufferedImage`, `Color`, `Font`, `Polygon`) kullanılmıştır.
-* **Graphics2D Dönüşümleri (Transformations):** Dönen bıçaklar ve kalkan küreleri için `g2.translate()` ve `g2.rotate()` kullanılarak karmaşık trigonometrik açısal koordinat çevrimleri grafik bağlamına yaptırılmış, çizim performansı optimize edilmiştir.
-* **Metin Alfa Blending (Saydamlaşma):** `HasarSayisi` sınıfında `new Color(r, g, b, alpha)` yapısı kullanılarak darbe sayılarının yukarı süzülürken yavaşça şeffaflaşması sağlanmıştır.
-* **GC Dostu Çizim:** `getSubimage()` çağrılarının her karede (saniyede 60 kez) bellek üzerinde çöp nesne üretmesi engellenmiş, 9 parametreli `drawImage` koordinat sınırlandırmasıyla bellek verimliliği sağlanmıştır.
+```java
+// Çapraz harekette hızın artmasını engellemek için normalizasyon (sin(45) = 0.707)
+if (hareketX != 0 && hareketY != 0) {
+    hareketX *= 0.707;
+    hareketY *= 0.707;
+}
+double toplamHiz = hiz + ekstraHiz;
+x += hareketX * toplamHiz;
+y += hareketY * toplamHiz;
+```
 
-### 3. Java Sound API (javax.sound.sampled)
-* Harici MP3 veya WAV dosyalarına bağımlı kalmamak ve platform bağımsız kararlılığı korumak için Java'nın ham ses sentezleme altyapısı kullanılmıştır. `SesSentezleyici` sınıfında oluşturulan float veri dizileri 16-bit PCM Mono dalgalara dönüştürülerek ayrı bir Thread üzerinde çalınır. Bu sayede oyun döngüsü bloke edilmeden 8-bit retro sesler elde edilir.
+### B. Otomatik Düşman Dalgaları ve Zorluk Ölçeklemesi
+[DusmanUretici.java](file:///Users/aliandacerdass/SlimeSlayer/src/varliklar/DusmanUretici.java) sınıfı, oyuncu etrafındaki ekran sınırlarının hemen dışındaki 4 kenardan (+60px ofset) rastgele düşman spawn eder. Zaman geçtikçe zorluk katlanarak artar:
+* **İlk 30 saniye:** Yalnızca sıradan yeşil slime zombiler.
+* **30-60 saniye arası:** Hızlı kırmızı slime'lar (%30 ihtimalle) eklenir.
+* **60 saniyeden sonra:** Yüksek cana ve geri itilme direncine sahip ağır Golem Boss'lar (%10 ihtimalle) dahil olur.
 
-### 4. Java Koleksiyonları (Collections Framework)
-* **ArrayList:** Haritada dinamik olarak sürekli artıp azalan düşmanlar, mermiler, kristaller, meyveler ve hasar sayıları gibi nesneleri tutmak için esnek `ArrayList` yapısı kullanılmıştır.
-* **HashMap:** `DonerBicakMermi` sınıfında, her düşmanın bu bıçaktan en son ne zaman hasar aldığını milisaniye bazında tutmak için `HashMap<Dusman, Long>` yapısı kullanılmıştır. Bu sayede düşman başına vuruş bekleme süresi (hit cooldown) $O(1)$ karmaşıklığında hızlıca denetlenmiştir.
+Zorluk derecesi, ana menüden seçilen `zorlukModu` çarpanı ile çarpılarak düşmanların can ve hasarlarına etki eder:
+$$\text{Zorluk Çarpanı} = \left( 1.0 + \frac{\text{Geçen Süre (ms)}}{120000.0} \right) \times \text{zorlukModu}$$
 
-### 5. Matematiksel Hesaplamalar
-* **Trigonometri:** Döner bıçağın oyuncunun etrafında dairesel yörüngede dönmesi için $\cos(\theta)$ ve $\sin(\theta)$ formüllerinden yararlanılmıştır:
-  $$\text{x} = \text{oyuncu.x} + \cos(\text{aci}) \times \text{yorungeYaricapi}$$
-  $$\text{y} = \text{oyuncu.y} + \sin(\text{aci}) \times \text{yorungeYaricapi}$$
-* **Pisagor Teoremi:** Daire tabanlı çarpışma tespiti ve mıknatıs alan kontrolü için iki nokta arasındaki Öklid uzaklığı hesaplanmıştır:
-  $$\text{mesafe} = \sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}$$
+```java
+// Standart Düşman Oluşturma
+double can = 40.0 * zorlukCarpani;
+double hiz = 1.6 * Math.min(2.0, 1.0 + (zorlukCarpani - 1.0) * 0.3);
+double hasar = 12.0 * zorlukCarpani;
+return new Dusman(x, y, can, hiz, hasar, 16.0);
+```
+
+### C. Mıknatıs Çekimli Tecrübe Kristalleri
+Düşmanlar elendiğinde yere tecrübe kristalleri düşer. [DeneyimKristali.java](file:///Users/aliandacerdass/SlimeSlayer/src/mekanikler/DeneyimKristali.java) sınıfı, oyuncu 120 piksel toplama menziline girdiğinde mıknatıs çekim algoritmasını tetikler. Mesafe azaldıkça çekim hızı ivmelenir:
+
+```java
+double dx = oyuncu.x - this.x;
+double dy = oyuncu.y - this.y;
+double uzaklik = Math.sqrt(dx * dx + dy * dy);
+
+if (uzaklik <= this.toplamaMenzili) {
+    double yonX = dx / uzaklik;
+    double yonY = dy / uzaklik;
+    // Çekim hızını her karede ivmelendirir (Maks 12.0px/frame)
+    this.cekmeHizi = Math.min(12.0, this.cekmeHizi + 0.25);
+    this.x += yonX * this.cekmeHizi;
+    this.y += yonY * this.cekmeHizi;
+}
+```
 
 ---
 
-## 4. Kullanılan Kaynaklar ve Kaynakça
+## 4. Grafik, Görsel Efektler ve Çizim Yönetimi
+
+### A. Görsellerin Diskten Okunması ve Programatik Renklendirme
+Görseller diskten `ImageIO.read` yöntemi ile okunur. Oyunda spritesheet üzerindeki aynı slime animasyon şablonunun rengi programatik olarak değiştirilerek Hızlı Slime (kırmızı) ve Golem Slime (gri kaya) oluşturulmuştur. Bu işlem [GorselYukleyici.java](file:///Users/aliandacerdass/SlimeSlayer/src/motor/GorselYukleyici.java) içinde şu şekilde yapılır:
+
+```java
+public static BufferedImage gorseliGriyap(BufferedImage kaynak) {
+    BufferedImage sonuc = new BufferedImage(kaynak.getWidth(), kaynak.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    for (int x = 0; x < kaynak.getWidth(); x++) {
+        for (int y = 0; y < kaynak.getHeight(); y++) {
+            int rgb = kaynak.getRGB(x, y);
+            int a = (rgb >> 24) & 0xff;
+            int r = (rgb >> 16) & 0xff;
+            int g = (rgb >> 8) & 0xff;
+            int b = rgb & 0xff;
+            // Gri tonlama parlaklık formülü
+            int gri = (int) (r * 0.299 + g * 0.587 + b * 0.114);
+            int yeniRgb = (a << 24) | (gri << 16) | (gri << 8) | gri;
+            sonuc.setRGB(x, y, yeniRgb);
+        }
+    }
+    return sonuc;
+}
+```
+
+### B. Zemin Tiling Kaplama ve Frustum Culling Performans Optimizasyonu
+Büyük haritalarda (3000x3000px) tüm zemini çizmek ağır performans kaybına yol açar. Projede sadece kameranın gördüğü alandaki karolar taranıp çizilir. Ayrıca ekran sınırları dışındaki düşmanlar `getClipBounds` ile elenir (**Frustum Culling**):
+
+```java
+// Frustum Culling Örneği (Dusman.java)
+Rectangle ekranSiniri = g2.getClipBounds();
+if (ekranSiniri != null) {
+    if (x + yariCap < ekranSiniri.x || x - yariCap > ekranSiniri.x + ekranSiniri.width ||
+        y + yariCap < ekranSiniri.y || y - yariCap > ekranSiniri.y + ekranSiniri.height) {
+        return; // Ekranın dışındaysa çizimi atla
+    }
+}
+```
+
+### C. Kamera Sarsıntısı (Screen Shake) ve Hasar Ekranı Flaş Efekti
+Oyuncu hasar aldığında vuruş hissini (game feel) artırmak adına kamera rastgele sarsılır ve ekrana kırmızı saydam bir perde çekilir. Sarsıntı gücü ve flaşın opasitesi zamanla azalır:
+
+```java
+// OyunPaneli.java paintComponent metodu
+double nihaiKameraX = kameraX;
+double nihaiKameraY = kameraY;
+
+if (sarsintiSuresi > 0) {
+    Random rand = new Random();
+    nihaiKameraX += (rand.nextDouble() - 0.5) * 2.0 * sarsintiGucu;
+    nihaiKameraY += (rand.nextDouble() - 0.5) * 2.0 * sarsintiGucu;
+}
+g2.translate(-nihaiKameraX, -nihaiKameraY);
+// ... Çizimler ...
+g2.translate(nihaiKameraX, nihaiKameraY); // HUD öncesi geri al
+
+// Hasar Flaş perdesi
+if (hasarFlasiSuresi > 0) {
+    int alfa = (int) (110.0 * ((double) hasarFlasiSuresi / 8.0));
+    g2.setColor(new Color(255, 0, 0, alfa));
+    g2.fillRect(0, 0, EKRAN_GENISLIGI, EKRAN_YUKSEKLIGI);
+}
+```
+
+---
+
+## 5. Retro Ses Efekti Sentezleyici Motoru
+
+Ses sentezleyici motoru, diskteki `.wav` dosyalarının kaybolması veya işletim sisteminin ses sürücülerinin hata vermesi risklerini bertaraf etmek amacıyla tamamen **Java Sound API** (`javax.sound.sampled`) kullanılarak sıfırdan yazılmıştır. Sentezlenen 16-bit PCM dalgalar ayrı bir thread (iş parçacığı) üzerinden asenkron olarak çalınarak FPS düşüşleri engellenir.
+
+### A. Matematiksel Ses Dalgası Sentezleme
+Formül olarak basit Sinüs Dalgaları ($y = A \sin(2\pi f t)$) ve zamanla genliğin sıfıra yaklaşmasını sağlayan sönümleme (Fade-out) kullanılmıştır.
+
+```java
+// 16-bit PCM Mono Ses Sentezleme ve Çalma İşlemi (SesSentezleyici.java)
+private static void sesCal(float[] data) {
+    new Thread(() -> {
+        try {
+            byte[] byteData = new byte[data.length * 2];
+            for (int i = 0; i < data.length; i++) {
+                short val = (short) (data[i] * 32767); // Genliği 16-bit short'a dönüştür
+                byteData[i * 2] = (byte) (val & 0xff);       // Little-endian alt byte
+                byteData[i * 2 + 1] = (byte) ((val >> 8) & 0xff); // High byte
+            }
+            AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
+            SourceDataLine line = AudioSystem.getSourceDataLine(format);
+            line.open(format);
+            line.start();
+            line.write(byteData, 0, byteData.length);
+            line.drain();
+            line.close();
+        } catch (Exception e) {
+            System.out.println("Ses calinirken hata: " + e.getMessage());
+        }
+    }).start();
+}
+```
+
+### B. Frekans Modülasyonu Sinyalleri
+* **Ateş Topu Sesi:** Frekansı 750 Hz'den 250 Hz'e doğru doğrusal olarak düşürerek fırlatılma (Pew!) efekti oluşturur.
+* **Hasar Sesi:** 60 Hz ile 140 Hz arasında rastgele beyaz gürültü (white noise) karıştırılmış düşük frekanslı patlama sesi oluşturur.
+* **Meyve Sesi:** Frekansı 350 Hz'den 950 Hz'e doğru hızla fırlatarak (Blip!) alma efekti oluşturur.
+* **Seviye Atlama Sesi:** C-Major Arpej tonlarını (Do, Mi, Sol, Do) sırayla tınlatarak retro bir melodi çalar.
+
+---
+
+## 6. Önemli Kod Blokları ve Teknik Analiz
+
+### A. Vektörel Çarpışma Çözücü ve Geri Sekme (Knockback)
+Daire tabanlı çarpışmalarda iki nesnenin iç içe girmesini önlemek amacıyla çarpışan alanların yarıçap toplamı kadar nesneler zıt yönde itilir. Golem Boss'unun direnç katsayısı (`geriItmeCarpani = 0.15`) ağır kütleyi başarıyla simüle eder:
+
+```java
+// CarpismaDenetleyici.java
+double dx = oyuncu.x - dusman.x;
+double dy = oyuncu.y - dusman.y;
+double mesafeKaresi = dx * dx + dy * dy;
+double yariCapToplam = oyuncu.yariCap + dusman.yariCap;
+
+if (mesafeKaresi < yariCapToplam * yariCapToplam) {
+    double mesafe = Math.sqrt(mesafeKaresi);
+    if (mesafe > 0) {
+        double overlap = yariCapToplam - mesafe;
+        double itmeX = (dx / mesafe) * overlap;
+        double itmeY = (dy / mesafe) * overlap;
+        
+        // Oyuncuyu %60 oranında geriye iter
+        oyuncu.x += itmeX * 0.6;
+        oyuncu.y += itmeY * 0.6;
+        
+        // Düşmanı kendi kütle direncine göre geriye iter
+        dusman.x -= itmeX * 0.4 * dusman.geriItmeCarpani;
+        dusman.y -= itmeY * 0.4 * dusman.geriItmeCarpani;
+    }
+}
+```
+
+### B. Döner Bıçakların Trigonometrik Yörüngesi ve Düşman Hasar Cooldown Sistemi
+Döner bıçak mermileri oyuncu etrafında trigonometrik yörüngede döner. Düşmanların bıçakla temas ettiğinde saniyede 60 kez hasar alıp hemen yok olmasını engellemek için `HashMap` tabanlı vuruş bekleme süresi entegre edilmiştir:
+
+```java
+// DonerBicakMermi.java güncelleme mantığı
+this.aci += this.donerHizi;
+this.x = oyuncu.x + Math.cos(this.aci) * this.yorungeYaricapi;
+this.y = oyuncu.y + Math.sin(this.aci) * this.yorungeYaricapi;
+
+// CarpismaDenetleyici içindeki temas kontrolü
+if (mermi instanceof DonerBicakMermi) {
+    DonerBicakMermi dbMermi = (DonerBicakMermi) mermi;
+    long suAn = System.currentTimeMillis();
+    
+    // Düşmanın hasar bekleme süresi (500ms) dolduysa hasar ver
+    if (dbMermi.dusmanaVurabilirMi(dusman, suAn)) {
+        dusman.can -= mermi.hasar;
+        dbMermi.vurulanDusmaniEkle(dusman, suAn); // HashMap'e kaydet
+        
+        // Bıçak temasında düşmanı merkezden dışarı doğru fırlat
+        double mesafe = Math.sqrt(mesafeKaresi);
+        if (mesafe > 0) {
+            dusman.geriIt(dx / mesafe, dy / mesafe, 15.0);
+        }
+    }
+}
+```
+
+---
+
+## 7. Kullanılan Java Yapıları ve Tercih Nedenleri
+
+### A. Nesne Yönelimli Programlama (OOP)
+* **Kalıtım (Inheritance):** `GolemDusman` ve `HizliDusman` sınıfları `Dusman` sınıfından türetilerek tüm hareket ve çizim kodlarını miras almıştır. Kod tekrarı engellenmiştir.
+* **Soyut Sınıflar (Abstract Classes):** `Silah` sınıfı soyut yapılarak silahlar için kurumsal standartlar konulmuş, `saldir()` metodu her silahta özelleştirilmiştir.
+* **Çok Biçimlilik (Polymorphism):** `Silah` türündeki listeler içinde barındırılan `AtesTopu`, `DonerBicak` ve `KalkanSilahi` nesneleri döngülerde aynı imza ile çağrılmış fakat kendi metotlarını tetiklemiştir.
+
+### B. Koleksiyon Yapısı (Collections Framework)
+* **ArrayList:** Haritadaki dinamik varlık listelerini (mermiler, kristaller, düşmanlar) yönetmek için hızlı indis erişimine sahip `ArrayList` yapısı seçilmiştir.
+* **HashMap:** Donen bıçak hasar cooldown takibinde düşman referanslarını anahtar (`key`), son vuruş zaman damgalarını değer (`value`) olarak saklayan `HashMap<Dusman, Long>` yapısı kullanılarak $O(1)$ karmaşıklığında hızlı sorgulama yapılmıştır.
+
+### C. Multi-threading (Asenkron İş Parçacıkları)
+* Java AWT Event Dispatch Thread (EDT) üzerinde çalışan çizim işlemlerinin donmaması ve ses çalınırken oyunun donmasını (FPS drop) engellemek amacıyla tüm ham ses dalgası çalma eylemleri ayrı birer `Thread` üzerinden yürütülmüştür.
+
+---
+
+## 8. Kullanılan Kaynaklar ve Kaynakça
 
 Oyunda kullanılan tüm görsel pikseller ve ses tasarımları için proje şablonundaki lisanslı retro varlık paketlerinden yararlanılmıştır:
 
@@ -103,3 +309,6 @@ Oyunda kullanılan tüm görsel pikseller ve ses tasarımları için proje şabl
 4. **Kullanıcı Arayüzü (UI):**
    * **Kaynak:** `assets/Pixel UI pack 3 23.13.22/`
    * **İçerik:** HUD çerçeveleri, XP bar tasarımı ve yazı tipleri için ilham alınan piksel şablonları.
+5. **Referans Dokümantasyonlar:**
+   * Oracle Java Sound API - Java Sampled Sound References.
+   * "Vampire Survivors" Design Architecture & Math Algorithms Guides.
