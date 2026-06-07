@@ -10,6 +10,10 @@
 \usepackage{titlesec}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta}
+\usepackage{graphicx}
+
 
 % Kod blokları için renk ve biçim tanımlamaları (Premium stil)
 \definecolor{codegreen}{rgb}{0,0.5,0}
@@ -255,6 +259,233 @@ if (mermi instanceof DonerBicakMermi) {
     }
 }
 \end{lstlisting}
+
+---
+
+\section{UML Sınıf Diyagramı ve Sistem Mimarisi}
+Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose coupling) ve yüksek uyum (high cohesion) prensipleri doğrultusunda geliştirilmiştir. Sistem mimarisi, oyun döngüsünü, girdi kontrollerini ve nesne koleksiyonlarını yöneten merkezi bir arayüz paneli (\texttt{OyunPaneli}) üzerine kurulmuştur. Sınıflar arasındaki yapısal ilişkiler, hiyerarşiler ve bağlantılar Şekil \ref{fig:uml}'deki UML sınıf diyagramında gösterilmiştir.
+
+\begin{figure}[htbp]
+    \centering
+    \scalebox{0.75}{
+    \begin{tikzpicture}[
+        class/.style={
+            draw=blue!60!black,
+            fill=blue!5,
+            thick,
+            rectangle,
+            rounded corners=2pt,
+            minimum width=3.2cm,
+            minimum height=1.2cm,
+            align=left,
+            font=\small\sffamily
+        },
+        abstract/.style={
+            draw=orange!60!black,
+            fill=orange!5,
+            thick,
+            rectangle,
+            rounded corners=2pt,
+            minimum width=3.2cm,
+            minimum height=1.2cm,
+            align=left,
+            font=\small\sffamily\itshape
+        },
+        inherits/.style={
+            -{Triangle[open]},
+            thick,
+            draw=black!70
+        },
+        associates/.style={
+            -{Stealth},
+            thick,
+            draw=black!70
+        },
+        aggregates/.style={
+            {Diamond[open]}-,
+            thick,
+            draw=black!70
+        }
+    ]
+        % Sınıf Tanımlamaları
+        % OyunPaneli (Üst Merkez)
+        \node[class] (OyunPaneli) at (0, 7.0) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{OyunPaneli}} \\
+            \hline
+            + oyuncu: Oyuncu \\
+            + dusmanlar: ArrayList$<$Dusman$>$ \\
+            + mermiler: ArrayList$<$Mermi$>$ \\
+            + silahlar: ArrayList$<$Silah$>$ \\
+            \hline
+            + paintComponent(g: Graphics) \\
+            + oyunGuncelle() \\
+            + yeniOyunBaslat()
+            \end{tabular}
+        };
+
+        % Oyuncu (Sol)
+        \node[class] (Oyuncu) at (-5.2, 3.5) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{Oyuncu}} \\
+            \hline
+            + x, y: double \\
+            + can, maksCan: double \\
+            + seviye, deneyim: int \\
+            \hline
+            + guncelle() \\
+            + ciz(g: Graphics2D) \\
+            + hasarAl(miktar: double)
+            \end{tabular}
+        };
+
+        % Silah (Orta Sol - Abstract)
+        \node[abstract] (Silah) at (-1.8, 3.5) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{Silah}} \\
+            \hline
+            + ad: String \\
+            + seviye: int \\
+            + hasar: double \\
+            \hline
+            + \textit{saldir(panel: OyunPaneli)} \\
+            + seviyeAtla()
+            \end{tabular}
+        };
+
+        % Mermi (Orta Sağ)
+        \node[class] (Mermi) at (1.8, 3.5) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{Mermi}} \\
+            \hline
+            + x, y: double \\
+            + yonX, yonY: double \\
+            + hasar, hiz: double \\
+            \hline
+            + guncelle() \\
+            + ciz(g: Graphics2D)
+            \end{tabular}
+        };
+
+        % Dusman (Sağ)
+        \node[class] (Dusman) at (5.2, 3.5) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{Dusman}} \\
+            \hline
+            + x, y: double \\
+            + can, hiz: double \\
+            + hasar: double \\
+            \hline
+            + guncelle() \\
+            + ciz(g: Graphics2D) \\
+            + geriIt(dx, dy, guc)
+            \end{tabular}
+        };
+
+        % Alt Sınıflar (Silah, Mermi ve Düşman Özelleştirmeleri)
+        % Silah Alt Sınıfları
+        \node[class] (KalkanSilahi) at (-3.6, 0.2) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{KalkanSilahi}} \\
+            \hline
+            \hline
+            + saldir(panel)
+            \end{tabular}
+        };
+
+        \node[class] (AtesTopu) at (-1.8, 0.2) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{AtesTopu}} \\
+            \hline
+            \hline
+            + saldir(panel)
+            \end{tabular}
+        };
+
+        \node[class] (DonerBicak) at (0.0, 0.2) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{DonerBicak}} \\
+            \hline
+            - bicakAdedi: int \\
+            \hline
+            + saldir(panel)
+            \end{tabular}
+        };
+
+        % Mermi Alt Sınıfı
+        \node[class] (DonerBicakMermi) at (1.8, 0.2) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{DonerBicakMermi}} \\
+            \hline
+            - yorungeYaricapi: double \\
+            - aci, donusHizi: double \\
+            \hline
+            + guncelle()
+            \end{tabular}
+        };
+
+        % Dusman Alt Sınıfları
+        \node[class] (GolemDusman) at (4.2, 0.2) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{GolemDusman}} \\
+            \hline
+            \hline
+            + guncelle()
+            \end{tabular}
+        };
+
+        \node[class] (HizliDusman) at (6.2, 0.2) {
+            \begin{tabular}{l}
+            \multicolumn{1}{c}{\textbf{HizliDusman}} \\
+            \hline
+            \hline
+            + guncelle()
+            \end{tabular}
+        };
+
+        % İlişkiler (Bağlantılar)
+        % OyunPaneli Sahiplikleri (Aggregation)
+        \draw[thick, draw=black!70] (-5.2, 5.2) -- (5.2, 5.2);
+        \draw[thick, draw=black!70] (Oyuncu) -- (-5.2, 5.2);
+        \draw[thick, draw=black!70] (Silah) -- (-1.8, 5.2);
+        \draw[thick, draw=black!70] (Mermi) -- (1.8, 5.2);
+        \draw[thick, draw=black!70] (Dusman) -- (5.2, 5.2);
+        \draw[aggregates] (OyunPaneli) -- (0, 5.2);
+
+        % Oyuncu - Silah İlişkisi
+        \draw[associates] (Silah) -- (Oyuncu);
+
+        % Kalıtım Hiyerarşisi - Silahlar (Ortak Ok Başlı)
+        \draw[thick, draw=black!70] (KalkanSilahi) -- (-3.6, 1.8);
+        \draw[thick, draw=black!70] (DonerBicak) -- (0.0, 1.8);
+        \draw[thick, draw=black!70] (-3.6, 1.8) -- (0.0, 1.8);
+        \draw[thick, draw=black!70] (AtesTopu) -- (-1.8, 1.8);
+        \draw[inherits] (-1.8, 1.8) -- (Silah);
+
+        % Kalıtım Hiyerarşisi - Mermi
+        \draw[inherits] (DonerBicakMermi) -- (Mermi);
+
+        % Kalıtım Hiyerarşisi - Düşmanlar (Ortak Ok Başlı)
+        \draw[thick, draw=black!70] (GolemDusman) -- (4.2, 1.8);
+        \draw[thick, draw=black!70] (HizliDusman) -- (6.2, 1.8);
+        \draw[thick, draw=black!70] (4.2, 1.8) -- (6.2, 1.8);
+        \draw[inherits] (5.2, 1.8) -- (Dusman);
+
+        % DonerBicak -> DonerBicakMermi Bağımlılığı (Dashed arrow)
+        \draw[associates, dashed] (DonerBicak) -- (DonerBicakMermi);
+
+    \end{tikzpicture}
+    }
+    \caption{slimeSlayer Nesne Yönelimli UML Sınıf Diyagramı}
+    \label{fig:uml}
+\end{figure}
+
+Mimari yapının temel özellikleri şunlardır:
+\begin{itemize}
+    \item \textbf{Merkezi Yönetim (\texttt{OyunPaneli}):} Sistemdeki tüm hareketli nesneleri (mermiler, düşmanlar, kristaller, güç meyveleri) ve alt sistemleri (veri çizimi, çarpışma kontrolleri, sesler) kendi bünyesinde yöneten ana kontrol merkezidir.
+    \item \textbf{Kalıtım ve Soyutlama (Inheritance \& Abstraction):} \texttt{Silah} sınıfı \texttt{abstract} olarak tanımlanmış olup silah türlerinin (\texttt{AtesTopu}, \texttt{DonerBicak}, \texttt{KalkanSilahi}) davranış standardını belirler. Aynı şekilde \texttt{GolemDusman} ve \texttt{HizliDusman} sınıfları \texttt{Dusman} ana sınıfından kalıtım alarak özelleşmiştir.
+    \item \textbf{Gevşek Bağlılık ve Polimorfizm:} \texttt{OyunPaneli} içindeki döngüler nesneleri genel tipleriyle (\texttt{Dusman}, \texttt{Mermi}, \texttt{Silah}) ele alır. Bu sayede yeni bir canavar türü veya silah eklendiğinde ana panel kodlarında neredeyse hiçbir değişiklik gerekmez.
+\end{itemize}
 
 ---
 
