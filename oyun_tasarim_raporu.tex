@@ -284,7 +284,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
 \begin{figure}[htbp]
     \centering
     \begin{tikzpicture}[
-        scale=0.6,
+        scale=0.8,
         transform shape,
         class/.style={
             draw=blue!60!black,
@@ -292,8 +292,8 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
             thick,
             rectangle,
             rounded corners=2pt,
-            minimum width=3.2cm,
-            minimum height=1.2cm,
+            minimum width=2.8cm,
+            minimum height=1.0cm,
             align=left,
             font=\footnotesize\sffamily
         },
@@ -303,10 +303,21 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
             thick,
             rectangle,
             rounded corners=2pt,
-            minimum width=3.2cm,
-            minimum height=1.2cm,
+            minimum width=2.8cm,
+            minimum height=1.0cm,
             align=left,
             font=\footnotesize\sffamily\itshape
+        },
+        subclass/.style={
+            draw=blue!60!black,
+            fill=blue!5,
+            thick,
+            rectangle,
+            rounded corners=2pt,
+            minimum width=2.2cm,
+            minimum height=0.8cm,
+            align=left,
+            font=\scriptsize\sffamily
         },
         inherits/.style={
             -{Triangle[open]},
@@ -345,7 +356,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
         };
 
         % Oyuncu (Sol)
-        \node[class] (Oyuncu) at (-9.0, 3.5) {
+        \node[class] (Oyuncu) at (-8.0, 3.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{Oyuncu}} \\
             \hline
@@ -364,7 +375,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
         };
 
         % Silah (Orta Sol - Abstract)
-        \node[abstract] (Silah) at (-3.0, 3.5) {
+        \node[abstract] (Silah) at (-2.9, 3.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{\textit{Silah}}} \\
             \hline
@@ -382,7 +393,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
         };
 
         % Mermi (Orta Sağ)
-        \node[class] (Mermi) at (3.0, 3.5) {
+        \node[class] (Mermi) at (2.9, 3.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{Mermi}} \\
             \hline
@@ -398,7 +409,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
         };
 
         % Dusman (Sağ)
-        \node[class] (Dusman) at (9.0, 3.5) {
+        \node[class] (Dusman) at (7.25, 3.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{Dusman}} \\
             \hline
@@ -416,7 +427,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
 
         % Alt Sınıflar (Silah, Mermi ve Düşman Özelleştirmeleri)
         % Silah Alt Sınıfları
-        \node[class] (KalkanSilahi) at (-6.0, -1.5) {
+        \node[subclass] (KalkanSilahi) at (-5.8, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{KalkanSilahi}} \\
             \hline
@@ -428,7 +439,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
             \end{tabular}
         };
 
-        \node[class] (AtesTopu) at (-3.0, -1.5) {
+        \node[subclass] (AtesTopu) at (-2.9, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{AtesTopu}} \\
             \hline
@@ -438,11 +449,11 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
             \end{tabular}
         };
 
-        \node[class] (DonerBicak) at (0.0, -1.5) {
+        \node[subclass] (DonerBicak) at (0.0, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{DonerBicak}} \\
             \hline
-            - yorungeYaricapi: double \\
+            - yorungeYaricap: double \\
             - donusHizi: double \\
             \hline
             + saldir(panel) \\
@@ -452,23 +463,21 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
         };
 
         % Mermi Alt Sınıfı
-        \node[class] (DonerBicakMermi) at (3.0, -1.5) {
+        \node[subclass] (DonerBicakMermi) at (2.9, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{DonerBicakMermi}} \\
             \hline
-            - yorungeYaricapi: double \\
+            - yorungeYaricap: double \\
             - aci, donusHizi: double \\
-            - sonVurusZamanlari: HashMap \\
             \hline
             + guncelle() \\
             + ciz(g2) \\
-            + dusmanaVurabilirMi(d, s) \\
-            + vurulanDusmaniEkle(d, s)
+            + dusmanaVurabilirMi()
             \end{tabular}
         };
 
         % Dusman Alt Sınıfları
-        \node[class] (GolemDusman) at (7.5, -1.5) {
+        \node[subclass] (GolemDusman) at (5.8, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{GolemDusman}} \\
             \hline
@@ -477,7 +486,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
             \end{tabular}
         };
 
-        \node[class] (HizliDusman) at (10.5, -1.5) {
+        \node[subclass] (HizliDusman) at (8.7, -1.5) {
             \begin{tabular}{l}
             \multicolumn{1}{c}{\textbf{HizliDusman}} \\
             \hline
@@ -488,31 +497,31 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
 
         % İlişkiler (Bağlantılar)
         % OyunPaneli Sahiplikleri (Aggregation)
-        \draw[thick, draw=black!70] (-9.0, 5.8) -- (9.0, 5.8);
-        \draw[thick, draw=black!70] (Oyuncu.north) -- (-9.0, 5.8);
-        \draw[thick, draw=black!70] (Silah.north) -- (-3.0, 5.8);
-        \draw[thick, draw=black!70] (Mermi.north) -- (3.0, 5.8);
-        \draw[thick, draw=black!70] (Dusman.north) -- (9.0, 5.8);
-        \draw[aggregates] (OyunPaneli.south) -- (0, 5.8);
+        \draw[thick, draw=black!70] (-8.0, 5.6) -- (7.25, 5.6);
+        \draw[thick, draw=black!70] (Oyuncu.north) -- (-8.0, 5.6);
+        \draw[thick, draw=black!70] (Silah.north) -- (-2.9, 5.6);
+        \draw[thick, draw=black!70] (Mermi.north) -- (2.9, 5.6);
+        \draw[thick, draw=black!70] (Dusman.north) -- (7.25, 5.6);
+        \draw[aggregates] (OyunPaneli.south) -- (0, 5.6);
 
         % Oyuncu - Silah İlişkisi
         \draw[associates] (Silah.west) -- (Oyuncu.east);
 
         % Kalıtım Hiyerarşisi - Silahlar (Ortak Ok Başlı)
-        \draw[thick, draw=black!70] (KalkanSilahi.north) -- (-6.0, 1.0);
+        \draw[thick, draw=black!70] (KalkanSilahi.north) -- (-5.8, 1.0);
         \draw[thick, draw=black!70] (DonerBicak.north) -- (0.0, 1.0);
-        \draw[thick, draw=black!70] (-6.0, 1.0) -- (0.0, 1.0);
-        \draw[thick, draw=black!70] (AtesTopu.north) -- (-3.0, 1.0);
-        \draw[inherits] (-3.0, 1.0) -- (Silah.south);
+        \draw[thick, draw=black!70] (-5.8, 1.0) -- (0.0, 1.0);
+        \draw[thick, draw=black!70] (AtesTopu.north) -- (-2.9, 1.0);
+        \draw[inherits] (-2.9, 1.0) -- (Silah.south);
 
         % Kalıtım Hiyerarşisi - Mermi
         \draw[inherits] (DonerBicakMermi.north) -- (Mermi.south);
 
         % Kalıtım Hiyerarşisi - Düşmanlar (Ortak Ok Başlı)
-        \draw[thick, draw=black!70] (GolemDusman.north) -- (7.5, 1.0);
-        \draw[thick, draw=black!70] (HizliDusman.north) -- (10.5, 1.0);
-        \draw[thick, draw=black!70] (7.5, 1.0) -- (10.5, 1.0);
-        \draw[inherits] (9.0, 1.0) -- (Dusman.south);
+        \draw[thick, draw=black!70] (GolemDusman.north) -- (5.8, 1.0);
+        \draw[thick, draw=black!70] (HizliDusman.north) -- (8.7, 1.0);
+        \draw[thick, draw=black!70] (5.8, 1.0) -- (8.7, 1.0);
+        \draw[inherits] (7.25, 1.0) -- (Dusman.south);
 
         % DonerBicak -> DonerBicakMermi Bağımlılığı (Dashed arrow)
         \draw[associates, dashed] (DonerBicak.east) -- (DonerBicakMermi.west);
