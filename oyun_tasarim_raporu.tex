@@ -11,7 +11,7 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{tikz}
-\usetikzlibrary{positioning, arrows.meta}
+\usetikzlibrary{positioning, arrows.meta, babel}
 \usepackage{graphicx}
 
 
@@ -314,9 +314,9 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
             \multicolumn{1}{c}{\textbf{OyunPaneli}} \\
             \hline
             + oyuncu: Oyuncu \\
-            + dusmanlar: ArrayList$<$Dusman$>$ \\
-            + mermiler: ArrayList$<$Mermi$>$ \\
-            + silahlar: ArrayList$<$Silah$>$ \\
+            + dusmanlar: ArrayList\textless Dusman\textgreater \\
+            + mermiler: ArrayList\textless Mermi\textgreater \\
+            + silahlar: ArrayList\textless Silah\textgreater \\
             \hline
             + paintComponent(g: Graphics) \\
             + oyunGuncelle() \\
