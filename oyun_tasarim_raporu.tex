@@ -446,33 +446,33 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
         % İlişkiler (Bağlantılar)
         % OyunPaneli Sahiplikleri (Aggregation)
         \draw[thick, draw=black!70] (-5.2, 5.2) -- (5.2, 5.2);
-        \draw[thick, draw=black!70] (Oyuncu) -- (-5.2, 5.2);
-        \draw[thick, draw=black!70] (Silah) -- (-1.8, 5.2);
-        \draw[thick, draw=black!70] (Mermi) -- (1.8, 5.2);
-        \draw[thick, draw=black!70] (Dusman) -- (5.2, 5.2);
-        \draw[aggregates] (OyunPaneli) -- (0, 5.2);
+        \draw[thick, draw=black!70] (Oyuncu.north) -- (-5.2, 5.2);
+        \draw[thick, draw=black!70] (Silah.north) -- (-1.8, 5.2);
+        \draw[thick, draw=black!70] (Mermi.north) -- (1.8, 5.2);
+        \draw[thick, draw=black!70] (Dusman.north) -- (5.2, 5.2);
+        \draw[aggregates] (OyunPaneli.south) -- (0, 5.2);
 
         % Oyuncu - Silah İlişkisi
-        \draw[associates] (Silah) -- (Oyuncu);
+        \draw[associates] (Silah.west) -- (Oyuncu.east);
 
         % Kalıtım Hiyerarşisi - Silahlar (Ortak Ok Başlı)
-        \draw[thick, draw=black!70] (KalkanSilahi) -- (-3.6, 1.8);
-        \draw[thick, draw=black!70] (DonerBicak) -- (0.0, 1.8);
+        \draw[thick, draw=black!70] (KalkanSilahi.north) -- (-3.6, 1.8);
+        \draw[thick, draw=black!70] (DonerBicak.north) -- (0.0, 1.8);
         \draw[thick, draw=black!70] (-3.6, 1.8) -- (0.0, 1.8);
-        \draw[thick, draw=black!70] (AtesTopu) -- (-1.8, 1.8);
-        \draw[inherits] (-1.8, 1.8) -- (Silah);
+        \draw[thick, draw=black!70] (AtesTopu.north) -- (-1.8, 1.8);
+        \draw[inherits] (-1.8, 1.8) -- (Silah.south);
 
         % Kalıtım Hiyerarşisi - Mermi
-        \draw[inherits] (DonerBicakMermi) -- (Mermi);
+        \draw[inherits] (DonerBicakMermi.north) -- (Mermi.south);
 
         % Kalıtım Hiyerarşisi - Düşmanlar (Ortak Ok Başlı)
-        \draw[thick, draw=black!70] (GolemDusman) -- (4.2, 1.8);
-        \draw[thick, draw=black!70] (HizliDusman) -- (6.2, 1.8);
+        \draw[thick, draw=black!70] (GolemDusman.north) -- (4.2, 1.8);
+        \draw[thick, draw=black!70] (HizliDusman.north) -- (6.2, 1.8);
         \draw[thick, draw=black!70] (4.2, 1.8) -- (6.2, 1.8);
-        \draw[inherits] (5.2, 1.8) -- (Dusman);
+        \draw[inherits] (5.2, 1.8) -- (Dusman.south);
 
         % DonerBicak -> DonerBicakMermi Bağımlılığı (Dashed arrow)
-        \draw[associates, dashed] (DonerBicak) -- (DonerBicakMermi);
+        \draw[associates, dashed] (DonerBicak.east) -- (DonerBicakMermi.west);
 
     \end{tikzpicture}
     }
