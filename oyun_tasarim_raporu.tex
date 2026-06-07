@@ -283,8 +283,9 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
 
 \begin{figure}[htbp]
     \centering
-    \scalebox{0.6}{
     \begin{tikzpicture}[
+        scale=0.6,
+        transform shape,
         class/.style={
             draw=blue!60!black,
             fill=blue!5,
@@ -294,7 +295,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
             minimum width=3.2cm,
             minimum height=1.2cm,
             align=left,
-            font=\small\sffamily
+            font=\footnotesize\sffamily
         },
         abstract/.style={
             draw=orange!60!black,
@@ -305,7 +306,7 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
             minimum width=3.2cm,
             minimum height=1.2cm,
             align=left,
-            font=\small\sffamily\itshape
+            font=\footnotesize\sffamily\itshape
         },
         inherits/.style={
             -{Triangle[open]},
@@ -517,7 +518,6 @@ Oyunun nesne yönelimli mimarisi, sınıflar arası gevşek bağlılık (loose c
         \draw[associates, dashed] (DonerBicak.east) -- (DonerBicakMermi.west);
 
     \end{tikzpicture}
-    }
     \caption{slimeSlayer Nesne Yönelimli UML Sınıf Diyagramı}
     \label{fig:uml}
 \end{figure}
