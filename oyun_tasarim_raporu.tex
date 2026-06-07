@@ -88,42 +88,130 @@ Projede yer alan ekip üyeleri ve geliştirme süreçlerindeki katkıları şu �
 
 ---
 
-\section{Kod Mimarisinin İncelenmesi ve Etkileri}
+\section{Oyun Mekanikleri ve Kod Tasarımı}
 
-\subsection{Ana Giriş Ekranı ve İnteraktif Ayarlar}
-Oyuncuya oyunu başlatmadan önce ses seviyesini ve dalga zorluğunu ayarlayabileceği şık bir giriş paneli sunulmuştur. \texttt{MenuArayuzu.java} sınıfı, bu butonların çizimini ve tıklama kontrollerini yönetir. Kullanıcı ses düzeyini yüzde göstergeli bar üzerinden +/- butonlarıyla değiştirebilir, zorluğu Kolay (0.7x), Normal (1.0x) veya Zor (1.5x) olarak seçebilir. Ayrıca oyun bittiğinde \texttt{M} tuşu yardımıyla bu ekrana geri dönülebilir:
+\subsection{Karakter Hareketi ve Çapraz Hız Normalizasyonu}
+8 yönlü hareket sistemlerinde, yatay ve dikey tuşlara aynı anda basıldığında ($\sqrt{2} \approx 1.414$ kat) ortaya çıkan hız artışı, \texttt{Oyuncu.java} içerisinde normalize edilmiştir:
 
-\begin{lstlisting}[caption={Giriş Menüsü Buton ve Tıklama Yönetimi}, label={list:menubuton}]
-if (baslatButon.contains(mx, my)) {
-    panel.oyunuSifirla();
-    panel.durum = OyunDurumu.OYUN;
-    SesSentezleyici.gucMeyvesi(); // Tıklama sesi
+\begin{lstlisting}[caption={Çapraz Harekette Hız Normalizasyonu}, label={list:normalizasyon}]
+// Capraz harekette hizin 1.41 katina cikmasini engellemek icin normalizasyon degeri (sin(45) = 0.707)
+if (hareketX != 0 && hareketY != 0) {
+    hareketX *= 0.707;
+    hareketY *= 0.707;
+}
+double toplamHiz = hiz + ekstraHiz;
+x += hareketX * toplamHiz;
+y += hareketY * toplamHiz;
+\end{lstlisting}
+
+\subsection{Düşman Spawn Algoritması ve Zorluk Ölçeklemesi}
+\texttt{DusmanUretici.java} sınıfı, oyuncu etrafındaki ekran sınırlarının hemen dışındaki 4 kenardan (+60px ofset) düşman spawn eder. Zorluk derecesi, ana menüden seçilen \texttt{zorlukModu} çarpanı ile çarpılarak düşmanların can ve hasarlarına etki eder:
+\begin{equation}
+    \text{Zorluk Çarpanı} = \left( 1.0 + \frac{\text{Geçen Süre (ms)}}{120000.0} \right) \times \text{zorlukModu}
+\end{equation}
+
+\subsection{Mıknatıs Çekimli Tecrübe Kristalleri}
+Düşmanlar elendiğinde yere tecrübe kristalleri düşer. Oyuncu 120 piksel toplama menziline girdiğinde mıknatıs çekim alanı devreye girer:
+\begin{equation}
+    \vec{V}_{cekme} = \vec{u}_{yon} \times \min(12.0, V_{eski} + 0.25)
+\end{equation}
+
+---
+
+\section{Grafik, Görsel Efektler ve Çizim Yönetimi}
+
+\subsection{Programatik Renklendirme}
+Düşman varyasyonları için diskten tek bir spritesheet okunur ve \texttt{GorselYukleyici.java} içinde programatik gri tonlama algoritmasıyla gri golem bossuna dönüştürülür:
+
+\begin{lstlisting}[caption={Programatik Gri Tonlama Filtresi}, label={list:gri}]
+public static BufferedImage gorseliGriyap(BufferedImage kaynak) {
+    BufferedImage sonuc = new BufferedImage(kaynak.getWidth(), kaynak.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    for (int x = 0; x < kaynak.getWidth(); x++) {
+        for (int y = 0; y < kaynak.getHeight(); y++) {
+            int rgb = kaynak.getRGB(x, y);
+            int a = (rgb >> 24) & 0xff;
+            int r = (rgb >> 16) & 0xff;
+            int g = (rgb >> 8) & 0xff;
+            int b = rgb & 0xff;
+            int gri = (int) (r * 0.299 + g * 0.587 + b * 0.114);
+            int yeniRgb = (a << 24) | (gri << 16) | (gri << 8) | gri;
+            sonuc.setRGB(x, y, yeniRgb);
+        }
+    }
+    return sonuc;
 }
 \end{lstlisting}
 
-\subsection{Uzaklık Tabanlı Düşman Silme ve Dalga Kontrolü}
-Haritada oyuncudan çok uzaklaşan düşmanların CPU tüketmesini engellemek için periyodik çalışan culling sistemi entegre edilmiştir. 
-Aşağıdaki kod bloğunda, her 2 saniyede bir oyuncudan 1200 pikselden uzaktaki düşmanlar listeden temizlenmektedir:
+\subsection{Performans Optimizasyonu (Frustum Culling)}
+Büyük haritalarda (3000x3000px) tüm zemini çizmek ağır performans kaybına yol açar. Projede sadece kameranın gördüğü alandaki karolar taranıp çizilir. Ayrıca ekran sınırları dışındaki düşmanlar \texttt{getClipBounds} ile elenir (\textbf{Frustum Culling}).
 
-\begin{lstlisting}[caption={Düşman Üretim Sıklığı ve Culling Mekanizması}, label={list:dusmanuretici}]
-// Her 2 saniyede bir (120 tick) uzaktaki dusmanlari temizler
-if (panel.oyunSuresiKareSayisi % 120 == 0) {
-    double limitMesafeKaresi = 1200.0 * 1200.0;
-    panel.dusmanlar.removeIf(d -> {
-        double dx = d.x - panel.oyuncu.x;
-        double dy = d.y - panel.oyuncu.y;
-        return (dx * dx + dy * dy) > limitMesafeKaresi;
-    });
+\subsection{Kamera Sarsıntısı (Screen Shake) ve Hasar Ekranı Flaş Efekti}
+Oyuncu hasar aldığında vuruş hissini artırmak adına kamera rastgele sarsılır ve ekrana kırmızı saydam bir perde çekilir. Sarsıntı gücü ve flaşın opasitesi zamanla azalır:
+
+\begin{lstlisting}[caption={Kamera Sarsıntısı ve Flaş Uygulaması}, label={list:sarsinti}]
+// OyunPaneli.java paintComponent metodu
+double nihaiKameraX = kameraX;
+double nihaiKameraY = kameraY;
+
+if (sarsintiSuresi > 0) {
+    java.util.Random rand = new java.util.Random();
+    nihaiKameraX += (rand.nextDouble() - 0.5) * 2.0 * sarsintiGucu;
+    nihaiKameraY += (rand.nextDouble() - 0.5) * 2.0 * sarsintiGucu;
+}
+g2.translate(-nihaiKameraX, -nihaiKameraY);
+// ... Cizimler ...
+g2.translate(nihaiKameraX, nihaiKameraY); // HUD oncesi geri al
+
+// Hasar Flas perdesi
+if (hasarFlasiSuresi > 0) {
+    int alfa = (int) (110.0 * ((double) hasarFlasiSuresi / 8.0));
+    g2.setColor(new Color(255, 0, 0, alfa));
+    g2.fillRect(0, 0, EKRAN_GENISLIGI, EKRAN_YUKSEKLIGI);
 }
 \end{lstlisting}
 
-\subsection{Çarpışma Algılama ve Geri İtme (Fizik)}
-Fizik motorunu simüle etmek amacıyla \texttt{CarpismaDenetleyici.java} içinde oyuncu ile düşmanların iç içe geçmesini engelleyen ve hasar alındığında her iki varlığı belirli oranlarda geriye iten vektörel çarpışma çözücü yazılmıştır:
+---
 
-\begin{lstlisting}[caption={İç İçe Girmeyi Engelleme ve Geri İtme (Pushback)}, label={list:carpisma}]
+\section{Retro Ses Efekti Sentezleyici Motoru}
+
+Ses sentezleyici motoru, diskteki `.wav` dosyalarının kaybolması veya işletim sisteminin ses sürücelerinin hata vermesi risklerini bertaraf etmek amacıyla tamamen **Java Sound API** (\texttt{javax.sound.sampled}) kullanılarak sıfırdan yazılmıştır. Sentezlenen 16-bit PCM dalgalar ayrı bir thread (iş parçacığı) üzerinden asenkron olarak çalınarak FPS düşüşleri engellenir.
+
+\begin{lstlisting}[caption={Asenkron 16-bit PCM Mono Ses Çalma Modülü}, label={list:sessentezleyici}]
+private static void sesCal(float[] data) {
+    new Thread(() -> {
+        try {
+            byte[] byteData = new byte[data.length * 2];
+            for (int i = 0; i < data.length; i++) {
+                short val = (short) (data[i] * 32767); // Genligi 16-bit short'a donustur
+                byteData[i * 2] = (byte) (val & 0xff);       // Little-endian alt byte
+                byteData[i * 2 + 1] = (byte) ((val >> 8) & 0xff); // High byte
+            }
+            AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
+            SourceDataLine line = AudioSystem.getSourceDataLine(format);
+            line.open(format);
+            line.start();
+            line.write(byteData, 0, byteData.length);
+            line.drain();
+            line.close();
+        } catch (Exception e) {
+            System.out.println("Ses calinirken hata: " + e.getMessage());
+        }
+    }).start();
+}
+\end{lstlisting}
+
+---
+
+\section{Önemli Kod Blokları ve Teknik Analiz}
+
+\subsection{Vektörel Çarpışma Çözücü ve Geri Sekme (Knockback)}
+Daire tabanlı çarpışmalarda iki nesnenin iç içe girmesini önlemek amacıyla çarpışan alanların yarıçap toplamı kadar nesneler zıt yönde itilir. Golem Boss'unun direnç katsayısı (\texttt{geriItmeCarpani = 0.15}) ağır kütleyi başarıyla simüle eder:
+
+\begin{lstlisting}[caption={Vektörel Çarpışma Çözücü}, label={list:carpismafizik}]
+// CarpismaDenetleyici.java
 double dx = oyuncu.x - dusman.x;
 double dy = oyuncu.y - dusman.y;
-double mesafeKaresi = (dx * dx) + (dy * dy);
+double mesafeKaresi = dx * dx + dy * dy;
 double yariCapToplam = oyuncu.yariCap + dusman.yariCap;
 
 if (mesafeKaresi < yariCapToplam * yariCapToplam) {
@@ -133,7 +221,7 @@ if (mesafeKaresi < yariCapToplam * yariCapToplam) {
         double itmeX = (dx / mesafe) * overlap;
         double itmeY = (dy / mesafe) * overlap;
         
-        oyuncu.x += itmeX * 0.6; // Oyuncu geriye seker
+        oyuncu.x += itmeX * 0.6;
         oyuncu.y += itmeY * 0.6;
         dusman.x -= itmeX * 0.4 * dusman.geriItmeCarpani;
         dusman.y -= itmeY * 0.4 * dusman.geriItmeCarpani;
@@ -141,43 +229,45 @@ if (mesafeKaresi < yariCapToplam * yariCapToplam) {
 }
 \end{lstlisting}
 
-\subsection{Uçuşan Hasar Sayıları}
-Düşmanlar hasar aldıklarında kafalarının üzerinde beliren, darbenin türüne göre renklendirilmiş (turuncu, turkuaz, mavi) uçuşan hasar sayıları (\texttt{HasarSayisi}) yukarı doğru süzülür ve saydamlaşarak kaybolur.
-
-\subsection{Dinamik ve Merkezi Tecrübe Sistemi}
-Düşmanlar öldüğünde düşürdükleri kristallerin tecrübe değeri düşman tipine göre dinamik olarak hesaplanır: Sıradan düşmanlar 15 DP, Hızlı düşmanlar 25 DP ve büyük Golem Boss 60 DP kazandırır. Bu kontrol merkezi olarak \texttt{OyunPaneli} güncelleme döngüsünde yürütülür.
-
----
-
-\section{Matematik ve Fiziksel Hesaplamalar}
-
-\subsection{Yörüngesel Hareket}
-Döner bıçakların karakterin etrafında dairesel yörüngede dönmesi trigonometrik fonksiyonlar kullanılarak gerçekleştirilmiştir:
-\begin{equation{equation}
+\subsection{Döner Bıçakların Yörüngesi ve Hasar Cooldown Sistemi}
+Döner bıçak mermileri oyuncu etrafında dairesel yörüngede döner. Denge sağlamak amacıyla düşman bazlı hasar zaman damgası takibi yapılmıştır:
+\begin{equation}
     x_{bicak} = x_{oyuncu} + \cos(\theta) \times r_{yorunge}
 \end{equation}
 \begin{equation}
     y_{bicak} = y_{oyuncu} + \sin(\theta) \times r_{yorunge}
 \end{equation}
 
-\subsection{Mıknatıs Alan Çekimi}
-Yere düşen deneyim kristallerinin oyuncuya çekilmesinde oyuncuya yaklaştıkça ivmelenen çekme kuvveti formülü uygulanmıştır:
-\begin{equation}
-    \vec{V}_{cekme} = \vec{u}_{yon} \times \min(12.0, V_{eski} + 0.25)
-\end{equation}
+\begin{lstlisting}[caption={Döner Bıçak Hasar Zaman Damgası Takibi}, label={list:hashmapcooldown}]
+if (mermi instanceof DonerBicakMermi) {
+    DonerBicakMermi dbMermi = (DonerBicakMermi) mermi;
+    long suAn = System.currentTimeMillis();
+    
+    // Dusmana tekrar vurup vuramayacagini denetleyen metot (500 ms bekleme suresi)
+    if (dbMermi.dusmanaVurabilirMi(dusman, suAn)) {
+        dusman.can -= mermi.hasar;
+        dbMermi.vurulanDusmaniEkle(dusman, suAn); // HashMap kaydi
+        
+        double mesafe = Math.sqrt(mesafeKaresi);
+        if (mesafe > 0) {
+            dusman.geriIt(dx / mesafe, dy / mesafe, 15.0);
+        }
+    }
+}
+\end{lstlisting}
 
 ---
 
-\section{Teknik Detaylar ve Performans Optimizasyonları}
+\section{Kullanılan Java Yapıları ve Tercih Nedenleri}
 
-\subsection{Ekran Dışı Çizimlerin Kapatılması (Frustum Culling)}
-Ekran sınırları dışındaki düşmanların çizimini devre dışı bırakarak CPU tasarrufu sağlamak amacıyla \texttt{getClipBounds} kullanılmaktadır.
+\subsection{Nesne Yönelimli Programlama (OOP)}
+* \textbf{Kalıtım (Inheritance):} \texttt{GolemDusman} ve \texttt{HizliDusman} sınıfları \texttt{Dusman} sınıfından türetilmiştir.
+* \textbf{Soyut Sınıflar (Abstract Classes):** \texttt{Silah} sınıfı soyut yapılarak silahlar için kurumsal standartlar konulmuş, \texttt{saldir()} metodu her silahta özelleştirilmiştir.
+* \textbf{Çok Biçimlilik (Polymorphism):} \texttt{Silah} türündeki listeler içinde barındırılan nesneler döngülerde aynı imza ile çağrılmış fakat kendi metotlarını tetiklemiştir.
 
-\subsection{Retro Ses Sentezleyici Motoru (javax.sound.sampled)}
-Harici ses dosyalarına ihtiyaç duyulmaması amacıyla Java Sound API kullanılarak tamamen retro 8-bit dalgalar dinamik sentezlenir. Ses seviyesi çarpanı da burada dinamik olarak genliğe uygulanır.
-
-\subsection{Çöp Toplayıcı (GC) Yükünün Azaltılması}
-\texttt{getSubimage} metodunun yaratabileceği anlık donmaları engellemek için, spritelar 9 parametreli \texttt{drawImage} koordinat sınırlandırmasıyla bellek dostu çizilmiştir.
+\subsection{Koleksiyon Yapısı (Collections Framework)}
+* \textbf{ArrayList:} Haritadaki dinamik varlık listelerini (mermiler, kristaller, düşmanlar) yönetmek için \texttt{ArrayList} yapısı seçilmiştir.
+* \textbf{HashMap:} Dönen bıçak hasar cooldown takibinde düşman referanslarını anahtar (\texttt{key}), son vuruş zaman damgalarını değer (\texttt{value}) olarak saklayan \texttt{HashMap<Dusman, Long>} yapısı kullanılmıştır.
 
 ---
 
@@ -191,6 +281,8 @@ Harici ses dosyalarına ihtiyaç duyulmaması amacıyla Java Sound API kullanıl
     \texttt{assets/Dark\_Swamp\_Starter\_Pack\_v1.0 23.13.22/RawAssets/GroundTileset.png}
     \item \textbf{HUD Arayüz Şablonları:} \\
     \texttt{assets/Pixel UI pack 3 23.13.22/}
+    \item \textbf{Referans Dokümantasyonlar:} \\
+    Oracle Java Sound API - Java Sampled Sound References.
 \end{enumerate}
 
 \end{document}
