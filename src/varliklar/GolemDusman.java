@@ -7,36 +7,38 @@ import motor.GorselYukleyici;
 
 // GolemDusman sinifi, yavas hareket eden ancak yuksek cana, hasara ve geri itilme direncine sahip bir golem boss/dusmanidir
 public class GolemDusman extends Dusman {
+    // Golem gorsel onbellegi (static) - Disk erisimini ve griye donusturme dongulerini engeller (Andaç)
+    private static BufferedImage ortakGolemSheet = null;
+    private static BufferedImage ortakGolemGorsel = null;
     
     // Kurucu metot: Golem dusmani baslangic koordinatlariyla olusturur
     public GolemDusman(double x, double y) {
         // Ust sinifin kurucu metodunu cagirir: Konum (x, y), Can (150.0), Hiz (0.8), Hasar (25.0), Yaricap (28.0)
         super(x, y, 150.0, 0.8, 25.0, 28.0);
         
-        // Goleme ozel geri itilme carpani (cok agir oldugu icin mermiler onu neredeyse hic itmez)
+        // Goleme ozel geri itilme carpani (破坏力 geriItmeCarpani = 0.15)
         this.geriItmeCarpani = 0.15;
         
         // Golemin animasyon kare sayisi yuruyus sayfasi ile uyumlu olarak 8 karedir (Emre)
         this.maksAnimasyonKaresi = 8;
         
-        // Golem gorseli icin temel slime yuruyus animasyonu sheet dosyasini yukler
-        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
-        // Eger sheet dosyasi basariyla yuklendiyse
-        if (sheet != null) {
-            // Slime sheet gorselini programatik olarak goleme ozel gri kaya rengine donusturur
-            this.dusmanSheet = GorselYukleyici.gorseliGriyap(sheet);
-            // Kirpma veya yukleme sirasinda hata ihtimaline karsi koruma saglar
-            try {
-                // Eger gri tonlamali sheet basariyla olusturulduysa
-                if (this.dusmanSheet != null) {
-                    // Ilk kareyi yedek statik gorsel olarak kirpar (37, 42) konumundan 20x20 boyutunda
-                    this.dusmanGorseli = this.dusmanSheet.getSubimage(37, 42, 20, 20);
+        // Golem gorselini onbellekten yukler veya ilk defa olusturup onbellegini kaydeder (Andaç)
+        if (ortakGolemSheet == null) {
+            BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
+            if (sheet != null) {
+                ortakGolemSheet = GorselYukleyici.gorseliGriyap(sheet);
+                try {
+                    if (ortakGolemSheet != null) {
+                        ortakGolemGorsel = ortakGolemSheet.getSubimage(37, 42, 20, 20);
+                    }
+                } catch (Exception e) {
+                    System.out.println("UYARI: Golem gorseli kesilirken hata olustu.");
                 }
-            } catch (Exception e) {
-                // Hata durumunda konsola uyari yazdirir
-                System.out.println("UYARI: Golem gorseli kesilirken hata olustu. Yedek sekil cizilecek. Detay: " + e.getMessage());
             }
         }
+        
+        this.dusmanSheet = ortakGolemSheet;
+        this.dusmanGorseli = ortakGolemGorsel;
     }
     
     // Gorsel bulunamazsa veya yuklenemezse cizilecek geometrik yedek sekil metodu

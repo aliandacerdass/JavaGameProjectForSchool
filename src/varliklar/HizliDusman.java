@@ -7,6 +7,9 @@ import motor.GorselYukleyici;
 
 // HizliDusman sinifi, normal dusmanlardan daha hizli ancak daha az cana sahip olan bir dusman turudur
 public class HizliDusman extends Dusman {
+    // Hizli Slime gorsel onbellegi (static) - Disk erisimini ve piksel boyama dongulerini engeller (Andaç)
+    private static BufferedImage ortakHizliSheet = null;
+    private static BufferedImage ortakHizliGorsel = null;
     
     // Kurucu metot: Hizli dusmani baslangic koordinatlariyla olusturur
     public HizliDusman(double x, double y) {
@@ -19,24 +22,23 @@ public class HizliDusman extends Dusman {
         // Hizli dusman yuruyus animasyonu sheet dosyasi 8 kareden olusmaktadir
         this.maksAnimasyonKaresi = 8;
         
-        // Hizli dusman gorseli icin slime yurume animasyonu sheet dosyasini yukler
-        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
-        // Eger sheet dosyasi basariyla yuklendiyse
-        if (sheet != null) {
-            // Slime sheet gorselini programatik olarak hizli dusmana ozel kirmizi renge boyar (R=2.0, G=0.5, B=0.5 carpanlariyla)
-            this.dusmanSheet = GorselYukleyici.gorselRenklendir(sheet, 2.0, 0.5, 0.5);
-            // Kirpma veya yukleme sirasinda hata ihtimaline karsi koruma saglar
-            try {
-                // Eger renklendirilmis sheet basariyla olusturulduysa
-                if (this.dusmanSheet != null) {
-                    // Ilk kareyi yedek statik gorsel olarak kirpar (37, 42) konumundan 20x20 boyutunda
-                    this.dusmanGorseli = this.dusmanSheet.getSubimage(37, 42, 20, 20);
+        // Hizli dusman gorselini onbellekten yukler veya ilk defa olusturup onbellegini kaydeder (Andaç)
+        if (ortakHizliSheet == null) {
+            BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
+            if (sheet != null) {
+                ortakHizliSheet = GorselYukleyici.gorselRenklendir(sheet, 2.0, 0.5, 0.5);
+                try {
+                    if (ortakHizliSheet != null) {
+                        ortakHizliGorsel = ortakHizliSheet.getSubimage(37, 42, 20, 20);
+                    }
+                } catch (Exception e) {
+                    System.out.println("UYARI: Hizli dusman gorseli kesilirken hata olustu.");
                 }
-            } catch (Exception e) {
-                // Hata durumunda konsola uyari yazdirir
-                System.out.println("UYARI: Hizli dusman gorseli kesilirken hata olustu. Yedek sekil cizilecek. Detay: " + e.getMessage());
             }
         }
+        
+        this.dusmanSheet = ortakHizliSheet;
+        this.dusmanGorseli = ortakHizliGorsel;
     }
     
     // Gorsel bulunamazsa veya yuklenemezse cizilecek geometrik yedek sekil metodu

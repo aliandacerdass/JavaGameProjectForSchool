@@ -7,6 +7,10 @@ import motor.GorselYukleyici;
 
 // Dusman sinifi, oyundaki tum dusmanlarin temelini olusturur
 public class Dusman {
+    // Slime gorsel onbellegi (static) - Disk erisimini ve gereksiz bellek harcamasini engeller (Andaç)
+    protected static BufferedImage ortakSheet = null;
+    protected static BufferedImage ortakGorsel = null;
+
     // Dusmanin X koordinati (harita uzerindeki yatay konum)
     public double x;
     // Dusmanin Y koordinati (harita uzerindeki dikey konum)
@@ -49,21 +53,23 @@ public class Dusman {
         // Varsayilan geri itilme carpani 1.0 (tam itilme)
         this.geriItmeCarpani = 1.0;
         
-        // Dusman gorselini spritesheet'ten yuklemeyi dener ve ilk kareyi kirpar
-        // Daha dinamik bir gorunum elde etmek icin Idle-Sheet yerine Walk-Sheet yukluyoruz (Emre)
-        BufferedImage sheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
-        if (sheet != null) {
-            this.dusmanSheet = sheet;
-            this.maksAnimasyonKaresi = 8;
-            try {
-                // Slime karakterinin gorseldeki merkezini (37, 42) koordinatlarindan 20x20 boyutunda keseriz
-                // Boylece seffaf bosluklar atilir ve dusmanlar ekranda net bir sekilde gorunur hale gelir (Emre)
-                this.dusmanGorseli = sheet.getSubimage(37, 42, 20, 20);
-            } catch (Exception e) {
-                System.out.println("UYARI: Dusman gorseli kesilirken hata olustu. Yedek sekil cizilecek.");
-                this.dusmanGorseli = null;
+        // Dusman gorselini onbellekten yukler veya ilk defa yukleyip onbellegini olusturur (Andaç)
+        if (ortakSheet == null) {
+            ortakSheet = GorselYukleyici.gorselYukle("assets/FreeCharactersAnimationsAssetPack 23.13.22/SpriteSheets(96x96)/Monster_Slime/With_Shadows/Monster_Slime_Walk-Sheet.png");
+            if (ortakSheet != null) {
+                try {
+                    // Slime karakterinin gorseldeki merkezini (37, 42) koordinatlarindan 20x20 boyutunda keseriz
+                    ortakGorsel = ortakSheet.getSubimage(37, 42, 20, 20);
+                } catch (Exception e) {
+                    System.out.println("UYARI: Slime gorseli kesilirken hata olustu.");
+                    ortakGorsel = null;
+                }
             }
         }
+        
+        this.dusmanSheet = ortakSheet;
+        this.dusmanGorseli = ortakGorsel;
+        this.maksAnimasyonKaresi = 8;
     }
     
     // Dusmanin durumunu her karede (tick) gunceller ve oyuncuya dogru hareket etmesini saglar
