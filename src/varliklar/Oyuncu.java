@@ -41,6 +41,10 @@ public class Oyuncu {
     private int aktifSatir = 0; // 0: Idle, 1: Sol/Asagi, 2: Sag, 6: Yukari
     private boolean sagaBakiyor = true; // Oyuncunun baktigi yon (true: sag, false: sol)
     
+    // Hiz boost parametreleri (Andac)
+    private long hizBoostuBitisZamani = 0;
+    private double ekstraHiz = 0.0;
+    
     // Kurucu metot: Karakteri baslangic degerleriyle olusturur
     public Oyuncu(double x, double y) {
         // Baslangic konumlarini atar
@@ -79,6 +83,12 @@ public class Oyuncu {
     
     // Oyuncunun hareket ve diger durumlarini her karede (tick) gunceller
     public void guncelle(TusKontrolcu tusKontrol) {
+        // Hiz boostu suresinin dolup dolmadigini denetler (Andac)
+        long suAn = System.currentTimeMillis();
+        if (suAn > hizBoostuBitisZamani) {
+            ekstraHiz = 0.0;
+        }
+
         // Yatay ve dikey hareket yon degiskenleri
         double hareketX = 0;
         double hareketY = 0;
@@ -106,9 +116,10 @@ public class Oyuncu {
                 hareketY *= 0.707;
             }
             
-            // Konumu hiza bagli olarak gunceller
-            x += hareketX * hiz;
-            y += hareketY * hiz;
+            // Konumu hiza bagli olarak gunceller (ekstra hiz varsa eklenir - Andac)
+            double toplamHiz = hiz + ekstraHiz;
+            x += hareketX * toplamHiz;
+            y += hareketY * toplamHiz;
             
             // Oyuncunun 3000x3000px harita sinirlarinin disina cikmasini engeller
             // Sinir degerleri 0 ile 3000 arasinda tutulur (Matematiksel sinirlama)
@@ -188,13 +199,20 @@ public class Oyuncu {
     
     // Oyuncuyu ekrana cizen metot
     public void ciz(Graphics2D g2) {
+        // Eger hiz boostu aktifse oyuncunun arkasina kirmizi bir aura cizeriz (Andac)
+        if (ekstraHiz > 0) {
+            g2.setColor(new Color(255, 0, 0, 80)); // Yarı saydam kırmızı
+            g2.fillOval((int)(x - yariCap * 1.6), (int)(y - yariCap * 1.6), (int)(yariCap * 3.2), (int)(yariCap * 3.2));
+            g2.setColor(new Color(255, 50, 50, 150));
+            g2.drawOval((int)(x - yariCap * 1.6), (int)(y - yariCap * 1.6), (int)(yariCap * 3.2), (int)(yariCap * 3.2));
+        }
+
         // Eger oyuncu sheet dosyasi yuklendiyse animasyonlu cizer (Emre)
         if (oyuncuSheet != null) {
             try {
                 // Dinamik olarak o anki animasyon karesini spritesheet'ten keseriz (100x40 grid)
                 int cellX = animasyonKaresi * 100 + 28;
                 int cellY = aktifSatir * 40 + 4;
-                BufferedImage kareGorseli = oyuncuSheet.getSubimage(cellX, cellY, 24, 30);
                 
                 int cizimX = (int) (x - 16);
                 int cizimY = (int) (y - 24);
@@ -205,10 +223,11 @@ public class Oyuncu {
                 // - Yururken (Satir 3) ve Beklerken (Satir 5, kare 0-1) varsayilan sagdir -> sola bakarken ceviririz (!sagaBakiyor)
                 boolean cevir = (aktifSatir == 3 || (aktifSatir == 5 && animasyonKaresi < 2)) && !sagaBakiyor;
                 
+                // getSubimage yerine 9 parametreli drawImage kullanarak cop bellek (GC) olusumunu engelliyoruz
                 if (cevir) {
-                    g2.drawImage(kareGorseli, cizimX + w, cizimY, -w, h, null);
+                    g2.drawImage(oyuncuSheet, cizimX + w, cizimY, cizimX, cizimY + h, cellX, cellY, cellX + 24, cellY + 30, null);
                 } else {
-                    g2.drawImage(kareGorseli, cizimX, cizimY, w, h, null);
+                    g2.drawImage(oyuncuSheet, cizimX, cizimY, cizimX + w, cizimY + h, cellX, cellY, cellX + 24, cellY + 30, null);
                 }
             } catch (Exception e) {
                 // Herhangi bir hata durumunda statik resim cizimine duser
@@ -257,5 +276,30 @@ public class Oyuncu {
         g2.fillOval(cizimX, cizimY, (int) (yariCap * 2), (int) (yariCap * 2));
         g2.setColor(Color.BLACK);
         g2.fillOval((int) (x - 4), (int) (y - 4), 8, 8);
+    }
+
+    // Karakterin hizini gecici olarak artiran metot (Andac)
+    public void hizBoostuUygula(double miktar, long sureMs) {
+        this.ekstraHiz = miktar;
+        this.hizBoostuBitisZamani = System.currentTimeMillis() + sureMs;
+        System.out.println("Hiz boostu uygulandi! Miktar: " + miktar + ", Sure: " + sureMs + "ms");
+    }
+
+    // Oyuncunun tum durumlarini sifirlayan metot (Andac)
+    public void durumSifirla() {
+        this.can = 100.0;
+        this.maksCan = 100.0;
+        this.seviye = 1;
+        this.deneyim = 0.0;
+        this.sonrakiSeviyeDeneyimi = 100.0;
+        this.hiz = 4.0;
+        this.ekstraHiz = 0.0;
+        this.hizBoostuBitisZamani = 0;
+        this.x = 1500.0;
+        this.y = 1500.0;
+        this.animasyonKaresi = 0;
+        this.kareSayaci = 0;
+        this.aktifSatir = 0;
+        this.sagaBakiyor = true;
     }
 }

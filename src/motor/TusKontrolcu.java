@@ -11,8 +11,8 @@ public class TusKontrolcu extends KeyAdapter {
     
     // Hareket yonu tuslarinin basili olup olmadigini kontrol eden yardimci degiskenler
     public boolean yukari, asagi, sola, saga;
-    // Oyun yeniden baslatma tusu (R)
-    public boolean rTusu;
+    // Oyun yeniden baslatma tusu (R) ve ana menuye donus tusu (M) (Andaç)
+    public boolean rTusu, mTusu;
     
     // Oyun paneli referansi
     private final OyunPaneli panel;
@@ -62,6 +62,8 @@ public class TusKontrolcu extends KeyAdapter {
         saga = tuslar[KeyEvent.VK_D] || tuslar[KeyEvent.VK_RIGHT];
         // R tusu basiliysa yeniden baslatma tetiklenir
         rTusu = tuslar[KeyEvent.VK_R];
+        // M tusu basiliysa ana menuye donulur (Andaç)
+        mTusu = tuslar[KeyEvent.VK_M];
         
         // Ekrani yeniden cizmek icin panelin repaint metodunu tetikleriz
         if (panel != null) {
@@ -74,6 +76,6 @@ public class TusKontrolcu extends KeyAdapter {
         for (int i = 0; i < tuslar.length; i++) {
             tuslar[i] = false;
         }
-        yukari = asagi = sola = saga = rTusu = false;
+        yukari = asagi = sola = saga = rTusu = mTusu = false;
     }
 }

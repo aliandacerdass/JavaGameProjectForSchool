@@ -118,24 +118,34 @@ public class Dusman {
     
     // Dusmani ekrana cizen metot
     public void ciz(Graphics2D g2) {
+        // --- OPTIMIZASYON: EKRAN DISI AYIKLAMA (FRUSTUM CULLING) ---
+        // Ekrana cizilecek alan disindaki dusmanlari cizmeyerek performans artisi sagliyoruz
+        java.awt.Rectangle ekranSiniri = g2.getClipBounds();
+        if (ekranSiniri != null) {
+            if (x + yariCap < ekranSiniri.x || x - yariCap > ekranSiniri.x + ekranSiniri.width ||
+                y + yariCap < ekranSiniri.y || y - yariCap > ekranSiniri.y + ekranSiniri.height) {
+                return; // Gorunmeyen dusmani cizmeyi atla
+            }
+        }
+
         // Eger dusman sheet dosyasi varsa animasyonlu cizer (Emre)
         if (dusmanSheet != null) {
             try {
                 // Dinamik olarak o anki zıplama animasyon karesini spritesheet'ten keseriz (96px genisliginde grid)
                 int cellX = animasyonKaresi * 96 + 37;
                 int cellY = 42;
-                BufferedImage kareGorseli = dusmanSheet.getSubimage(cellX, cellY, 20, 20);
                 
                 int cizimX = (int) (x - yariCap);
                 int cizimY = (int) (y - yariCap);
                 int w = (int) (yariCap * 2);
                 int h = (int) (yariCap * 2);
                 
-                // Baktigi yone gore resmi yatay olarak cevirir (Andaç/Emre)
+                // Baktigi yone gore resmi yatay olarak cevirir (Andac/Emre)
+                // getSubimage yerine 9 parametreli drawImage kullanarak cop bellek (GC) olusumunu engelliyoruz
                 if (sagaBakiyor) {
-                    g2.drawImage(kareGorseli, cizimX + w, cizimY, -w, h, null);
+                    g2.drawImage(dusmanSheet, cizimX + w, cizimY, cizimX, cizimY + h, cellX, cellY, cellX + 20, cellY + 20, null);
                 } else {
-                    g2.drawImage(kareGorseli, cizimX, cizimY, w, h, null);
+                    g2.drawImage(dusmanSheet, cizimX, cizimY, cizimX + w, cizimY + h, cellX, cellY, cellX + 20, cellY + 20, null);
                 }
             } catch (Exception e) {
                 yedekGorselCiz(g2);

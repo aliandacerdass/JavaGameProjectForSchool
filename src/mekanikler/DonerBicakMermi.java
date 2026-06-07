@@ -3,6 +3,8 @@ package mekanikler;
 import varliklar.Oyuncu;
 import java.awt.Graphics2D;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import motor.GorselYukleyici;
 
 // DonerBicakMermi sinifi, normal mermilerden farkli olarak oyuncunun etrafinda trigonometrik donus yapar
 public class DonerBicakMermi extends Mermi {
@@ -65,7 +67,18 @@ public class DonerBicakMermi extends Mermi {
         }
     }
     
-    // Donen bicagin cizim metodu (Piksel tarzi metalik bir bicak rengi: Mavi-Gri)
+    // Donen bicak resmi (bir kez statik olarak yuklenir)
+    private static BufferedImage bicakGorseli = null;
+
+    static {
+        try {
+            bicakGorseli = GorselYukleyici.gorselYukle("assets/doner_bicak.png");
+        } catch (Exception e) {
+            System.out.println("UYARI: doner_bicak.png yuklenemedi, yedek cizime gecilecek.");
+        }
+    }
+
+    // Donen bicagin cizim metodu (Piksel tarzi metalik donen shuriken efekti)
     @Override
     public void ciz(Graphics2D g2) {
         // Eger aktif degilse cizim yapmaz
@@ -73,22 +86,74 @@ public class DonerBicakMermi extends Mermi {
             return;
         }
         
-        // Donen bicagin rengini Cyan (Turkuaz) yapar (oyunda belirgin durmasi icin)
-        g2.setColor(Color.CYAN);
+        // Donus hareketini canlandirmak icin local bir Graphics2D kopyasi olusturuyoruz
+        Graphics2D gKopya = (Graphics2D) g2.create();
         
-        // Bicagin sol ust cizim koordinatlarini hesaplar
-        int cizimX = (int) (this.x - this.yariCap);
-        int cizimY = (int) (this.y - this.yariCap);
-        int cap = (int) (this.yariCap * 2);
+        // Dunyadaki koordinata translate ederiz
+        gKopya.translate(this.x, this.y);
         
-        // Oval biciminde (daire) cizer
-        g2.fillOval(cizimX, cizimY, cap, cap);
+        // Kendi etrafinda hizla donmesi icin aciyi katlayarak dondururuz
+        gKopya.rotate(this.aci * 6.0);
         
-        // Metalik efekt katmak icin icine daha kucuk beyaz bir daire cizer
-        g2.setColor(Color.WHITE);
-        int icCap = (int) (this.yariCap);
-        int icCizimX = (int) (this.x - (this.yariCap / 2));
-        int icCizimY = (int) (this.y - (this.yariCap / 2));
-        g2.fillOval(icCizimX, icCizimY, icCap, icCap);
+        int r = (int) this.yariCap;
+        
+        if (bicakGorseli != null) {
+            // Eger resim dosyasi yuklenebildiyse resmi merkezde dondurerek ciz
+            gKopya.drawImage(bicakGorseli, -r, -r, r * 2, r * 2, null);
+        } else {
+            // --- YEDEK ÇİZİM: Eger resim dosyası bulunamazsa poligonlarla shuriken cizer ---
+            // --- 1. DIŞ BIÇAK PARLAMA HALKASI ---
+            gKopya.setColor(new Color(0, 255, 255, 60)); // Cyan golgesi/parlamasi
+            gKopya.fillOval(-r * 2, -r * 2, r * 4, r * 4);
+            
+            // --- 2. 4 KESKİN UÇ (POLYGONS) ---
+            gKopya.setColor(Color.CYAN);
+            
+            // Dikey bıçaklar (Yukarı ve Aşağı uçlar)
+            int[] xNoktalariDikey = { -3, 0, 3 };
+            int[] yNoktalariDikey1 = { 0, -r * 2, 0 }; // Yukari
+            int[] yNoktalariDikey2 = { 0, r * 2, 0 };  // Asagi
+            gKopya.fillPolygon(xNoktalariDikey, yNoktalariDikey1, 3);
+            gKopya.fillPolygon(xNoktalariDikey, yNoktalariDikey2, 3);
+            
+            // Yatay bıçaklar (Sol ve Sağ uçlar)
+            int[] yNoktalariYatay = { -3, 0, 3 };
+            int[] xNoktalariYatay1 = { 0, -r * 2, 0 }; // Sol
+            int[] xNoktalariYatay2 = { 0, r * 2, 0 };  // Sag
+            gKopya.fillPolygon(xNoktalariYatay1, yNoktalariYatay, 3);
+            gKopya.fillPolygon(xNoktalariYatay2, yNoktalariYatay, 3);
+            
+            // --- 3. METALİK MERKEZ HALKASI ---
+            gKopya.setColor(Color.LIGHT_GRAY);
+            gKopya.fillOval(-r / 2, -r / 2, r, r);
+            
+            // En merkezdeki delik veya parlama noktası
+            gKopya.setColor(Color.WHITE);
+            gKopya.fillOval(-r / 4, -r / 4, r / 2, r / 2);
+            
+            // Keskin metal hatlar (White highlights)
+            gKopya.setColor(Color.WHITE);
+            gKopya.drawLine(0, -r * 2, 0, r * 2);
+            gKopya.drawLine(-r * 2, 0, r * 2, 0);
+        }
+        
+        // Kopya grafik baglamini serbest birakiriz
+        gKopya.dispose();
+    }
+
+    // Vurulan dusmanlarin en son hasar alma zamanlari (Andac)
+    private final java.util.HashMap<varliklar.Dusman, Long> sonVurusZamanlari = new java.util.HashMap<>();
+
+    // Dusmana tekrar vurup vuramayacagini denetleyen metot (500 ms bekleme suresi - Andac)
+    public boolean dusmanaVurabilirMi(varliklar.Dusman d, long suAn) {
+        if (!sonVurusZamanlari.containsKey(d)) {
+            return true;
+        }
+        return (suAn - sonVurusZamanlari.get(d)) >= 500; // Dusman basina yarim saniye bekleme
+    }
+
+    // Vurulan dusmani ve zaman damgasini listeye kaydeden metot (Andac)
+    public void vurulanDusmaniEkle(varliklar.Dusman d, long suAn) {
+        sonVurusZamanlari.put(d, suAn);
     }
 }

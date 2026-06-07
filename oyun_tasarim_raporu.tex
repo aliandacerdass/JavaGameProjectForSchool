@@ -1,0 +1,196 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[turkish]{babel}
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Kod blokları için renk ve biçim tanımlamaları (Premium stil)
+\definecolor{codegreen}{rgb}{0,0.5,0}
+\definecolor{codegray}{rgb}{0.4,0.4,0.4}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.96}
+
+\lstdefinestyle{javastyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{blue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=Java
+}
+\lstset{style=javastyle}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={slimeSlayer - Oyun Tasarim ve Uygulama Raporu},
+}
+
+\title{
+    \vspace{-2cm}
+    \textbf{\Large Okul Projesi Teknik Raporu}\\
+    \vspace{0.5cm}
+    \textbf{\huge ``slimeSlayer''}\\
+    \vspace{0.5cm}
+    \large 2D Top-Down Survival Roguelite Oyunu Tasarım ve Uygulama Detayları
+}
+
+\author{
+    \textbf{Geliştirici Ekibi:}\\
+    Gizem Öksüz \\
+    Ali Andaç Erdaş \\
+    İsmail Emre Türkbay
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Giriş ve Proje Hakkında}
+Bu rapor; okul projesi kapsamında Java platformunun grafik arayüz kütüphaneleri (Swing ve AWT) kullanılarak harici bir oyun motoru desteği olmaksızın geliştirilen \textbf{``slimeSlayer''} oyununun mimarisini, mekaniklerini, matematiksel altyapısını ve optimizasyon süreçlerini incelemektedir.
+
+\subsection{Oyunun Amacı}
+\textbf{slimeSlayer}, oyuncunun bataklık temalı bir harita üzerinde hayatta kalma mücadelesini ele alan 2D roguelite türünde bir oyundur. Oyuncu WASD tuşları yardımıyla hareket ederken, otomatik saldıran yetenekleri (Ateş Topu, Döner Bıçak ve Kalkan) ile sürekli çoğalan Slime ve Golem ordularına karşı direnir. Düşmanlardan düşen deneyim kristallerini topladıkça seviye atlar, kart seçim ekranından yeteneklerini geliştirir, haritada doğan kırmızı güç meyvelerini yiyerek geçici hız kazanır. Ayrıca oyunda hasar anında uçuşan hasar sayıları, sentezlenmiş retro ses efektleri, ses seviyesi ve zorluk ayarlarının yapılabildiği interaktif bir giriş ekranı bulunur.
+
+---
+
+\section{Proje Ekibi ve Rol Dağılımı}
+Projede yer alan ekip üyeleri ve geliştirme süreçlerindeki katkıları şu şekildedir:
+\begin{itemize}
+    \item \textbf{Gizem Öksüz:} Seviye atlama kart arayüzü (\texttt{SeviyeArayuzu}), slot temelli envanter arayüzü, can/xp barları tasarımı ve entegrasyonu.
+    \item \textbf{Ali Andaç Erdaş:} Zemin çizim optimizasyonu, mıknatıslı kristaller, kırmızı hız meyvesi, döner bıçakların yörüngesi, hasar anında uçuşan renkli hasar sayıları (\texttt{HasarSayisi}), retro ses sentezleyici motoru (\texttt{SesSentezleyici}) ve ana giriş arayüzü (\texttt{MenuArayuzu}).
+    \item \textbf{İsmail Emre Türkbay:} Düşman yapay zekası (\texttt{Dusman}), zıplama/yürüme animasyonlarının spritesheet üzerinden kesilmesi, Golem ve Hızlı düşman varyasyonları, dalga uretim algoritması ve itme/fizik motoru.
+\end{itemize}
+
+---
+
+\section{Kod Mimarisinin İncelenmesi ve Etkileri}
+
+\subsection{Ana Giriş Ekranı ve İnteraktif Ayarlar}
+Oyuncuya oyunu başlatmadan önce ses seviyesini ve dalga zorluğunu ayarlayabileceği şık bir giriş paneli sunulmuştur. \texttt{MenuArayuzu.java} sınıfı, bu butonların çizimini ve tıklama kontrollerini yönetir. Kullanıcı ses düzeyini yüzde göstergeli bar üzerinden +/- butonlarıyla değiştirebilir, zorluğu Kolay (0.7x), Normal (1.0x) veya Zor (1.5x) olarak seçebilir. Ayrıca oyun bittiğinde \texttt{M} tuşu yardımıyla bu ekrana geri dönülebilir:
+
+\begin{lstlisting}[caption={Giriş Menüsü Buton ve Tıklama Yönetimi}, label={list:menubuton}]
+if (baslatButon.contains(mx, my)) {
+    panel.oyunuSifirla();
+    panel.durum = OyunDurumu.OYUN;
+    SesSentezleyici.gucMeyvesi(); // Tıklama sesi
+}
+\end{lstlisting}
+
+\subsection{Uzaklık Tabanlı Düşman Silme ve Dalga Kontrolü}
+Haritada oyuncudan çok uzaklaşan düşmanların CPU tüketmesini engellemek için periyodik çalışan culling sistemi entegre edilmiştir. 
+Aşağıdaki kod bloğunda, her 2 saniyede bir oyuncudan 1200 pikselden uzaktaki düşmanlar listeden temizlenmektedir:
+
+\begin{lstlisting}[caption={Düşman Üretim Sıklığı ve Culling Mekanizması}, label={list:dusmanuretici}]
+// Her 2 saniyede bir (120 tick) uzaktaki dusmanlari temizler
+if (panel.oyunSuresiKareSayisi % 120 == 0) {
+    double limitMesafeKaresi = 1200.0 * 1200.0;
+    panel.dusmanlar.removeIf(d -> {
+        double dx = d.x - panel.oyuncu.x;
+        double dy = d.y - panel.oyuncu.y;
+        return (dx * dx + dy * dy) > limitMesafeKaresi;
+    });
+}
+\end{lstlisting}
+
+\subsection{Çarpışma Algılama ve Geri İtme (Fizik)}
+Fizik motorunu simüle etmek amacıyla \texttt{CarpismaDenetleyici.java} içinde oyuncu ile düşmanların iç içe geçmesini engelleyen ve hasar alındığında her iki varlığı belirli oranlarda geriye iten vektörel çarpışma çözücü yazılmıştır:
+
+\begin{lstlisting}[caption={İç İçe Girmeyi Engelleme ve Geri İtme (Pushback)}, label={list:carpisma}]
+double dx = oyuncu.x - dusman.x;
+double dy = oyuncu.y - dusman.y;
+double mesafeKaresi = (dx * dx) + (dy * dy);
+double yariCapToplam = oyuncu.yariCap + dusman.yariCap;
+
+if (mesafeKaresi < yariCapToplam * yariCapToplam) {
+    double mesafe = Math.sqrt(mesafeKaresi);
+    if (mesafe > 0) {
+        double overlap = yariCapToplam - mesafe;
+        double itmeX = (dx / mesafe) * overlap;
+        double itmeY = (dy / mesafe) * overlap;
+        
+        oyuncu.x += itmeX * 0.6; // Oyuncu geriye seker
+        oyuncu.y += itmeY * 0.6;
+        dusman.x -= itmeX * 0.4 * dusman.geriItmeCarpani;
+        dusman.y -= itmeY * 0.4 * dusman.geriItmeCarpani;
+    }
+}
+\end{lstlisting}
+
+\subsection{Uçuşan Hasar Sayıları}
+Düşmanlar hasar aldıklarında kafalarının üzerinde beliren, darbenin türüne göre renklendirilmiş (turuncu, turkuaz, mavi) uçuşan hasar sayıları (\texttt{HasarSayisi}) yukarı doğru süzülür ve saydamlaşarak kaybolur.
+
+\subsection{Dinamik ve Merkezi Tecrübe Sistemi}
+Düşmanlar öldüğünde düşürdükleri kristallerin tecrübe değeri düşman tipine göre dinamik olarak hesaplanır: Sıradan düşmanlar 15 DP, Hızlı düşmanlar 25 DP ve büyük Golem Boss 60 DP kazandırır. Bu kontrol merkezi olarak \texttt{OyunPaneli} güncelleme döngüsünde yürütülür.
+
+---
+
+\section{Matematik ve Fiziksel Hesaplamalar}
+
+\subsection{Yörüngesel Hareket}
+Döner bıçakların karakterin etrafında dairesel yörüngede dönmesi trigonometrik fonksiyonlar kullanılarak gerçekleştirilmiştir:
+\begin{equation{equation}
+    x_{bicak} = x_{oyuncu} + \cos(\theta) \times r_{yorunge}
+\end{equation}
+\begin{equation}
+    y_{bicak} = y_{oyuncu} + \sin(\theta) \times r_{yorunge}
+\end{equation}
+
+\subsection{Mıknatıs Alan Çekimi}
+Yere düşen deneyim kristallerinin oyuncuya çekilmesinde oyuncuya yaklaştıkça ivmelenen çekme kuvveti formülü uygulanmıştır:
+\begin{equation}
+    \vec{V}_{cekme} = \vec{u}_{yon} \times \min(12.0, V_{eski} + 0.25)
+\end{equation}
+
+---
+
+\section{Teknik Detaylar ve Performans Optimizasyonları}
+
+\subsection{Ekran Dışı Çizimlerin Kapatılması (Frustum Culling)}
+Ekran sınırları dışındaki düşmanların çizimini devre dışı bırakarak CPU tasarrufu sağlamak amacıyla \texttt{getClipBounds} kullanılmaktadır.
+
+\subsection{Retro Ses Sentezleyici Motoru (javax.sound.sampled)}
+Harici ses dosyalarına ihtiyaç duyulmaması amacıyla Java Sound API kullanılarak tamamen retro 8-bit dalgalar dinamik sentezlenir. Ses seviyesi çarpanı da burada dinamik olarak genliğe uygulanır.
+
+\subsection{Çöp Toplayıcı (GC) Yükünün Azaltılması}
+\texttt{getSubimage} metodunun yaratabileceği anlık donmaları engellemek için, spritelar 9 parametreli \texttt{drawImage} koordinat sınırlandırmasıyla bellek dostu çizilmiştir.
+
+---
+
+\section{Kaynakça}
+\begin{enumerate}
+    \item \textbf{Oyuncu Spritesheet Tasarımı:} \\
+    \texttt{assets/Heroes99\_free 23.13.22/character\_spritesheet.png}
+    \item \textbf{Canavar/Slime Animasyonları:} \\
+    \texttt{assets/FreeCharactersAnimationsAssetPack 23.13.22/Monster\_Slime\_Walk-Sheet.png}
+    \item \textbf{Zemin Tileset Çizimleri:} \\
+    \texttt{assets/Dark\_Swamp\_Starter\_Pack\_v1.0 23.13.22/RawAssets/GroundTileset.png}
+    \item \textbf{HUD Arayüz Şablonları:} \\
+    \texttt{assets/Pixel UI pack 3 23.13.22/}
+\end{enumerate}
+
+\end{document}

@@ -108,6 +108,9 @@ public class DeneyimKristali {
                 
                 // Seviye atlama kart arayüzünü tetikler (Oyunu duraklatıp seçim menüsünü açar)
                 panel.seviyeArayuzu.aktifEt();
+                
+                // Retro seviye atlama sesini calar (Andaç)
+                motor.SesSentezleyici.seviyeAtla();
             }
         }
     }

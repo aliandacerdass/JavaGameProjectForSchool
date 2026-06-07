@@ -30,8 +30,25 @@ public class OyunPaneli extends JPanel {
     public double kameraX = 0;
     public double kameraY = 0;
     
-    // Oyunun anlik durumunu saklayan degisken (Varsayilan olarak OYUN durumunda baslar)
-    public OyunDurumu durum = OyunDurumu.OYUN;
+    // Kamera sarsıntı ve hasar flaş parametreleri (Andaç)
+    private int sarsintiSuresi = 0;
+    private double sarsintiGucu = 0.0;
+    private int hasarFlasiSuresi = 0;
+    
+    // Hasar alindiginda ekran sarsintisini ve kirmizi flasi baslatan metot (Andaç)
+    public void hasarFlasiTetikle() {
+        this.hasarFlasiSuresi = 8;  // 8 kare boyunca kirmizi ekran flasi
+        this.sarsintiSuresi = 12;   // 12 kare boyunca kamera sarsintisi
+        this.sarsintiGucu = 6.0;    // 6 piksel sarsinti gucu
+    }
+    
+    // Oyunun anlik durumunu saklayan degisken (Varsayilan olarak MENU durumunda baslar) (Andaç)
+    public OyunDurumu durum = OyunDurumu.MENU;
+    
+    // Giris/Ayar ekrani arayuzu nesnesi (Andaç)
+    public final MenuArayuzu menuArayuzu;
+    // Zorluk katsayisi (Andaç)
+    public double zorlukModu = 1.0; 
     
     // Oyundaki aktif silahların listesi (Gizem)
     public final ArrayList<Silah> silahlar = new ArrayList<>();
@@ -41,6 +58,10 @@ public class OyunPaneli extends JPanel {
     public final ArrayList<Dusman> dusmanlar = new ArrayList<>();
     // Yere düşen deneyim kristallerinin listesi (Gizem)
     public final ArrayList<DeneyimKristali> kristaller = new ArrayList<>();
+    // Yere dusen Guc Meyvelerinin listesi (Andac)
+    public final ArrayList<GucMeyvesi> meyveler = new ArrayList<>();
+    // Havada ucusan hasar sayilarinin listesi (Andac)
+    public final ArrayList<HasarSayisi> hasarSayilari = new ArrayList<>();
     
     // Seviye atlama kart arayüzü nesnesi (Gizem)
     public final SeviyeArayuzu seviyeArayuzu;
@@ -72,6 +93,9 @@ public class OyunPaneli extends JPanel {
         
         // Seviye atlama arayuzunu baslatir
         this.seviyeArayuzu = new SeviyeArayuzu(this);
+        
+        // Giris ekranini baslatir (Andaç)
+        this.menuArayuzu = new MenuArayuzu(this);
         
         // Klavye kontrolcusunu olusturur
         this.tusKontrol = new TusKontrolcu(this);
@@ -117,8 +141,25 @@ public class OyunPaneli extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         
+        // Eger menu durumundaysak sadece menuyu cizeriz (Andaç)
+        if (durum == OyunDurumu.MENU) {
+            menuArayuzu.ciz(g2);
+            g2.dispose();
+            return;
+        }
+        
         // 1. DÜNYA NESNELERİNİ ÇİZ (Kamera kaydirmasini uygula)
-        g2.translate(-kameraX, -kameraY);
+        double nihaiKameraX = kameraX;
+        double nihaiKameraY = kameraY;
+        
+        // Eger kamera sarsintisi aktifse koordinatlari rastgele sarsariz (Andac)
+        if (sarsintiSuresi > 0) {
+            java.util.Random rand = new java.util.Random();
+            nihaiKameraX += (rand.nextDouble() - 0.5) * 2.0 * sarsintiGucu;
+            nihaiKameraY += (rand.nextDouble() - 0.5) * 2.0 * sarsintiGucu;
+        }
+        
+        g2.translate(-nihaiKameraX, -nihaiKameraY);
         
         // Zemin cizimi (Andaç)
         if (zeminKarosu != null) {
@@ -154,6 +195,11 @@ public class OyunPaneli extends JPanel {
             kristaller.get(i).ciz(g2);
         }
         
+        // Yerdeki guc meyvelerini cizer (Andac)
+        for (int i = 0; i < meyveler.size(); i++) {
+            meyveler.get(i).ciz(g2);
+        }
+        
         // Havada giden aktif mermileri cizer
         for (int i = 0; i < mermiler.size(); i++) {
             mermiler.get(i).ciz(g2);
@@ -167,8 +213,18 @@ public class OyunPaneli extends JPanel {
         // Oyuncu karakterini dunya koordinatlarina gore cizer (Emre'nin Oyuncu sinifindaki ciz metodu)
         oyuncu.ciz(g2);
         
+        // Oyuncunun aktif silahlarinin (ornegin Kalkan) ekrandaki gorsel efektlerini cizer
+        for (int i = 0; i < silahlar.size(); i++) {
+            silahlar.get(i).ciz(g2);
+        }
+        
+        // Havada ucusan hasar sayilarini cizer (Andac)
+        for (int i = 0; i < hasarSayilari.size(); i++) {
+            hasarSayilari.get(i).ciz(g2);
+        }
+        
         // 2. SABİT EKRAN ARAYÜZÜNÜ ÇİZ (Kamerayi geri cevir / translate geri al)
-        g2.translate(kameraX, kameraY);
+        g2.translate(nihaiKameraX, nihaiKameraY);
         
         // Varsayılan fontları ayarla (her frame sıfırlamak için)
         Font varsayilanFont = new Font("Arial", Font.PLAIN, 12);
@@ -322,6 +378,14 @@ public class OyunPaneli extends JPanel {
                     g2.setColor(Color.CYAN);
                     g2.fillRect(slotX + 14, slotY + 6, 4, 20);
                     g2.fillRect(slotX + 6, slotY + 14, 20, 4);
+                } else if (s.ad.equals("Kalkan")) {
+                    // Kalkan İkonu (Konsantrik mavi/cyan enerji dairesi)
+                    g2.setColor(new Color(0, 191, 255));
+                    g2.drawOval(slotX + 6, slotY + 6, 20, 20);
+                    g2.setColor(Color.CYAN);
+                    g2.drawOval(slotX + 10, slotY + 10, 12, 12);
+                    g2.setColor(Color.WHITE);
+                    g2.fillOval(slotX + 13, slotY + 13, 6, 6);
                 }
                 
                 // Silah Seviyesi (Sağ altta küçük sarı yazı)
@@ -382,10 +446,20 @@ public class OyunPaneli extends JPanel {
             // İnce ayırıcı çizgi
             g2.drawLine(panelX + 40, panelY + 185, panelX + panelW - 40, panelY + 185);
             
-            // R tusu ile yeniden baslatma talimati yazisi
+            // R ve M tuslari ile yeniden baslatma veya menuye donme talimati yazilari (Andaç)
             g2.setColor(Color.CYAN);
-            g2.setFont(new Font("Arial", Font.BOLD, 14));
-            g2.drawString("Yeniden baslamak icin 'R' tusuna basin.", panelX + 65, panelY + 220);
+            g2.setFont(new Font("Arial", Font.BOLD, 13));
+            g2.drawString("Yeniden baslamak icin 'R' tusuna basin.", panelX + 72, panelY + 212);
+            g2.setColor(Color.YELLOW);
+            g2.drawString("Ana menuye donmek icin 'M' tusuna basin.", panelX + 68, panelY + 236);
+        }
+        
+        // Oyuncu hasar aldiginda hafif kirmizi ekran flasi ceker (Andaç)
+        if (hasarFlasiSuresi > 0) {
+            int alfa = (int) (110.0 * ((double) hasarFlasiSuresi / 8.0));
+            alfa = Math.max(0, Math.min(255, alfa));
+            g2.setColor(new Color(255, 0, 0, alfa));
+            g2.fillRect(0, 0, EKRAN_GENISLIGI, EKRAN_YUKSEKLIGI);
         }
         
         // Cizim islemlerinin bellek temizligini yapar
@@ -394,10 +468,21 @@ public class OyunPaneli extends JPanel {
     
     // Oyun durumlarini guncelleyen metot (OyunDongusu tarafindan periyodik olarak tetiklenir)
     public void guncelle() {
-        // Eger oyun bittiyse sadece yeniden baslatma tusunu kontrol ederiz
+        // Eger oyun MENU durumundaysa sadece menu ayarlarini gunceller (Andaç)
+        if (durum == OyunDurumu.MENU) {
+            menuArayuzu.guncelle();
+            return;
+        }
+        
+        // Eger oyun bittiyse yeniden baslatma (R) veya ana menuye donus (M) tuslarini denetler (Andaç)
         if (durum == OyunDurumu.OYUN_BITTI) {
             if (tusKontrol.rTusu) {
                 oyunuSifirla();
+                durum = OyunDurumu.OYUN;
+            } else if (tusKontrol.mTusu) {
+                durum = OyunDurumu.MENU;
+                tusKontrol.temizle();
+                fareKontrol.temizle();
             }
             return;
         }
@@ -413,12 +498,21 @@ public class OyunPaneli extends JPanel {
             // Saniye sayacı için kare sayısını artırır (Gizem)
             oyunSuresiKareSayisi++;
             
+            // Kamera sarsintisi ve hasar flas surelerini azaltir (Andaç)
+            if (sarsintiSuresi > 0) {
+                sarsintiSuresi--;
+            }
+            if (hasarFlasiSuresi > 0) {
+                hasarFlasiSuresi--;
+            }
+            
             // Oyuncunun hareketlerini ve konumunu gunceller
             oyuncu.guncelle(this.tusKontrol);
             
             // Oyuncunun canı bittiyse oyunu OYUN_BITTI durumuna aliriz
             if (oyuncu.can <= 0) {
                 durum = OyunDurumu.OYUN_BITTI;
+                motor.SesSentezleyici.oyunBitti(); // Andaç: Oyun bitti hüzünlü sesini çal
                 return;
             }
             
@@ -432,9 +526,9 @@ public class OyunPaneli extends JPanel {
                 dusmanlar.add(new GolemDusman(oyuncu.x, oyuncu.y + 350));
             }
             
-            // Oyuncunun aktif silahlarini gunceller ve ates etmelerini saglar
+            // Oyuncunun aktif silahlarini gunceller ve ates etmelerini saglar (Andaç)
             for (int i = 0; i < silahlar.size(); i++) {
-                silahlar.get(i).guncelle(dusmanlar, mermiler);
+                silahlar.get(i).guncelle(this);
             }
             
             // Aktif mermilerin konumlarini gunceller
@@ -455,15 +549,56 @@ public class OyunPaneli extends JPanel {
                 }
             }
             
+            // Guc meyvelerinin toplanmasini ve guncellenmesini denetler (Andac)
+            for (int i = meyveler.size() - 1; i >= 0; i--) {
+                GucMeyvesi gm = meyveler.get(i);
+                gm.guncelle(this);
+                if (gm.toplandi) {
+                    meyveler.remove(i);
+                }
+            }
+            
+            // Ucusan hasar sayilarinin konumlarini ve omurlerini gunceller (Andac)
+            for (int i = hasarSayilari.size() - 1; i >= 0; i--) {
+                HasarSayisi hs = hasarSayilari.get(i);
+                hs.guncelle();
+                if (hs.omur <= 0) {
+                    hasarSayilari.remove(i);
+                }
+            }
+            
+            // Belirli aralıklarla (yaklasik 30 saniyede bir - 1800 kare) haritaya nadiren Guc Meyvesi dogururuz (Andac)
+            if (oyunSuresiKareSayisi > 0 && oyunSuresiKareSayisi % 1800 == 0) {
+                java.util.Random rast = new java.util.Random();
+                double aci = rast.nextDouble() * 2.0 * Math.PI;
+                double mesafe = 150.0 + rast.nextDouble() * 250.0;
+                double meyveX = Math.max(50, Math.min(HARITA_BOYUTU - 50, oyuncu.x + Math.cos(aci) * mesafe));
+                double meyveY = Math.max(50, Math.min(HARITA_BOYUTU - 50, oyuncu.y + Math.sin(aci) * mesafe));
+                meyveler.add(new GucMeyvesi(meyveX, meyveY));
+                System.out.println("Guc Meyvesi dogdu! Konum: (" + (int)meyveX + ", " + (int)meyveY + ")");
+            }
+            
             // Aktif dusmanlarin hareket yapay zekasini gunceller
             for (int i = 0; i < dusmanlar.size(); i++) {
                 dusmanlar.get(i).guncelle(oyuncu);
             }
             
             // Çarpışmaları denetler (Andac'in CarpismaDenetleyici sınıfındaki metot cagrilir)
-            CarpismaDenetleyici.carpismalariDenetle(oyuncu, dusmanlar, mermiler, kristaller);
+            CarpismaDenetleyici.carpismalariDenetle(this);
             
-            // Ölen düşmanları temizler
+            // Ölen düşmanları temizler ve tecrübe kristali bırakmalarını sağlar (Andaç)
+            for (int i = 0; i < dusmanlar.size(); i++) {
+                Dusman d = dusmanlar.get(i);
+                if (d.can <= 0) {
+                    double xpMiktari = 15.0;
+                    if (d instanceof GolemDusman) {
+                        xpMiktari = 60.0;
+                    } else if (d instanceof HizliDusman) {
+                        xpMiktari = 25.0;
+                    }
+                    kristaller.add(new DeneyimKristali(d.x, d.y, xpMiktari));
+                }
+            }
             dusmanlar.removeIf(d -> d.can <= 0);
             
             // Dusman ureticisini gunceller ve yeni dalgalari dogurur (Emre)
@@ -485,14 +620,14 @@ public class OyunPaneli extends JPanel {
         dusmanlar.clear();
         mermiler.clear();
         kristaller.clear();
+        meyveler.clear();
+        hasarSayilari.clear();
         
-        // Oyuncunun canini ve durumlarini sifirlar
-        oyuncu.can = oyuncu.maksCan;
-        oyuncu.x = 1500;
-        oyuncu.y = 1500;
-        oyuncu.seviye = 1;
-        oyuncu.deneyim = 0;
-        oyuncu.sonrakiSeviyeDeneyimi = 100;
+        // Oyuncunun canini, hizini ve durumlarini sifirlar (Andac)
+        oyuncu.durumSifirla();
+        
+        // Dusman ureticisinin zamanlayicilarini ve zorlugunu sifirlar (Andac)
+        dusmanUretici.sifirla();
         
         // Girdi durumlarini temizler (R tusunun sonsuz tetiklenmesini onlemek icin)
         tusKontrol.temizle();

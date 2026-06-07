@@ -78,6 +78,14 @@ public class SeviyeArayuzu {
             tumSecenekler.add(new GelistirmeSecenegi("Guncelle: Doner Bicak", "Bicaklarin hasarini ve donus yaricapini artirir.", 4));
         }
         
+        // Kalkan silah kontrolu (Andaç)
+        Silah kalkan = silahBul("Kalkan");
+        if (kalkan == null) {
+            tumSecenekler.add(new GelistirmeSecenegi("Yeni: Kalkan", "Etrafinizda koruyucu dairesel bir enerji kalkani olusturur.", 5));
+        } else if (kalkan.seviye < 5) {
+            tumSecenekler.add(new GelistirmeSecenegi("Guncelle: Kalkan", "Kalkanin hasarini ve koruma yaricapini artirir.", 5));
+        }
+        
         // Olusturulan olasi secenekler arasindan rastgele 3 adet benzersiz secenek secer
         int secilecekAdet = Math.min(3, tumSecenekler.size());
         for (int i = 0; i < secilecekAdet; i++) {
@@ -182,6 +190,16 @@ public class SeviyeArayuzu {
                     donerBicak.seviyeAtla();
                 }
                 break;
+                
+            case 5: // Kalkan Ekle / Seviye Artir (Gizem)
+                Silah kalkanSilah = silahBul("Kalkan");
+                if (kalkanSilah == null) {
+                    panel.silahlar.add(new KalkanSilahi(oyuncu));
+                    System.out.println("Yeni Silah: Kalkan envantere eklendi!");
+                } else {
+                    kalkanSilah.seviyeAtla();
+                }
+                break;
         }
     }
     
@@ -284,6 +302,13 @@ public class SeviyeArayuzu {
                 g2.fillRect(iconX + 40, iconY + 25, 5, 5);
                 g2.fillRect(iconX + 25, iconY + 5, 5, 5);
                 g2.fillRect(iconX + 20, iconY + 40, 5, 5);
+            } else if (secenek.tip == 5) { // Kalkan - Enerji Alanı (Andaç)
+                g2.setColor(new Color(0, 191, 255));
+                g2.drawOval(iconX + 5, iconY + 5, 40, 40);
+                g2.setColor(new Color(0, 255, 255, 120));
+                g2.drawOval(iconX + 10, iconY + 10, 30, 30);
+                g2.setColor(Color.WHITE);
+                g2.fillOval(iconX + 20, iconY + 20, 10, 10);
             }
             
             // Açıklama Metni (Satır sığdırma ve piksel hizalama)

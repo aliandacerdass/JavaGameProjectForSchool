@@ -2,6 +2,7 @@ package mekanikler;
 
 import varliklar.Oyuncu;
 import varliklar.Dusman;
+import motor.OyunPaneli;
 import java.util.ArrayList;
 import java.awt.Graphics2D;
 
@@ -43,14 +44,14 @@ public abstract class Silah {
     }
     
     // Silahin her oyun karesinde (tick) durumunu guncellemesini saglayan temel metot
-    public void guncelle(ArrayList<Dusman> dusmanlar, ArrayList<Mermi> mermiler) {
+    public void guncelle(OyunPaneli panel) {
         // Sistemdeki mevcut zamani milisaniye olarak alir
         long suAnkiZaman = System.currentTimeMillis();
         
         // Eger son saldiridan bu yana gecen sure, bekleme suresinden buyukse yeni saldiri yapilabilir
         if (suAnkiZaman - sonSaldiriZamani >= saldiriBeklemeSuresi) {
             // Saldiri metodunu cagirir (alt siniflar kendi saldiri mantigini buraya yazacak)
-            saldir(dusmanlar, mermiler);
+            saldir(panel);
             // Son saldiri zamanini gunceller
             this.sonSaldiriZamani = suAnkiZaman;
         }
@@ -58,7 +59,7 @@ public abstract class Silah {
     
     // Her silahin kendine has saldirisini tetikleyecek soyut (abstract) metot
     // Bu metodu her silah sinifi (AtesTopu, DonerBicak) kendi kurallarina gore ezmelidir (override)
-    public abstract void saldir(ArrayList<Dusman> dusmanlar, ArrayList<Mermi> mermiler);
+    public abstract void saldir(OyunPaneli panel);
     
     // Ekranda cizilmesi gereken gorsel/piksel bir silahi cizmek icin kullanilacak metot
     public abstract void ciz(Graphics2D g2);

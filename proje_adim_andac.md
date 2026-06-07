@@ -36,7 +36,7 @@ Bu dosya Andaç'ın yapması gereken adımları ve güncel ilerlemesini takip ed
   - **Andaç'ın Görevi:** Zemin kaplaması ve renklendirme efektlerinin sorunsuz çalıştığını doğrulamak.
   - *Durum:* Tamamlandı ve onaylandı.
 
-- [ ] **Adım 7: Ekran Sarsıntısı (Screen Shake) ve Hasar Gösterge Efektleri**
-  - **Yapay Zeka Görevi:** Oyuncu hasar aldığında ekranın kısa süreliğine sarsılmasını (screen shake) sağlayan kamera sarsıntı sınıfını entegre etmek. Hasar alındığında ekrana hafif bir kırmızı flaş efekti çizmek.
+- [x] **Adım 7: Ekran Sarsıntısı (Screen Shake) ve Hasar Gösterge Efektleri**
+  - **Yapay Zeka Görevi:** Oyuncu hasar aldığında ekranın kısa süreliğine sarsılmasını (screen shake) sağlayan kamera sarsıntı yapısını entegre etmek. Hasar alındığında ekrana hafif bir kırmızı flaş efekti çizmek.
   - **Andaç'ın Görevi:** Hasar alındığında ekranın sarsıldığını ve kırmızı flaş efektinin vuruş hissini artırdığını test etmek.
-  - *Durum:* Tasarım aşamasında.
+  - *Durum:* Tamamlandı ve onaylandı.

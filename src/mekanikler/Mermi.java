@@ -78,23 +78,58 @@ public class Mermi {
         }
     }
     
-    // Mermiyi ekrana cizen metot (Piksel temali geri donus cizimi icerir)
+    // Mermiyi ekrana cizen metot (Piksel ve alev animasyonu efektli Ates Topu)
     public void ciz(Graphics2D g2) {
         // Eger mermi aktif degilse cizim yapmaz
         if (!aktif) {
             return;
         }
         
-        // Merminin rengini belirler (Ateş topu/Mermi rengi olarak Turuncu)
-        g2.setColor(Color.ORANGE);
+        // --- 1. ALEV KUYRUĞU / PARÇACIK EFEKTİ (TRAILING PARTICLES) ---
+        // Alev topunun hareket yonunun tersine dogru kuculen ve saydamlasan alev kuyrugu cizeriz
+        int r = (int) this.yariCap;
         
-        // Daire tabanli carpisma yariçapini kullanarak mermiyi ekrana oval olarak cizer
-        // X ve Y koordinatlari merminin merkezini temsil ettiginden sol ust koseyi hesaplamak icin yariCap cikarilir
-        int cizimX = (int) (this.x - this.yariCap);
-        int cizimY = (int) (this.y - this.yariCap);
-        int cap = (int) (this.yariCap * 2);
+        // Kuyruk parcalari arasinda dongu
+        for (int i = 3; i >= 1; i--) {
+            // Kuyruk konumu: Mevcut konumdan geriye dogru yon vektorune gore kaydirilir
+            double kaymaMiktari = r * 0.8 * i;
+            int kX = (int) (this.x - this.yonX * kaymaMiktari);
+            int kY = (int) (this.y - this.yonY * kaymaMiktari);
+            
+            // Boyut ve saydamlik her adimda kuculur
+            int kCap = (int) (r * 2 * (1.0 - i * 0.25));
+            int kAlfa = 220 - i * 50; // Alev ucuna dogru kararma/silinme
+            
+            if (kCap > 0 && kAlfa > 0) {
+                // Kuyrugun rengi disari dogru kirmizilasar
+                if (i == 3) {
+                    g2.setColor(new Color(139, 0, 0, kAlfa)); // Koyu Kirmizi
+                } else if (i == 2) {
+                    g2.setColor(new Color(255, 69, 0, kAlfa)); // Turuncu kirmizi
+                } else {
+                    g2.setColor(new Color(255, 140, 0, kAlfa)); // Koyu turuncu
+                }
+                g2.fillOval(kX - kCap / 2, kY - kCap / 2, kCap, kCap);
+            }
+        }
         
-        // Ovali cizer
-        g2.fillOval(cizimX, cizimY, cap, cap);
+        // --- 2. KATMANLI PARLAK MERKEZ (LAMINATED CORE) ---
+        // Alev topunun merkezine dogru parlakligi ve sicakligi artan katmanli bir cizim uyguluyoruz
+        
+        // Katman A: En dis kirmizi alev halkasi
+        g2.setColor(new Color(220, 20, 60, 200)); // Parlak Kirmizi
+        g2.fillOval((int)(x - r * 1.2), (int)(y - r * 1.2), (int)(r * 2.4), (int)(r * 2.4));
+        
+        // Katman B: Orta turuncu govde
+        g2.setColor(new Color(255, 140, 0)); // Turuncu
+        g2.fillOval((int)(x - r), (int)(y - r), r * 2, r * 2);
+        
+        // Katman C: Sicak sari katman
+        g2.setColor(new Color(255, 215, 0)); // Sari
+        g2.fillOval((int)(x - r * 0.75), (int)(y - r * 0.75), (int)(r * 1.5), (int)(r * 1.5));
+        
+        // Katman D: En sicak beyaz merkez cekirdegi
+        g2.setColor(Color.WHITE);
+        g2.fillOval((int)(x - r * 0.4), (int)(y - r * 0.4), (int)(r * 0.8), (int)(r * 0.8));
     }
 }

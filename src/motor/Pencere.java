@@ -7,8 +7,8 @@ public class Pencere extends JFrame {
     
     // Kurucu metot: Pencerenin basligini ve temel ozelliklerini ayarlar
     public Pencere() {
-        // Pencerenin basligini belirler
-        super("Piksel Hayatta Kalma Oyunu");
+        // Pencerenin basligini slimeSlayer yapar (Andac)
+        super("slimeSlayer");
         
         // Pencere kapatildiginda uygulamanin sonlandirilmasini saglar
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

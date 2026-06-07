@@ -16,7 +16,7 @@ public class DusmanUretici {
     // Iki uretim arasindaki bekleme suresi (milisaniye cinsinden)
     private long uretimAraligi;
     // Oyunun baslangic zaman damgasi (zorlugu gecen sureye gore ayarlamak icin)
-    private final long baslangicZamani;
+    private long baslangicZamani;
     
     // Kurucu metot: Referanslari ve zaman damgalarini hazirlar
     public DusmanUretici(OyunPaneli panel) {
@@ -24,7 +24,14 @@ public class DusmanUretici {
         this.rastgele = new Random();
         this.baslangicZamani = System.currentTimeMillis();
         this.sonUretimZamani = System.currentTimeMillis();
-        this.uretimAraligi = 2500; // Baslangicta her 2.5 saniyede bir yeni dusman dalgasi doğar
+        this.uretimAraligi = 1800; // Baslangicta her 1.8 saniyede bir yeni dusman dalgasi doğar
+    }
+
+    // Dusman uretim zamanlayicilarini ve zorlugu baslangic degerlerine sifirlar (Andac)
+    public void sifirla() {
+        this.baslangicZamani = System.currentTimeMillis();
+        this.sonUretimZamani = System.currentTimeMillis();
+        this.uretimAraligi = 1800;
     }
     
     // Her oyun karesinde (tick) cagrilan guncelleme metodu
@@ -33,13 +40,27 @@ public class DusmanUretici {
         
         // Eger son uretimden bu yana gecen sure uretim araligini astiysa yeni dusmanlar uretilir
         if (suAnkiZaman - sonUretimZamani >= uretimAraligi) {
-            dusmanUret();
+            // OPTIMIZASYON: Ekranda cok fazla dusman birikmesini engellemek icin limit koyuyoruz
+            if (panel.dusmanlar.size() < 150) {
+                dusmanUret();
+            }
             sonUretimZamani = suAnkiZaman;
             
             // Gecen sureye bagli olarak uretim hizini hafifce artiririz (uretim araligini azaltarak)
             // Minimum 1000 ms (1 saniye) bekleme limiti koyarak oyunun cignenemez hale gelmesini engelleriz
             long gecenSure = suAnkiZaman - baslangicZamani;
-            uretimAraligi = Math.max(1000, 2500 - (gecenSure / 60000) * 200);
+            uretimAraligi = Math.max(700, 1800 - (gecenSure / 60000) * 150);
+        }
+
+        // OPTIMIZASYON: Oyuncudan cok uzakta kalan ve haritada biriken dusmanlari temizleyerek kasilmayi onleriz
+        // Her 2 saniyede bir (120 tick) bu kontrolu yaparak gereksiz islemci yoruculugunu engelleriz
+        if (panel.oyunSuresiKareSayisi % 120 == 0) {
+            double limitMesafeKaresi = 1200.0 * 1200.0;
+            panel.dusmanlar.removeIf(d -> {
+                double dx = d.x - panel.oyuncu.x;
+                double dy = d.y - panel.oyuncu.y;
+                return (dx * dx + dy * dy) > limitMesafeKaresi;
+            });
         }
     }
     
@@ -48,12 +69,12 @@ public class DusmanUretici {
         long suAnkiZaman = System.currentTimeMillis();
         long gecenSure = suAnkiZaman - baslangicZamani; // Milisaniye cinsinden gecen sure
         
-        // Zorluk derecesi carpani (Her 60 saniyede bir zorluk %15 artar)
-        double zorlukCarpani = 1.0 + (double) gecenSure / 400000.0;
+        // Zorluk derecesi carpani (Zorluk scaling hızı artırıldı - her 2 dakikada zorluk iki katına çıkar - Andac) - zorlukModu ile olceklenir (Andaç)
+        double zorlukCarpani = (1.0 + (double) gecenSure / 120000.0) * panel.zorlukModu;
         
-        // Tek dalgada uretilecek dusman sayisi (Her 30 saniyede bir uretilen dusman sayisi 1 artar)
-        // Baslangicta 2 dusman, maksimum ayni anda 15 dusman dogurabilir
-        int uretilecekDusmanSayisi = Math.min(15, 2 + (int) (gecenSure / 30000));
+        // Tek dalgada uretilecek dusman sayisi (zorluk artırıldı - Andac)
+        // Baslangicta 3 dusman, maksimum ayni anda 25 dusman dogurabilir
+        int uretilecekDusmanSayisi = Math.min(25, 3 + (int) (gecenSure / 20000));
         
         // Belirlenen sayida dusman uretir
         for (int i = 0; i < uretilecekDusmanSayisi; i++) {
@@ -130,34 +151,34 @@ public class DusmanUretici {
         return new double[]{spawnX, spawnY};
     }
     
-    // Zorluk carpanina gore standart zombi dusman nesnesi olusturur
+    // Zorluk carpanina gore standart zombi dusman nesnesi olusturur (Statlar artırıldı - Andac)
     private Dusman standartDusmanOlustur(double x, double y, double zorlukCarpani) {
-        // Can (30 * zorluk), Hiz (1.5 * zorluk), Hasar (10 * zorluk), Yaricap (16)
-        double can = 30.0 * zorlukCarpani;
-        double hiz = 1.5 * Math.min(2.0, 1.0 + (zorlukCarpani - 1.0) * 0.3);
-        double hasar = 10.0 * zorlukCarpani;
+        // Can (40 * zorluk), Hiz (1.6 * zorluk), Hasar (12 * zorluk), Yaricap (16)
+        double can = 40.0 * zorlukCarpani;
+        double hiz = 1.6 * Math.min(2.0, 1.0 + (zorlukCarpani - 1.0) * 0.3);
+        double hasar = 12.0 * zorlukCarpani;
         return new Dusman(x, y, can, hiz, hasar, 16.0);
     }
     
-    // Zorluk carpanina gore hizli zombi dusman nesnesi olusturur
+    // Zorluk carpanina gore hizli zombi dusman nesnesi olusturur (Statlar artırıldı - Andac)
     private HizliDusman hizliDusmanOlustur(double x, double y, double zorlukCarpani) {
-        double can = 15.0 * zorlukCarpani;
-        double hiz = 3.0 * Math.min(1.8, 1.0 + (zorlukCarpani - 1.0) * 0.2);
+        double can = 20.0 * zorlukCarpani;
+        double hiz = 3.2 * Math.min(1.8, 1.0 + (zorlukCarpani - 1.0) * 0.2);
         HizliDusman hd = new HizliDusman(x, y);
         hd.can = can;
         hd.hiz = hiz;
-        hd.hasar = 5.0 * zorlukCarpani;
+        hd.hasar = 7.0 * zorlukCarpani;
         return hd;
     }
     
-    // Zorluk carpanina gore golem boss nesnesi olusturur
+    // Zorluk carpanina gore golem boss nesnesi olusturur (Statlar artırıldı - Andac)
     private GolemDusman golemDusmanOlustur(double x, double y, double zorlukCarpani) {
-        double can = 150.0 * zorlukCarpani;
-        double hiz = 0.8 * Math.min(1.5, 1.0 + (zorlukCarpani - 1.0) * 0.1);
+        double can = 200.0 * zorlukCarpani;
+        double hiz = 0.9 * Math.min(1.5, 1.0 + (zorlukCarpani - 1.0) * 0.1);
         GolemDusman gd = new GolemDusman(x, y);
         gd.can = can;
         gd.hiz = hiz;
-        gd.hasar = 25.0 * zorlukCarpani;
+        gd.hasar = 35.0 * zorlukCarpani;
         return gd;
     }
 }

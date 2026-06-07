@@ -17,7 +17,9 @@ public class AtesTopu extends Silah {
     
     // Ates Topunun saldiri mekanizmasi: En yakin dusmana doğru mermi firlatir
     @Override
-    public void saldir(ArrayList<Dusman> dusmanlar, ArrayList<Mermi> mermiler) {
+    public void saldir(motor.OyunPaneli panel) {
+        ArrayList<Dusman> dusmanlar = panel.dusmanlar;
+        ArrayList<Mermi> mermiler = panel.mermiler;
         // Eger haritada hic dusman yoksa saldiri yapilmaz
         if (dusmanlar == null || dusmanlar.isEmpty()) {
             return;
@@ -79,6 +81,9 @@ public class AtesTopu extends Silah {
             
             // Olusturulan mermiyi oyunun genel mermi listesine ekler
             mermiler.add(atesMermisi);
+            
+            // Retro ates topu sesini calar (Andaç)
+            motor.SesSentezleyici.atesTopu();
             
             // Konsola bilgilendirme yazdirir (gelistirici takibi icin)
             System.out.println("Ates Topu firlatildi! Hedef koordinat: (" + enYakinDusman.x + ", " + enYakinDusman.y + ")");

@@ -2,13 +2,20 @@ package varliklar;
 
 import mekanikler.Mermi;
 import mekanikler.DeneyimKristali;
+import mekanikler.HasarSayisi;
+import motor.OyunPaneli;
+import java.awt.Color;
 import java.util.ArrayList;
 
 // CarpismaDenetleyici sinifi, oyundaki nesnelerin birbirleriyle olan temaslarini kontrol eder
 public class CarpismaDenetleyici {
     
-    // Tum carpismalari denetleyen ana metot
-    public static void carpismalariDenetle(Oyuncu oyuncu, ArrayList<Dusman> dusmanlar, ArrayList<Mermi> mermiler, ArrayList<DeneyimKristali> kristaller) {
+    // Tum carpismalari denetleyen ana metot (Andac refaktoruyla OyunPaneli context'i uzerinden calisir)
+    public static void carpismalariDenetle(OyunPaneli panel) {
+        Oyuncu oyuncu = panel.oyuncu;
+        ArrayList<Dusman> dusmanlar = panel.dusmanlar;
+        ArrayList<Mermi> mermiler = panel.mermiler;
+        ArrayList<DeneyimKristali> kristaller = panel.kristaller;
         
         // 1. OYUNCU - DÜŞMAN ÇARPIŞMASI
         for (Dusman dusman : dusmanlar) {
@@ -28,6 +35,12 @@ public class CarpismaDenetleyici {
                     oyuncu.can = 0;
                 }
                 
+                // Hasar sesini calar, ekran sarsintisini ve kirmizi flasi tetikler (Andaç)
+                if (panel.oyunSuresiKareSayisi % 22 == 0) {
+                    motor.SesSentezleyici.hasar();
+                    panel.hasarFlasiTetikle();
+                }
+                
                 // --- İÇ İÇE GİRMEYİ ENGELLEME VE GERİ SEKME (PUSHBACK) ---
                 double mesafe = Math.sqrt(mesafeKaresi);
                 if (mesafe > 0) {
@@ -40,9 +53,9 @@ public class CarpismaDenetleyici {
                     oyuncu.x += itmeX * 0.6;
                     oyuncu.y += itmeY * 0.6;
                     
-                    // Dusmani da geriye dogru %40 oraninda iteriz
-                    dusman.x -= itmeX * 0.4;
-                    dusman.y -= itmeY * 0.4;
+                    // Dusmani da geriye dogru %40 oraninda ve kendi geri itilme direncine gore iteriz (Andac)
+                    dusman.x -= itmeX * 0.4 * dusman.geriItmeCarpani;
+                    dusman.y -= itmeY * 0.4 * dusman.geriItmeCarpani;
                     
                     // Harita sinirlari disina tasmalarini engelleriz (Andaç)
                     oyuncu.x = Math.max(0, Math.min(oyuncu.x, 3000));
@@ -69,30 +82,46 @@ public class CarpismaDenetleyici {
                     continue;
                 }
                 
-                double dx = mermi.x - dusman.x;
-                double dy = mermi.y - dusman.y;
+                double dx = dusman.x - mermi.x; // Mermiden dusmana dogru olan vektor (Andaç)
+                double dy = dusman.y - mermi.y;
                 double mesafeKaresi = (dx * dx) + (dy * dy);
                 double yariCapToplamKaresi = (mermi.yariCap + dusman.yariCap) * (mermi.yariCap + dusman.yariCap);
                 
                 // Eger mermi dusmana çarptiysa
                 if (mesafeKaresi < yariCapToplamKaresi) {
-                    // Dusman canini azalt
-                    dusman.can -= mermi.hasar;
-                    // Mermiyi pasif yap (yok et)
-                    mermi.aktif = false;
-                    
-                    // Dusmani merminin gelis yonunde geriye dogru it (Knockback - Geri Itme)
-                    // Geri itilme miktari olarak sabit 25 piksel kullanilir
-                    dusman.geriIt(mermi.yonX, mermi.yonY, 25.0);
-                    
-                    // Eger dusman olduysa
-                    if (dusman.can <= 0) {
-                        // Dusmanin oldugu yere bir deneyim kristali birak (15 Deneyim Puani degerinde)
-                        kristaller.add(new DeneyimKristali(dusman.x, dusman.y, 15.0));
+                    // Dönen bıçak kontrolü (Andaç)
+                    if (mermi instanceof mekanikler.DonerBicakMermi) {
+                        mekanikler.DonerBicakMermi dbMermi = (mekanikler.DonerBicakMermi) mermi;
+                        long suAn = System.currentTimeMillis();
+                        
+                        // Düşman bu bıçaktan hasar alabilir durumdaysa (cooldown dolduysa)
+                        if (dbMermi.dusmanaVurabilirMi(dusman, suAn)) {
+                            dusman.can -= mermi.hasar;
+                            dbMermi.vurulanDusmaniEkle(dusman, suAn);
+                            
+                            // Ekrana hasar sayisi firlatir (Turkuaz renkli bicak hasari - Andaç)
+                            panel.hasarSayilari.add(new HasarSayisi(dusman.x, dusman.y - 12, String.format("-%.0f", mermi.hasar), Color.CYAN));
+                            
+                            // Düşmanı bıçağın çarptığı yönde (mermidir dışarı doğru) geriye it (Andaç)
+                            double mesafe = Math.sqrt(mesafeKaresi);
+                            if (mesafe > 0) {
+                                dusman.geriIt(dx / mesafe, dy / mesafe, 15.0);
+                            }
+                        }
+                    } else {
+                        // Normal mermi (Ateş topu vb.): Çarptığında yok olur
+                        dusman.can -= mermi.hasar;
+                        mermi.aktif = false;
+                        
+                        // Ekrana hasar sayisi firlatir (Turuncu renkli ates topu hasari - Andaç)
+                        panel.hasarSayilari.add(new HasarSayisi(dusman.x, dusman.y - 12, String.format("-%.0f", mermi.hasar), Color.ORANGE));
+                        
+                        // Düşmanı merminin gidiş yönünde geriye it (Knockback)
+                        dusman.geriIt(mermi.yonX, mermi.yonY, 25.0);
+                        
+                        // Mermi yok olduğu için aramayı kes
+                        break;
                     }
-                    
-                    // Mermi yok oldugu icin bu mermi icin baska dusman aramayi sonlandir
-                    break;
                 }
             }
         }

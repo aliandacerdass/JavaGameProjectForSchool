@@ -27,7 +27,11 @@ public class DonerBicak extends Silah {
     
     // Doner Bicagin saldiri mekanizmasi: Oyuncu etrafinda donen mermiler (bicaklar) olusturur
     @Override
-    public void saldir(ArrayList<Dusman> dusmanlar, ArrayList<Mermi> mermiler) {
+    public void saldir(motor.OyunPaneli panel) {
+        ArrayList<Mermi> mermiler = panel.mermiler;
+        // Yeni bicaklar olusturulmadan once eski aktif donen bicaklari temizleriz (Andac)
+        mermiler.removeIf(m -> m instanceof DonerBicakMermi);
+
         // Silahin seviyesine bagli olarak firlatilacak bicak sayisini belirler
         // Seviye 1 ise 1 bicak, Seviye 2 ise 2 bicak, Seviye 3 ise 3 bicak... vb.
         int bicakSayisi = this.seviye;
