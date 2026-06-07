@@ -74,7 +74,7 @@
 Bu rapor; okul projesi kapsamında Java platformunun grafik arayüz kütüphaneleri (Swing ve AWT) kullanılarak harici bir oyun motoru desteği olmaksızın geliştirilen \textbf{``slimeSlayer''} oyununun mimarisini, mekaniklerini, matematiksel altyapısını ve optimizasyon süreçlerini incelemektedir.
 
 \subsection{Oyunun Amacı}
-\textbf{slimeSlayer}, oyuncunun bataklık temalı bir harita üzerinde hayatta kalma mücadelesini ele alan 2D roguelite türünde bir oyundur. Oyuncu WASD tuşları yardımıyla hareket ederken, otomatik saldıran yetenekleri (Ateş Topu, Döner Bıçak ve Kalkan) ile sürekli çoğalan Slime ve Golem ordularına karşı direnir. Düşmanlardan düşen deneyim kristallerini topladıkça seviye atlar, kart seçim ekranından yeteneklerini geliştirir, haritada doğan kırmızı güç meyvelerini yiyerek geçici hız kazanır. Ayrıca oyunda hasar anında uçuşan hasar sayıları, sentezlenmiş retro ses efektleri, ses seviyesi ve zorluk ayarlarının yapılabildiği interaktif bir giriş ekranı bulunur.
+\textbf{slimeSlayer}, oyuncunun bataklık temalı bir harita üzerinde hayatta kalma mücadelesini ele alan 2D roguelite türünde bir oyundur. Oyuncu WASD tuşları yardımıyla hareket ederken, otomatik saldıran üç temel yetenek (Ateş Topu, Döner Bıçak ve Kalkan) ile sürekli çoğalan Slime ve Golem ordularına karşı direnir. Düşmanlardan düşen deneyim kristallerini topladıkça seviye atlar, kart seçim ekranından yeteneklerini geliştirir, haritada doğan kırmızı güç meyvelerini yiyerek geçici hız kazanır. Ayrıca oyunda hasar anında uçuşan hasar sayıları, sentezlenmiş retro ses efektleri, ses seviyesi ve zorluk ayarlarının yapılabildiği interaktif bir giriş ekranı bulunur.
 
 ---
 
@@ -107,7 +107,7 @@ y += hareketY * toplamHiz;
 \subsection{Düşman Spawn Algoritması ve Zorluk Ölçeklemesi}
 \texttt{DusmanUretici.java} sınıfı, oyuncu etrafındaki ekran sınırlarının hemen dışındaki 4 kenardan (+60px ofset) düşman spawn eder. Zorluk derecesi, ana menüden seçilen \texttt{zorlukModu} çarpanı ile çarpılarak düşmanların can ve hasarlarına etki eder:
 \begin{equation}
-    \text{Zorluk Çarpanı} = \left( 1.0 + \frac{\text{Geçen Süre (ms)}}{120000.0} \right) \times \text{zorlukModu}
+    \text{Zorluk Carpani} = \left( 1.0 + \frac{\text{Gecen Sure (ms)}}{120000.0} \right) \times \text{zorlukModu}
 \end{equation}
 
 \subsection{Mıknatıs Çekimli Tecrübe Kristalleri}
@@ -172,7 +172,7 @@ if (hasarFlasiSuresi > 0) {
 
 ---
 
-\section{Retro Ses Efekti Sentezleyici Motoru}
+\section{Retro Ses Efektı Sentezleyici Motoru}
 
 Ses sentezleyici motoru, diskteki `.wav` dosyalarının kaybolması veya işletim sisteminin ses sürücelerinin hata vermesi risklerini bertaraf etmek amacıyla tamamen **Java Sound API** (\texttt{javax.sound.sampled}) kullanılarak sıfırdan yazılmıştır. Sentezlenen 16-bit PCM dalgalar ayrı bir thread (iş parçacığı) üzerinden asenkron olarak çalınarak FPS düşüşleri engellenir.
 
@@ -261,13 +261,17 @@ if (mermi instanceof DonerBicakMermi) {
 \section{Kullanılan Java Yapıları ve Tercih Nedenleri}
 
 \subsection{Nesne Yönelimli Programlama (OOP)}
-* \textbf{Kalıtım (Inheritance):} \texttt{GolemDusman} ve \texttt{HizliDusman} sınıfları \texttt{Dusman} sınıfından türetilmiştir.
-* \textbf{Soyut Sınıflar (Abstract Classes):** \texttt{Silah} sınıfı soyut yapılarak silahlar için kurumsal standartlar konulmuş, \texttt{saldir()} metodu her silahta özelleştirilmiştir.
-* \textbf{Çok Biçimlilik (Polymorphism):} \texttt{Silah} türündeki listeler içinde barındırılan nesneler döngülerde aynı imza ile çağrılmış fakat kendi metotlarını tetiklemiştir.
+\begin{itemize}
+    \item \textbf{Kalıtım (Inheritance):} \texttt{GolemDusman} ve \texttt{HizliDusman} sınıfları \texttt{Dusman} sınıfından türetilmiştir.
+    \item \textbf{Soyut Sınıflar (Abstract Classes):} \texttt{Silah} sınıfı soyut yapılarak silahlar için kurumsal standartlar konulmuş, \texttt{saldir()} metodu her silahta özelleştirilmiştir.
+    \item \textbf{Çok Biçimlilik (Polymorphism):} \texttt{Silah} türündeki listeler içinde barındırılan nesneler döngülerde aynı imza ile çağrılmış fakat kendi metotlarını tetiklemiştir.
+\end{itemize}
 
 \subsection{Koleksiyon Yapısı (Collections Framework)}
-* \textbf{ArrayList:} Haritadaki dinamik varlık listelerini (mermiler, kristaller, düşmanlar) yönetmek için \texttt{ArrayList} yapısı seçilmiştir.
-* \textbf{HashMap:} Dönen bıçak hasar cooldown takibinde düşman referanslarını anahtar (\texttt{key}), son vuruş zaman damgalarını değer (\texttt{value}) olarak saklayan \texttt{HashMap<Dusman, Long>} yapısı kullanılmıştır.
+\begin{itemize}
+    \item \textbf{ArrayList:} Haritadaki dinamik varlık listelerini (mermiler, kristaller, düşmanlar) yönetmek için \texttt{ArrayList} yapısı seçilmiştir.
+    \item \textbf{HashMap:} Dönen bıçak hasar cooldown takibinde düşman referanslarını anahtar (\texttt{key}), son vuruş zaman damgalarını değer (\texttt{value}) olarak saklayan \texttt{HashMap<Dusman, Long>} yapısı kullanılmıştır.
+\end{itemize}
 
 ---
 
